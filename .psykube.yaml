@@ -1,0 +1,52 @@
+name: my-app
+registry_host: gcr.io
+registry_user: commercial-tribe
+tags:
+  - latest
+env:
+  APP_SOURCE: "jetson"
+  BAR:
+    configMap:
+      name: some-config-map
+      key: some-key
+  BAZ:
+    secret: some-key
+
+ingress:
+  tls:
+    acme: true
+
+service: true
+
+configMap:
+  some.value: "tada"
+
+secrets:
+  apiKey: "1234"
+
+# Set the ports: this will create the ports on the container and on the service
+ports:
+  default: 80 # will generate a env var of DEFAULT_PORT
+
+clusters:
+  staging:
+    ingress:
+      hosts:
+        commercialtribe.ninja:
+          tls:
+            acme: true
+          paths:
+            - /
+    configMap:
+      some.value: "tada"
+  production:
+    ingress:
+      hosts:
+        commercialtribe.net:
+          tls:
+            acme: true
+          paths:
+            /:
+              port: 8080
+    configMap:
+      some.value: "tada"
