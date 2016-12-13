@@ -1,0 +1,2 @@
+#!/usr/bin/env crystal
+require "../src/psykube.cr"
