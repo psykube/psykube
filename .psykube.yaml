@@ -6,7 +6,7 @@ tags:
 env:
   APP_SOURCE: "jetson"
   BAR:
-    configMap:
+    config_map:
       name: some-config-map
       key: some-key
   BAZ:
@@ -18,7 +18,7 @@ ingress:
 
 service: true
 
-configMap:
+config_map:
   some.value: "tada"
 
 secrets:
@@ -37,7 +37,7 @@ clusters:
             acme: true
           paths:
             - /
-    configMap:
+    config_map:
       some.value: "tada"
   production:
     ingress:
@@ -48,5 +48,5 @@ clusters:
           paths:
             /:
               port: 8080
-    configMap:
+    config_map:
       some.value: "tada"
