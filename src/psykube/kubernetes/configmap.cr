@@ -14,7 +14,7 @@ class Psykube::Kubernetes::ConfigMap
     @apiVersion = "v1"
     @metadata = Psykube::Kubernetes::Shared::Metadata.new
     @data = {} of String => String
-  endm
+  end
 
   def initialize(name : String, data : Hash(String, String))
     initialize

@@ -16,7 +16,7 @@ class Psykube::Manifest
   )
 
   def kuberenetes_cluster_config_map(cluster)
-    cm = Psykube::Kubernetes::ConfigMap.new(
+    Psykube::Kubernetes::ConfigMap.new(
       name,
       config_map.merge(self.clusters[cluster].config_map)
     )
