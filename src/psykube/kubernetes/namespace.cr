@@ -1,7 +1,6 @@
 require "yaml"
 
-class Psykube::Kuberenetes::Namespace
-
+class Psykube::Kubernetes::Namespace
   YAML.mapping(
     apiVersion: String,
     kind: String,
