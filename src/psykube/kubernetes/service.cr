@@ -1,5 +1,5 @@
 require "yaml"
-require "./shared/metadata"
+require "./shared/*"
 
 class Psykube::Kubernetes::Service
   YAML.mapping(
@@ -7,7 +7,7 @@ class Psykube::Kubernetes::Service
     apiVersion: String,
     metadata: {type: Psykube::Kubernetes::Shared::Metadata},
     spec: {type: Psykube::Kubernetes::Service::Spec},
-    status: {type: Psykube::Kubernetes::Service::Status, nilable: true, setter: false}
+    status: {type: Psykube::Kubernetes::Shared::Status, nilable: true, setter: false}
   )
 
   def initialize
