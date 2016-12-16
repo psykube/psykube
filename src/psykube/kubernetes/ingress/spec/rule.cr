@@ -2,12 +2,11 @@ require "yaml"
 
 class Psykube::Kubernetes::Ingress::Spec::Rule
   YAML.mapping(
-    host: {type: String},                                        # nillable?
-    http: {type: Psykube::Kubernetes::Ingress::Spec::Rule::Http} # nillable?
+    host: {type: String, nilable: true},
+    http: {type: Psykube::Kubernetes::Ingress::Spec::Rule::Http}
   )
 
   def initialize
-    @host = ""
     @http = Psykube::Kubernetes::Ingress::Spec::Rule::Http.new
   end
 end
