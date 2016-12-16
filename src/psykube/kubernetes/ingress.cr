@@ -11,6 +11,8 @@ class Psykube::Kubernetes::Ingress
   )
 
   def initialize
+    @kind = "Ingress"
+    @apiVersion = "v1"
     @metadata = Psykube::Kubernetes::Shared::Metadata.new
     @spec = Psykube::Kubernetes::Ingress::Spec.new
   end
