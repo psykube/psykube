@@ -32,6 +32,6 @@ class Psykube::Manifest
 end
 
 require "./manifest/*"
-require "./kubernetes/configmap"
+require "./kubernetes/config_map"
 require "./kubernetes/service"
 require "./kubernetes/ingress"

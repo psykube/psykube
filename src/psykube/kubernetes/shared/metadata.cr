@@ -2,7 +2,7 @@ require "yaml"
 
 class Psykube::Kubernetes::Shared::Metadata
   YAML.mapping(
-    name: {type: String},
+    name: {type: String, nilable: true},
     generateName: {type: String, nilable: true},
     namespace: {type: String, nilable: true},
     selfLink: {type: String, nilable: true, setter: false},
@@ -20,11 +20,9 @@ class Psykube::Kubernetes::Shared::Metadata
   )
 
   def initialize
-    @name = ""
   end
 
   def initialize(name : String)
-    initialize
     @name = name
   end
 
