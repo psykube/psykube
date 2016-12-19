@@ -1,5 +1,10 @@
+require "../kubernetes/ingress"
+
 class Psykube::Generator
   module Ingress
+    @ingress : Psykube::Kubernetes::Ingress
+    getter ingress
+
     private def generate_ingress
       Psykube::Kubernetes::Ingress.new.tap do |ingress|
         ingress.spec.rules = [] of Psykube::Kubernetes::Ingress::Spec::Rule

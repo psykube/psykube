@@ -9,21 +9,8 @@ class Psykube::Generator
   include ConfigMap
   include List
 
-  @list : Psykube::Kubernetes::List
-  @config_map : Psykube::Kubernetes::ConfigMap
-  # @secret : Psykube::Kubernetes::Secret
-  # @deployment : Psykube::Kubernetes::Deployment
-  @service : Psykube::Kubernetes::Service
-  @ingress : Psykube::Kubernetes::Ingress
-
   getter manifest
   getter cluster_name
-  getter list
-  getter config_map
-  # getter secret
-  # getter deployment
-  getter service
-  getter ingress
 
   def initialize(manifest_file : String, cluster_name : String)
     @manifest = Psykube::Manifest.from_yaml(File.read manifest_file)
