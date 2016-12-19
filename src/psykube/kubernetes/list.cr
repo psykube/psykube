@@ -2,12 +2,14 @@ require "yaml"
 require "./namespace"
 require "./service"
 require "./config_map"
+require "./ingress"
 
 class Psykube::Kubernetes::List
   alias ListableTypes =
     Psykube::Kubernetes::Namespace |
     Psykube::Kubernetes::ConfigMap |
-    Psykube::Kubernetes::Service
+    Psykube::Kubernetes::Service |
+    Psykube::Kubernetes::Ingress
 
   YAML.mapping(
     api_version: { type: String, key: "apiVersion", default: "v1" },

@@ -14,19 +14,9 @@ class Psykube::Manifest
     ports: {type: Hash(String, UInt16), default: {} of String => UInt16},
     clusters: {type: Hash(String, Cluster), default: {} of String => Cluster},
   )
-
-  def kuberenetes_cluster_config_map(cluster : String)
-    Psykube::Kubernetes::ConfigMap.new(
-      name,
-      config_map.merge(self.clusters[cluster].config_map)
-    )
-  end
-
-  def kuberenetes_cluster_service
-    Psykube::Kubernetes::Service.new(name, ports)
-  end
 end
 
 require "./manifest/*"
 require "./kubernetes/config_map"
 require "./kubernetes/service"
+require "./kubernetes/ingress"
