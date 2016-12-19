@@ -46,7 +46,7 @@ clusters:
           tls:
             acme: true
           paths:
-            /:
-              port: 8080
+            /auth: default
+            /other: 8080
     config_map:
       some.value: "tada"

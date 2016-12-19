@@ -6,8 +6,9 @@ class Psykube::Kubernetes::Ingress::Spec::Rule
     http: {type: Psykube::Kubernetes::Ingress::Spec::Rule::Http}
   )
 
-  def initialize
-    @http = Psykube::Kubernetes::Ingress::Spec::Rule::Http.new
+  def initialize(host : String, paths : Array(Psykube::Kubernetes::Ingress::Spec::Rule::Http::Path))
+    @host = host
+    @http = Psykube::Kubernetes::Ingress::Spec::Rule::Http.new(paths)
   end
 end
 
