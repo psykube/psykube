@@ -7,6 +7,7 @@ class Psykube::Generator
   include Ingress
   include Service
   include ConfigMap
+  include Secret
   include List
 
   getter manifest
@@ -18,7 +19,7 @@ class Psykube::Generator
 
     # Generate the kubernetes objects
     @config_map = generate_config_map
-    # @secret = generate_secret
+    @secret = generate_secret
     # @deployment = generate_deployment
     @service = generate_service
     @ingress = generate_ingress
@@ -34,5 +35,4 @@ class Psykube::Generator
   def cluster_manifest
     manifest.clusters[cluster_name]
   end
-
 end
