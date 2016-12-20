@@ -2,8 +2,8 @@ require "yaml"
 
 class Psykube::Manifest::Env
   YAML.mapping(
-    configMap: String | ConfigMap | Nil,
-    secret: String | Secret | Nil
+    config_map: String | KeyRef | Nil,
+    secret: String | KeyRef | Nil
   )
 end
 

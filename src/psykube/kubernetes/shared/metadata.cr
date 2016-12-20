@@ -12,8 +12,8 @@ class Psykube::Kubernetes::Shared::Metadata
     creationTimestamp: {type: Time, nilable: true, setter: false},
     deletionTimestamp: {type: Time, nilable: true, setter: false},
     deletionGracePeriodSeconds: {type: Int32, nilable: true, setter: false},
-    labels: {type: Hash(String, String), nilable: true },
-    annotations: {type: Hash(String, String), nilable: true },
+    labels: {type: Hash(String, String), nilable: true},
+    annotations: {type: Hash(String, String), nilable: true},
     ownerReferences: {type: Array(OwnerReference), nilable: true, setter: false},
     finalizers: {type: Array(String), nilable: true},
     clusterName: {type: String, nilable: true}

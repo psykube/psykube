@@ -4,7 +4,7 @@ require "./shared/metadata"
 class Psykube::Kubernetes::ConfigMap
   YAML.mapping(
     kind: {type: String, setter: false, default: "ConfigMap"},
-    api_version: { type: String, key: "apiVersion", default: "v1" },
+    api_version: {type: String, key: "apiVersion", default: "v1"},
     metadata: {type: Psykube::Kubernetes::Shared::Metadata, default: Psykube::Kubernetes::Shared::Metadata.new},
     data: {type: Hash(String, String), default: {} of String => String}
   )

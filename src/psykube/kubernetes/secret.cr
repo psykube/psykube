@@ -1,9 +1,9 @@
 require "yaml"
 require "./shared/metadata"
 
-class Psykube::Kubernetes::ConfigMap
+class Psykube::Kubernetes::Secret
   YAML.mapping(
-    kind: {type: String, setter: false, default: "ConfigMap"},
+    kind: {type: String, setter: false, default: "Secret"},
     apiVersion: {type: String, setter: false, default: "v1"},
     metadata: {type: Psykube::Kubernetes::Shared::Metadata, default: Psykube::Kubernetes::Shared::Metadata.new},
     data: {type: Hash(String, String), default: {} of String => String},
