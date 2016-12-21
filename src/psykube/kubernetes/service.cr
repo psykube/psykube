@@ -17,13 +17,21 @@ class Psykube::Kubernetes::Service
     @spec = Psykube::Kubernetes::Service::Spec.new
   end
 
-  def initialize(name : String, ports : Hash(String, UInt16))
+  def initialize(name : String)
     initialize
     metadata.name = name
     spec.selector["app"] = name
+  end
+
+  def initialize(name : String, ports : Hash(String, UInt16))
+    initialize(name)
     ports.each do |name, port|
       spec.ports.push(Psykube::Kubernetes::Service::Spec::Port.new(name, port))
     end
+  end
+
+  def initialize(name : String, ports : Nil)
+    initialize(name)
   end
 end
 

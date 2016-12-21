@@ -3,6 +3,7 @@ require "./namespace"
 require "./service"
 require "./config_map"
 require "./ingress"
+require "./deployment"
 require "./secret"
 
 class Psykube::Kubernetes::List
@@ -10,6 +11,7 @@ class Psykube::Kubernetes::List
                         Psykube::Kubernetes::ConfigMap |
                         Psykube::Kubernetes::Service |
                         Psykube::Kubernetes::Ingress |
+                        Psykube::Kubernetes::Deployment |
                         Psykube::Kubernetes::Secret
 
   YAML.mapping(
@@ -18,10 +20,16 @@ class Psykube::Kubernetes::List
     items: {type: Array(ListableTypes)}
   )
 
-  def initialize(items)
+  def initialize
     @api_version = "v1"
     @kind = "List"
     @items = Array(ListableTypes).new
+  end
+
+  def initialize(items)
+    initialize
     items.each { |item| @items.push item }
   end
+
+  forward_missing_to @items
 end

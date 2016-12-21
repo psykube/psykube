@@ -2,7 +2,7 @@ require "../kubernetes/ingress"
 
 class Psykube::Generator
   module Ingress
-    @ingress : Psykube::Kubernetes::Ingress
+    @ingress : Psykube::Kubernetes::Ingress | Nil
     getter ingress
 
     private def generate_ingress
@@ -10,7 +10,7 @@ class Psykube::Generator
         ingress.spec.rules = [] of Psykube::Kubernetes::Ingress::Spec::Rule
         ingress.spec.tls = generate_ingress_tls_from_manifest(cluster_manifest.ingress)
         ingress.spec.rules = generate_ingress_rules_from_manifest(cluster_manifest.ingress)
-      end
+      end if manifest.service && cluster_manifest.ingress
     end
 
     private def generate_ingress_tls_from_manifest(cluster_ingress : Nil)
@@ -46,24 +46,12 @@ class Psykube::Generator
     private def generate_ingress_paths(host, paths : Psykube::Manifest::Cluster::Ingress::Host::PathPortMap)
       rules = [] of Psykube::Kubernetes::Ingress::Spec::Rule
       kube_paths = paths.map do |path, port_or_name|
-        if port_or_name.to_u16?
-          generate_ingress_path(path, port_or_name.to_u16)
-        else
-          generate_ingress_path(path, port_or_name)
-        end
+        Psykube::Kubernetes::Ingress::Spec::Rule::Http::Path.new(
+          path, manifest.name, lookup_port(port_or_name)
+        )
       end
       rules << Psykube::Kubernetes::Ingress::Spec::Rule.new(host, kube_paths)
       rules
-    end
-
-    private def generate_ingress_path(path : String, port_name : String)
-      generate_ingress_path(path, manifest.ports[port_name])
-    end
-
-    private def generate_ingress_path(path : String, port : UInt16)
-      Psykube::Kubernetes::Ingress::Spec::Rule::Http::Path.new(
-        path, manifest.name, port
-      )
     end
 
   end

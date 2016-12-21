@@ -9,18 +9,21 @@ class Psykube::Generator
   include ConfigMap
   include Secret
   include List
+  include Deployment
 
   getter manifest
   getter cluster_name
+  getter tag
 
-  def initialize(manifest_file : String, cluster_name : String)
-    @manifest = Psykube::Manifest.from_yaml(File.read manifest_file)
+  def initialize(filename : String, cluster_name : String, tag : String = "latest")
+    @manifest = Psykube::Manifest.from_yaml(File.read(filename))
     @cluster_name = cluster_name
+    @tag = tag
 
     # Generate the kubernetes objects
     @config_map = generate_config_map
+    @deployment = generate_deployment
     @secret = generate_secret
-    # @deployment = generate_deployment
     @service = generate_service
     @ingress = generate_ingress
 
@@ -33,6 +36,18 @@ class Psykube::Generator
   end
 
   def cluster_manifest
-    manifest.clusters[cluster_name]
+    clusters[cluster_name]
   end
+
+  def container_image
+    parts = [
+      registry_host,
+      registry_user,
+      name,
+    ]
+    image = parts.compact.join("/")
+    [image, tag].join(":")
+  end
+
+  forward_missing_to @manifest
 end
