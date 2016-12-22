@@ -1,6 +1,6 @@
 require "yaml"
 
-class Psykube::Kubernetes::Deployment::Spec::Selector
+class Psykube::Kubernetes::Shared::Selector
   alias MatchLabels = Hash(String, String)
 
   YAML.mapping({

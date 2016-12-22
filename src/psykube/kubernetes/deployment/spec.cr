@@ -3,7 +3,7 @@ require "yaml"
 class Psykube::Kubernetes::Deployment::Spec
   YAML.mapping(
     replicas: Int32 | Nil,
-    selector: Selector,
+    selector: Shared::Selector,
     template: Template,
     strategy: Strategy | Nil,
     min_ready_seconds: {type: Int32, nilable: true, key: "minReadySeconds"},
@@ -19,3 +19,4 @@ class Psykube::Kubernetes::Deployment::Spec
 end
 
 require "./spec/*"
+require "../../shared/selector"

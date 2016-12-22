@@ -18,4 +18,4 @@ class Psykube::Kubernetes::PersistentVolumeClaim
   end
 end
 
-require "./persistentvolumeclaim/*"
+require "./persistent_volume_claim/*"
