@@ -4,14 +4,16 @@ class Psykube::Kubernetes::PersistentVolumeClaim::Spec
   YAML.mapping(
     access_modes: {type: Array(String), key: "accessModes"},
     selector: {type: Shared::Selector, nilable: true},
-    resources: {type: Psykube::Kubernetes::PersistentVolumeClaim::Spec::Resource},
-    volume_name: {type: String, key: "volumeName"}
+    resources: {type: Resource},
+    volume_name: {type: String, key: "volumeName", nilable: true, setter: false}
   )
 
-  def initialize
-    @access_modes = [] of String
-    @resources = Psykube::Kubernetes::PersistentVolumeClaim::Spec::Resource.new
-    @volume_name = ""
+  def initialize(size : String, @access_modes : Array(String))
+    @resources = Resource.new(size)
+  end
+
+  def initialize(size)
+    initialize(size, ["ReadWriteOnce"])
   end
 end
 

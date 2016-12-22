@@ -10,6 +10,7 @@ class Psykube::Generator
   include Secret
   include List
   include Deployment
+  include PersistentVolumeClaims
 
   getter manifest
   getter cluster_name
@@ -26,6 +27,7 @@ class Psykube::Generator
     @secret = generate_secret
     @service = generate_service
     @ingress = generate_ingress
+    @persistent_volume_claims = generate_persistent_volume_claims
 
     # Generate the list after everything else is generated
     @list = generate_list

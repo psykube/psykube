@@ -13,7 +13,7 @@ class Psykube::Kubernetes::Deployment::Spec
   )
 
   def initialize(name : String)
-    @selector = Selector.new(name)
+    @selector = Shared::Selector.new(name)
     @template = Template.new(name)
   end
 end
