@@ -12,6 +12,11 @@ tags:
 config_map:
   some.value: "goop"
 
+# Define autoscaling configuration
+autoscale:
+  min: 3
+  max: 10
+
 # Define secrets to be used in this app
 secrets:
   apiKey: "1234"
