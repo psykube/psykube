@@ -1,7 +1,7 @@
 require "yaml"
 
 class Psykube::Manifest
-  alias VolumeMap = Hash(String, Psykube::Manifest::Volume | String)
+  alias VolumeMap = Hash(String, Volume | String)
   YAML.mapping({
     name:          String,
     registry_host: String | Nil,

@@ -1,6 +1,6 @@
 require "yaml"
 
-class Psykube::Kubernetes::Deployment::Spec::Selector::MatchExpression
+class Psykube::Kubernetes::Shared::Selector::MatchExpression
   YAML.mapping({
     key:      String,
     operator: String,

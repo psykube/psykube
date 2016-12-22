@@ -31,7 +31,7 @@ volumes:
         path: /tmp/test
   /myVol:
     claim:
-      size: hi
+      size: 100Gi
       storage_class: slow
       access_modes:
         - ReadWriteOnce
