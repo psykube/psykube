@@ -11,7 +11,7 @@ class Psykube::Generator
       Kubernetes::List.new.tap do |list|
         persistent_volume_claims.as(Array(Kubernetes::PersistentVolumeClaim)).each do |pvc|
           list << pvc
-        end
+        end if persistent_volume_claims
         list << config_map.as(Kubernetes::ConfigMap) if config_map
         list << secret.as(Kubernetes::Secret) if secret
         list << deployment
