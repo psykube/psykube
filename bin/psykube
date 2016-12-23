@@ -1,2 +1,2 @@
-#!/usr/bin/env crystal
-require "../src/psykube.cr"
+#!/usr/bin/env bash
+exec crystal run `dirname $0`/../src/psykube.cr -- $@

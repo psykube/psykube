@@ -2,12 +2,12 @@ require "../kubernetes/secret"
 
 class Psykube::Generator
   module Secret
-    @secret : Psykube::Kubernetes::Secret | Nil
+    @secret : Kubernetes::Secret | Nil
     getter secret
 
     private def generate_secret
       unless combined_secrets.empty?
-        Psykube::Kubernetes::Secret.new(cluster_name, combined_secrets)
+        Kubernetes::Secret.new(cluster_name, combined_secrets)
       end
     end
 

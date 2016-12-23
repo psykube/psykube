@@ -7,5 +7,3 @@ class Psykube::Manifest::Cluster
     secrets: {type: Hash(String, String), default: {} of String => String},
   )
 end
-
-require "./cluster/*"

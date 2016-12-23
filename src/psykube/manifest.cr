@@ -20,7 +20,7 @@ class Psykube::Manifest
 
   def full_env
     ports = self.ports || {} of String => UInt16
-    port_env = { "PORT" => lookup_port("default").to_s }
+    port_env = {"PORT" => lookup_port("default").to_s}
     ports.each do |name, port|
       port_env["#{name.underscore.upcase}_PORT"] = port.to_s
     end

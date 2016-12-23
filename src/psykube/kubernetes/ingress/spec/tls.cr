@@ -7,11 +7,11 @@ class Psykube::Kubernetes::Ingress::Spec::Tls
   )
 
   def initialize(host : String)
-    initialize(host, host.downcase.gsub(/\./, "-"))
+    initialize(host, nil)
   end
 
-  def initialize(host : String, secret_name : String)
-    initialize([host], secret_name)
+  def initialize(host : String, secret_name : String | Nil)
+    initialize([host], secret_name || host.downcase.gsub(/\./, "-"))
   end
 
   def initialize(hosts : Array(String), secret_name : String)

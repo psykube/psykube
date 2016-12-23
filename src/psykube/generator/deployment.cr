@@ -2,13 +2,13 @@ require "../kubernetes/deployment"
 
 class Psykube::Generator
   module Deployment
-    alias Volume = Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume
-    alias Container = Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container
-    @deployment : Psykube::Kubernetes::Deployment
+    alias Volume = Kubernetes::Deployment::Spec::Template::Spec::Volume
+    alias Container = Kubernetes::Deployment::Spec::Template::Spec::Container
+    @deployment : Kubernetes::Deployment
     getter deployment
 
     private def generate_deployment
-      Psykube::Kubernetes::Deployment.new(manifest.name).tap do |deployment|
+      Kubernetes::Deployment.new(manifest.name).tap do |deployment|
         deployment.spec.template.spec.volumes = generate_deployment_volumes(manifest.volumes)
         deployment.spec.template.spec.containers << generate_deployment_container
       end
@@ -17,7 +17,7 @@ class Psykube::Generator
     private def generate_deployment_volumes(volumes : Nil)
     end
 
-    private def generate_deployment_volumes(volumes : Hash(String, Psykube::Manifest::Volume | String))
+    private def generate_deployment_volumes(volumes : Hash(String, Manifest::Volume | String))
       volumes.map do |mount_path, spec|
         generate_deployment_volume(mount_path, spec)
       end
@@ -30,7 +30,7 @@ class Psykube::Generator
       end
     end
 
-    def generate_deployment_volume(mount_path : String, volume : Psykube::Manifest::Volume)
+    def generate_deployment_volume(mount_path : String, volume : Manifest::Volume)
       volume_name = name_from_mount_path(mount_path)
       kube_volume = (volume.spec ? volume.spec : Volume.new(volume_name)).as(Volume)
       kube_volume.persistent_volume_claim =
@@ -41,7 +41,7 @@ class Psykube::Generator
     def generate_deployment_volume_claim(mount_path : String, volume_claim : Nil)
     end
 
-    def generate_deployment_volume_claim(mount_path : String, volume_claim : Psykube::Manifest::Volume::Claim)
+    def generate_deployment_volume_claim(mount_path : String, volume_claim : Manifest::Volume::Claim)
       volume_name = name_from_mount_path(mount_path)
       Volume::PersistentVolumeClaim.new(volume_name, volume_claim.read_only)
     end
@@ -125,7 +125,7 @@ class Psykube::Generator
     private def generate_deployment_container_volume_mounts(volumes : Nil)
     end
 
-    private def generate_deployment_container_volume_mounts(volumes : Psykube::Manifest::VolumeMap)
+    private def generate_deployment_container_volume_mounts(volumes : Manifest::VolumeMap)
       volumes.map do |mount_path, volume|
         volume_name = name_from_mount_path(mount_path)
         Container::VolumeMount.new(volume_name, mount_path)
@@ -138,7 +138,7 @@ class Psykube::Generator
       end
     end
 
-    private def expand_env(key : String, value : Psykube::Manifest::Env)
+    private def expand_env(key : String, value : Manifest::Env)
       value_from = Container::Env::ValueFrom.new.tap do |value_from|
         if value.config_map
           value_from.config_map_key_ref = expand_env_config_map(value.config_map)
@@ -162,7 +162,7 @@ class Psykube::Generator
       Container::Env::ValueFrom::KeyRef.new(manifest.name, key)
     end
 
-    private def expand_env_config_map(key_ref : Psykube::Manifest::Env::KeyRef)
+    private def expand_env_config_map(key_ref : Manifest::Env::KeyRef)
       Container::Env::ValueFrom::KeyRef.new(key_ref.name, key_ref.key)
     end
 
@@ -173,7 +173,7 @@ class Psykube::Generator
       Container::Env::ValueFrom::KeyRef.new(manifest.name, key)
     end
 
-    private def expand_env_secret(key_ref : Psykube::Manifest::Env::KeyRef)
+    private def expand_env_secret(key_ref : Manifest::Env::KeyRef)
       Container::Env::ValueFrom::KeyRef.new(key_ref.name, key_ref.key)
     end
   end

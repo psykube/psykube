@@ -1,6 +1,6 @@
 require "yaml"
 
-class Psykube::Manifest::Cluster::Ingress::Host::Path
+class Psykube::Manifest::Ingress::Host::Path
   YAML.mapping(
     port: UInt16
   )

@@ -1,0 +1,18 @@
+name: psykube
+version: 0.1.0
+
+authors:
+  - Jason Waldrip <jwaldrip@commercialtribe.com>
+  - Eric Irwin <eirwin@commercialtribe.com>
+
+description: |
+  A tool to help with kubernetes deployments in CI/CD deployments.
+
+dependencies:
+  crustache:
+    github: MakeNowJust/crustache
+  commander:
+    # github: jwaldrip/commander
+    path: ../../jwaldrip/commander
+
+# license: MIT
