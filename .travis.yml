@@ -1,7 +1,18 @@
 os:
-  - linux
-  - osx
+- linux
+- osx
 sudo: required
 language: bash
-install: ./bin/install-crystal
-script: true
+install: "./bin/install-crystal"
+script: crystal spec
+before_deploy:
+  - crystal build ./src/psykube
+  - tar -cz psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: I33maegs/SFh0+iW9LMUAVqLZ6dSb68WAdpcrlfB5/1xbf+MRO1tSepreKWvrfKKyoGx9wHS8THiocZxmUuwjQiowJzWVEju4Gu/V3b9lsXg+xeDBtvJFJmr14EZmXDz47c9HtbtXjEm6APoJ2WAQNO4Q3GmceRvDsxChQQPV0fIevi7GrFYsQvfBD9UrK8Ae7rCsW+ZtjBYQURSmE3uIjX14rswrh+IRmo99AO8/LZ2fdTAelVx028Dm76twfEmNf8Nx8vXiF3J1KCKCcOIC1ITFJsc7JrsxhuSOTnn/8GINRyIBZJO7JaiTmq8RqUDl26nead0zmwQMTEDc51BoJEfuEZ8ddtlET9TdolZgcBOgcwicU5aJ7cswRoFYfoARNgiydzZBQs9CBa18l3FLturniAGYL3XFoct0ZNcErEvZD5nwLCLc+s/doBKJaAUAp7DjvTik0Nvz4tQRmpx/An+YTnckp2EPzWXD8VHe4tMJJQpycKIV/HufKNmFyEjKBynBN/KCU9uQKNodKBVWT4y9xkCZnUeMoLRvnCgvfFOIppUtegC3hRoPZVlEoIIIpIprWk/TXS5nMlkPpktvLoRV13/53V0YKt0kBMxQQhEwN2enegzqP01sLMFCBXJN6OsiAU2PL+RksYXlHUvPB+Alzy3AN6Eiv9IKKdmSok=
+  file: ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
+  on:
+    tags: true
