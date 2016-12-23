@@ -1,8 +1,8 @@
 version: 1.0
 shards:
   commander:
-    path: ../../jwaldrip/commander
-    version: 0.3.4
+    github: mrrooijen/commander
+    version: 0.3.3
 
   crustache:
     github: MakeNowJust/crustache
