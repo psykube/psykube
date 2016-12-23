@@ -12,7 +12,7 @@ script:
 before_deploy:
   - git add -A
   - git reset --hard
-  - crystal build ./src/psykube.cr
+  - crystal build --release ./src/psykube.cr
   - tar -cz psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
 deploy:
   skip_cleanup: true
