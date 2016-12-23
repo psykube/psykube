@@ -4,7 +4,7 @@ set -e
 case "$TRAVIS_OS_NAME" in
   linux)
     curl https://dist.crystal-lang.org/apt/setup.sh | sudo bash
-    apt-get update
+    sudo apt-get update
     sudo apt-get install crystal -y
     ;;
   osx)
