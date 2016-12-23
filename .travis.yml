@@ -6,7 +6,7 @@ language: bash
 install: "./bin/install-crystal"
 script: crystal spec
 before_deploy:
-  - crystal build ./src/psykube
+  - crystal build ./src/psykube.cr
   - tar -cz psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
 deploy:
   skip_cleanup: true
