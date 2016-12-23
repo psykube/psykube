@@ -1,13 +1,10 @@
 require "../kubernetes/secret"
 
 class Psykube::Generator
-  module Secret
-    @secret : Psykube::Kubernetes::Secret | Nil
-    getter secret
-
-    private def generate_secret
+  class Secret < Generator
+    protected def result
       unless combined_secrets.empty?
-        Psykube::Kubernetes::Secret.new(cluster_name, combined_secrets)
+        Kubernetes::Secret.new(cluster_name, combined_secrets)
       end
     end
 

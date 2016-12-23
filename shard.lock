@@ -1,0 +1,10 @@
+version: 1.0
+shards:
+  commander:
+    github: mrrooijen/commander
+    version: 0.3.3
+
+  crustache:
+    github: MakeNowJust/crustache
+    version: 2.3.0
+

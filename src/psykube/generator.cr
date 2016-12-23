@@ -1,55 +1,74 @@
-require "./kubernetes/*"
+require "crustache"
 require "./manifest"
-
 require "./generator/*"
 
 class Psykube::Generator
-  include Ingress
-  include Service
-  include ConfigMap
-  include Secret
-  include List
-  include Deployment
-  include PersistentVolumeClaims
+  alias TemplateData = Hash(String, Hash(String, String))
 
   getter manifest
   getter cluster_name
   getter tag
 
-  def initialize(filename : String, cluster_name : String, tag : String = "latest")
-    @manifest = Psykube::Manifest.from_yaml(File.read(filename))
+  def self.yaml(filename : String, cluster_name : String, tag : String = "latest", template_data : TemplateData = TemplateData.new)
+    new(filename, cluster_name, tag, template_data)
+  end
+
+  def self.result(generator : Generator)
+    new(generator).result
+  end
+
+  def initialize(generator : Generator)
+    @manifest = generator.manifest
+    @cluster_name = generator.cluster_name
+    @tag = generator.tag
+  end
+
+  def initialize(filename : String, cluster_name : String, tag : String = "latest", template_data : TemplateData = TemplateData.new)
+    template = Crustache.parse File.read(filename)
+
+    data = template_data.merge({
+      "cluster" => {"name" => cluster_name},
+      "env"     => ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] },
+    })
+
+    @manifest = Manifest.from_yaml Crustache.render template, data
     @cluster_name = cluster_name
     @tag = tag
+  end
 
-    # Generate the kubernetes objects
-    @config_map = generate_config_map
-    @deployment = generate_deployment
-    @secret = generate_secret
-    @service = generate_service
-    @ingress = generate_ingress
-    @persistent_volume_claims = generate_persistent_volume_claims
-
-    # Generate the list after everything else is generated
-    @list = generate_list
+  protected def result
+    {} of String => String
   end
 
   def to_yaml
-    list.to_yaml
+    result.to_yaml
   end
 
-  def cluster_manifest
-    clusters[cluster_name]
+  private def cluster_manifest
+    manifest.clusters[cluster_name]
   end
 
-  def container_image
+  private def container_image
     parts = [
-      registry_host,
-      registry_user,
-      name,
+      manifest.registry_host,
+      manifest.registry_user,
+      manifest.name,
     ]
     image = parts.compact.join("/")
     [image, tag].join(":")
   end
 
-  forward_missing_to @manifest
+  private def lookup_port(port : UInt16)
+    port
+  end
+
+  private def lookup_port(port_name : String)
+    if port_name.to_u16?
+      port_name.to_u16
+    elsif port_name == "default" && !manifest.port_map.key?("default")
+      manifest.port_map.values.first
+    else
+      manifest.port_map[port_name]
+    end
+  end
 end

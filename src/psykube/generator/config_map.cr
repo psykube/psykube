@@ -1,13 +1,10 @@
 require "../kubernetes/config_map"
 
 class Psykube::Generator
-  module ConfigMap
-    @config_map : Psykube::Kubernetes::ConfigMap | Nil
-    getter config_map
-
-    private def generate_config_map
+  class ConfigMap < Generator
+    protected def result
       unless combined_config_map.empty?
-        Psykube::Kubernetes::ConfigMap.new(cluster_name, combined_config_map)
+        Kubernetes::ConfigMap.new(cluster_name, combined_config_map)
       end
     end
 

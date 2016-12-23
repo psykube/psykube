@@ -16,7 +16,7 @@ class Psykube::Kubernetes::Deployment::Spec::Template::Spec
     host_network:                     {type: String, nilable: true, key: "hostNetwork"},
     host_pid:                         {type: String, nilable: true, key: "hostPid"},
     host_ipc:                         {type: String, nilable: true, key: "hostIPC"},
-    security_context:                 {type: Psykube::Kubernetes::Shared::SecurityContext, nilable: true, key: "securityContext"},
+    security_context:                 {type: Shared::SecurityContext, nilable: true, key: "securityContext"},
     image_pull_secrets:               {type: Array(ImagePullSecret), nilable: true, key: "imagePullSecrets"},
     hostname:                         String | Nil,
     subdomain:                        String | Nil,

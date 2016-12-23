@@ -1,11 +1,11 @@
 require "yaml"
 
-class Psykube::Manifest::Cluster::Ingress::Host
+class Psykube::Manifest::Ingress::Host
   alias PathStrings = Array(String)
   alias PathPortMap = Hash(String, String)
 
   YAML.mapping(
-    tls: Tls | Nil,
+    tls: Tls | Nil | Bool,
     paths: PathStrings | PathPortMap
   )
 end

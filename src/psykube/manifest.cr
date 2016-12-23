@@ -18,30 +18,7 @@ class Psykube::Manifest
     volumes:       {type: VolumeMap, nilable: true},
   }, true)
 
-  def full_env
-    ports = self.ports || {} of String => UInt16
-    port_env = { "PORT" => lookup_port("default").to_s }
-    ports.each do |name, port|
-      port_env["#{name.underscore.upcase}_PORT"] = port.to_s
-    end
-    env.merge(port_env)
-  end
-
-  def lookup_port(port : UInt16)
-    port
-  end
-
-  def lookup_port(port_name : String)
-    if port_name.to_u16?
-      port_name.to_u16
-    elsif port_name == "default" && !port_map.key?("default")
-      port_map.values.first
-    else
-      port_map[port_name]
-    end
-  end
-
-  private def port_map
+  def port_map
     ports || {} of String => UInt16
   end
 end

@@ -3,21 +3,16 @@ require "../kubernetes/service"
 require "../kubernetes/ingress"
 
 class Psykube::Generator
-  module List
-    @list : Kubernetes::List
-    getter list
-
-    private def generate_list
-      Kubernetes::List.new.tap do |list|
-        persistent_volume_claims.as(Array(Kubernetes::PersistentVolumeClaim)).each do |pvc|
-          list << pvc
-        end if persistent_volume_claims
-        list << config_map.as(Kubernetes::ConfigMap) if config_map
-        list << secret.as(Kubernetes::Secret) if secret
-        list << deployment
-        if service
-          list << service.as(Kubernetes::Service)
-          list << ingress.as(Kubernetes::Ingress) if ingress
+  class List < Generator
+    protected def result
+      Kubernetes::List.new do |list|
+        list.concat PersistentVolumeClaims.result(self)
+        list << ConfigMap.result(self)
+        list << Secret.result(self)
+        list << Deployment.result(self)
+        if service = Service.result(self)
+          list << service
+          list << Ingress.result(self)
         end
       end
     end

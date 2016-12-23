@@ -1,0 +1,31 @@
+install: psykube build $TRAVIS_BRANCH
+script: psykube run $TRAVIS_BRANCH npm test
+before_deploy:
+  - gcloud container clusters get-credentials production
+  - gcloud container clusters get-credentials staging
+deploy:
+  # Push to docker registry
+  - provider: script
+    script: psykube push
+    on:
+      all_branches: true
+  # Push latest to docker registry
+  - provider: script
+    script: psykube push
+    on:
+      branch: master
+  # Deploy prod
+  - provider: script
+    script: psykube deploy production --context=production --namespace=apps
+    on:
+      branch: master
+  # Deploy staging
+  - provider: script
+    script: psykube deploy staging --context=staging --namespace=apps
+    on:
+      branch: develop
+  # Deploy feature
+  - provider: script
+    script: psykube deploy staging --context=staging --namespace=apps-$TRAVIS_BRANCH --copyNamespace=apps
+    on:
+      branch: feature/*
