@@ -22,16 +22,33 @@ class Psykube::Kubernetes::List
     items: {type: Array(ListableTypes)}
   )
 
+  def initialize(&block : List -> _)
+    initialize
+    yield self
+  end
+
   def initialize
     @api_version = "v1"
     @kind = "List"
     @items = Array(ListableTypes).new
   end
 
-  def initialize(items)
+  def initialize(items : Array(ListableTypes | Nil))
     initialize
-    items.each { |item| @items.push item }
+    concat(items)
   end
 
-  forward_missing_to @items
+  def concat(items : Nil)
+  end
+
+  def concat(items : Array(ListableTypes | Nil))
+    items.each { |item| self << item }
+  end
+
+  def <<(item : ListableTypes)
+    @items << item
+  end
+
+  def <<(item : Nil)
+  end
 end

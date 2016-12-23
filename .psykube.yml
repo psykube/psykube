@@ -84,6 +84,7 @@ healthcheck:
 clusters:
   staging:
     ingress:
+      tls: true
       hosts:
         frontend.{{metadata.name}}.commercialtribe.ninja:
           paths:

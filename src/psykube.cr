@@ -51,7 +51,7 @@ cli = Commander::Command.new do |cmd|
     cmd.flags.add file_flag
     cmd.run do |options, arguments|
       if arguments[0]?
-        gen = Psykube::Generator.new(
+        gen = Psykube::Generator::List.new(
           options.string["file"],
           arguments[0],
           "latest",

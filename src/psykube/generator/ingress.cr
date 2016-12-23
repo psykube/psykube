@@ -1,16 +1,13 @@
 require "../kubernetes/ingress"
 
 class Psykube::Generator
-  module Ingress
-    @ingress : Kubernetes::Ingress | Nil
-    getter ingress
-
-    private def generate_ingress
-      Kubernetes::Ingress.new(name).tap do |ingress|
+  class Ingress < Generator
+    protected def result
+      Kubernetes::Ingress.new(manifest.name).tap do |ingress|
         ingress.metadata.annotations = cluster_ingress_annotations unless cluster_ingress_annotations.empty?
         ingress.spec.rules = [] of Kubernetes::Ingress::Spec::Rule
-        ingress.spec.tls = generate_ingress_tls
-        ingress.spec.rules = generate_ingress_rules
+        ingress.spec.tls = generate_tls
+        ingress.spec.rules = generate_rules
       end if manifest.service && cluster_manifest.ingress
     end
 
@@ -32,50 +29,50 @@ class Psykube::Generator
       manifest_ingress.tls || cluster_manifest_ingress.tls
     end
 
-    private def cluster_ingress_hosts
+    private def cluster_hosts
       (manifest_ingress.hosts || {} of String => Manifest::Ingress::Host).merge(
         cluster_manifest_ingress.hosts || {} of String => Manifest::Ingress::Host
       )
     end
 
-    private def generate_ingress_tls
-      ([] of Kubernetes::Ingress::Spec::Tls).tap do |tls|
-        cluster_ingress_hosts.each do |host, spec|
-          if spec.tls
-            tls.push generate_ingress_tls_host(host, spec.tls).as(Kubernetes::Ingress::Spec::Tls)
-          end
+    private def generate_tls
+      tls_list = [] of Kubernetes::Ingress::Spec::Tls
+      cluster_hosts.each do |host, spec|
+        if tls = spec.tls || cluster_tls
+          tls_list << generate_host_tls(host, tls).as(Kubernetes::Ingress::Spec::Tls)
         end
       end
+      tls_list unless tls_list.empty?
     end
 
-    private def generate_ingress_tls_host(host : String, tls : Manifest::Ingress::Host::Tls)
+    private def generate_host_tls(host : String, tls : Manifest::Ingress::Host::Tls)
       Kubernetes::Ingress::Spec::Tls.new(host, tls.secret_name)
     end
 
-    private def generate_ingress_tls_host(host : String, tls : Nil)
+    private def generate_host_tls(host : String, tls : Nil)
     end
 
-    private def generate_ingress_tls_host(host : String, tls : Bool)
+    private def generate_host_tls(host : String, tls : Bool)
       Kubernetes::Ingress::Spec::Tls.new(host)
     end
 
-    private def generate_ingress_rules
+    private def generate_rules
       rules = [] of Kubernetes::Ingress::Spec::Rule
-      cluster_ingress_hosts.map do |host, spec|
-        rules += generate_ingress_paths(host, spec.paths)
+      cluster_hosts.map do |host, spec|
+        rules += generate_host_paths(host, spec.paths)
       end
       rules.empty? ? nil : rules
     end
 
-    private def generate_ingress_paths(host, paths : Manifest::Ingress::Host::PathStrings)
+    private def generate_host_paths(host, paths : Manifest::Ingress::Host::PathStrings)
       name_map = Manifest::Ingress::Host::PathPortMap.new
       paths.each do |path|
         name_map[path] = "default".as(String)
       end
-      generate_ingress_paths(host, name_map)
+      generate_host_paths(host, name_map)
     end
 
-    private def generate_ingress_paths(host, paths : Manifest::Ingress::Host::PathPortMap)
+    private def generate_host_paths(host, paths : Manifest::Ingress::Host::PathPortMap)
       rules = [] of Kubernetes::Ingress::Spec::Rule
       kube_paths = paths.map do |path, port_or_name|
         Kubernetes::Ingress::Spec::Rule::Http::Path.new(
