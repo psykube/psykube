@@ -7,6 +7,6 @@ class Psykube::Kubernetes::PersistentVolumeClaim::Spec::Resource
   )
 
   def initialize(size : String)
-    @requests = { "storage" => size }
+    @requests = {"storage" => size}
   end
 end

@@ -12,7 +12,6 @@ dependencies:
   crustache:
     github: MakeNowJust/crustache
   commander:
-    # github: jwaldrip/commander
-    path: ../../jwaldrip/commander
+    github: mrrooijen/commander
 
 # license: MIT

@@ -2,7 +2,7 @@ require "yaml"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container::Action::HttpGet
   YAML.mapping({
-    path:         { type: String, default: "/" },
+    path:         {type: String, default: "/"},
     port:         UInt16,
     host:         String | Nil,
     scheme:       String | Nil,

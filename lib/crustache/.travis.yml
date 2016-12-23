@@ -1,3 +1,0 @@
-language: crystal
-script:
-  - crystal spec ./spec/spec.cr
