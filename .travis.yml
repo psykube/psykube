@@ -1,6 +1,7 @@
 os:
   - linux
   - osx
-language: crystal
-install: crystal build ./src/psykube
+sudo: required
+language: bash
+install: ./bin/install-crystal
 script: true
