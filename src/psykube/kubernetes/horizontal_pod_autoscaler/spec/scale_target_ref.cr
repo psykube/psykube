@@ -7,9 +7,6 @@ class Psykube::Kubernetes::HorizontalPodAutoscaler::Spec::ScaleTargetRef
     api_version: {type: String, key: "apiVersion"}
   )
 
-  def initialize(name : String)
-    @name = name
-    @kind = "HorizontalPodAutoscaler"
-    @api_version = "autoscaling/v1"
+  def initialize(@api_version : String, @kind : String, @name : String)
   end
 end

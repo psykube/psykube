@@ -16,6 +16,7 @@ class Psykube::Manifest
     clusters:      {type: Hash(String, Cluster), default: {} of String => Cluster},
     healthcheck:   {type: Bool | Healthcheck, default: true},
     volumes:       {type: VolumeMap, nilable: true},
+    autoscale:     {type: Autoscale, nilable: true},
   }, true)
 
   def port_map
