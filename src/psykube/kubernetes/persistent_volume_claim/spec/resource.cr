@@ -1,7 +1,7 @@
-require "yaml"
+require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::PersistentVolumeClaim::Spec::Resource
-  YAML.mapping(
+  Kubernetes.mapping(
     limits: {type: Hash(String, String), nilable: true},
     requests: {type: Hash(String, String), nilable: true}
   )

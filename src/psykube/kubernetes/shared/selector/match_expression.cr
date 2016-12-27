@@ -1,11 +1,11 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Selector::MatchExpression
-  YAML.mapping({
+  Kubernetes.mapping({
     key:      String,
     operator: String,
     values:   Array(String),
-  }, true)
+  })
 
   def initialize(key : String, operator : String, value : String)
     initialize(key, operator, [value])

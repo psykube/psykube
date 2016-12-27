@@ -1,8 +1,8 @@
-require "yaml"
+require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume::VsphereVolume
-  YAML.mapping({
+  Kubernetes.mapping({
     volume_path: {type: String, key: "volumePath"},
     fs_type:     {type: String, key: "fsType"},
-  }, true)
+  })
 end

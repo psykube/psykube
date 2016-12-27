@@ -1,10 +1,10 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Strategy
-  YAML.mapping({
+  Kubernetes.mapping({
     type:           String | Nil,
     rolling_update: {type: RollingUpdate, nilable: true, key: "rollingUpdate"},
-  }, true)
+  })
 end
 
 require "./strategy/*"

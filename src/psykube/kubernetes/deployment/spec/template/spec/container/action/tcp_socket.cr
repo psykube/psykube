@@ -1,9 +1,9 @@
-require "yaml"
+require "../../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container::Action::TcpSocket
-  YAML.mapping({
+  Kubernetes.mapping({
     port: UInt16,
-  }, true)
+  })
 
   def initialize(@port : UInt16)
   end

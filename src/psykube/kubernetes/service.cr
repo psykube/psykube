@@ -1,21 +1,11 @@
-require "yaml"
-require "./shared/*"
+require "./concerns/resource"
+require "./shared/status"
 
 class Psykube::Kubernetes::Service
-  YAML.mapping(
-    kind: String,
-    apiVersion: String,
-    metadata: {type: Shared::Metadata},
-    spec: {type: Psykube::Kubernetes::Service::Spec},
-    status: {type: Shared::Status, nilable: true, setter: false}
-  )
-
-  def initialize
-    @kind = "Service"
-    @apiVersion = "v1"
-    @metadata = Shared::Metadata.new
-    @spec = Psykube::Kubernetes::Service::Spec.new
-  end
+  Resource.definition("v1", "Service", {
+    spec:   Spec,
+    status: {type: Shared::Status, nilable: true, setter: false},
+  })
 
   def initialize(name : String)
     initialize
@@ -26,7 +16,7 @@ class Psykube::Kubernetes::Service
   def initialize(name : String, ports : Hash(String, UInt16))
     initialize(name)
     ports.each do |name, port|
-      spec.ports.push(Psykube::Kubernetes::Service::Spec::Port.new(name, port))
+      spec.ports.push(Spec::Port.new(name, port))
     end
   end
 

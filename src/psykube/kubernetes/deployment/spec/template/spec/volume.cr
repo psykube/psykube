@@ -1,7 +1,7 @@
-require "yaml"
+require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume
-  YAML.mapping({
+  Kubernetes.mapping({
     name:                    String,
     host_path:               {type: HostPath, nilable: true, key: "hostPath"},
     empty_dir:               {type: EmptyDir, nilable: true, key: "emptyDir"},
@@ -25,7 +25,7 @@ class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume
     vsphere_volume:          {type: VsphereVolume, nilable: true, key: "vsphereVolume"},
     quobyte:                 {type: Quobyte, nilable: true},
     azure_disk:              {type: AzureDisk, nilable: true, key: "azureDisk"},
-  }, true)
+  })
 
   def initialize(@name : String)
   end

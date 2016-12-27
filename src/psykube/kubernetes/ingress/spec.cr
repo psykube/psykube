@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec
-  YAML.mapping(
+  Kubernetes.mapping(
     backend: {type: Psykube::Kubernetes::Ingress::Spec::Backend, nilable: true},
     tls: {type: Array(Psykube::Kubernetes::Ingress::Spec::Tls), nilable: true},
     rules: {type: Array(Psykube::Kubernetes::Ingress::Spec::Rule), nilable: true}

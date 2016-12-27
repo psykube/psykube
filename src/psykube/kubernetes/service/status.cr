@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Service::Status
-  YAML.mapping(
+  Kubernetes.mapping(
     loadBalancer: {type: Shared::Status::LoadBalancer, setter: false}
   )
 end

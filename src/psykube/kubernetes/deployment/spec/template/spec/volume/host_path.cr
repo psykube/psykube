@@ -1,7 +1,7 @@
-require "yaml"
+require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume::HostPath
-  YAML.mapping({
+  Kubernetes.mapping({
     path: String,
-  }, true)
+  })
 end

@@ -1,9 +1,9 @@
-require "yaml"
+require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::ImagePullSecret
-  YAML.mapping({
+  Kubernetes.mapping({
     name: String,
-  }, true)
+  })
 
   def initialize(@name : String)
   end

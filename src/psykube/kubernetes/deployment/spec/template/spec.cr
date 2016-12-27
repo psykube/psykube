@@ -1,10 +1,10 @@
-require "yaml"
+require "../../../concerns/mapping"
 require "../../../shared/metadata"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec
-  YAML.mapping({
+  Kubernetes.mapping({
     volumes:                          Array(Volume) | Nil,
-    containers:                       Array(Container),
+    containers:                       {type: Array(Container), default: [] of Container},
     restart_policy:                   {type: String, nilable: true, key: "restartPolicy"},
     termination_grace_period_seconds: {type: UInt32, nilable: true, key: "terminationGracePeriodSeconds"},
     active_deadline_seconds:          {type: UInt32, nilable: true, key: "activeDeadlineSeconds"},
@@ -20,11 +20,7 @@ class Psykube::Kubernetes::Deployment::Spec::Template::Spec
     image_pull_secrets:               {type: Array(ImagePullSecret), nilable: true, key: "imagePullSecrets"},
     hostname:                         String | Nil,
     subdomain:                        String | Nil,
-  }, true)
-
-  def initialize
-    @containers = [] of Container
-  end
+  })
 end
 
 require "./spec/*"

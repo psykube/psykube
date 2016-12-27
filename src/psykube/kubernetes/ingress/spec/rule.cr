@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Rule
-  YAML.mapping(
+  Kubernetes.mapping(
     host: {type: String, nilable: true},
     http: {type: Psykube::Kubernetes::Ingress::Spec::Rule::Http}
   )

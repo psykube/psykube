@@ -1,7 +1,7 @@
-require "yaml"
+require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Tls
-  YAML.mapping(
+  Kubernetes.mapping(
     hosts: {type: Array(String)},
     secret_name: {type: String, key: "secretName"}
   )

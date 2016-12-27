@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Namespace::Status
-  YAML.mapping(
+  Kubernetes.mapping(
     phase: String
   )
 end

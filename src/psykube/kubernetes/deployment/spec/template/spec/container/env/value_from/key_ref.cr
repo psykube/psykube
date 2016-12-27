@@ -1,10 +1,10 @@
-require "yaml"
+require "../../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container::Env::ValueFrom::KeyRef
-  YAML.mapping({
+  Kubernetes.mapping({
     name: String,
     key:  String,
-  }, true)
+  })
 
   def initialize(@name : String, @key : String)
   end

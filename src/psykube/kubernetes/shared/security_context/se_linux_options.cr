@@ -1,12 +1,12 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::SecurityContext::SeLinuxOptions
-  YAML.mapping({
+  Kubernetes.mapping({
     level: String,
     user:  String | Nil,
     role:  String | Nil,
     type:  String | Nil,
-  }, true)
+  })
 
   def initialize(@level : String)
   end

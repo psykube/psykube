@@ -1,7 +1,7 @@
-require "yaml"
+require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Service::Spec::Port
-  YAML.mapping(
+  Kubernetes.mapping(
     name: {type: String},
     protocol: {type: String},
     port: {type: UInt16},

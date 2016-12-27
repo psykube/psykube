@@ -1,21 +1,11 @@
-require "yaml"
-require "./shared/*"
+require "./concerns/resource"
+require "./shared/status"
 
 class Psykube::Kubernetes::Ingress
-  YAML.mapping(
-    kind: String,
-    apiVersion: String,
-    metadata: {type: Shared::Metadata},
-    spec: {type: Psykube::Kubernetes::Ingress::Spec},
-    status: {type: Shared::Status, nilable: true, setter: false}
-  )
-
-  def initialize(name : String)
-    @kind = "Ingress"
-    @apiVersion = "v1"
-    @metadata = Shared::Metadata.new(name)
-    @spec = Psykube::Kubernetes::Ingress::Spec.new
-  end
+  Resource.definition("extensions/v1beta1", "Ingress", {
+    spec:   Psykube::Kubernetes::Ingress::Spec,
+    status: {type: Shared::Status, nilable: true, setter: false},
+  })
 end
 
 require "./ingress/*"

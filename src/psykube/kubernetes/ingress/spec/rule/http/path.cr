@@ -1,8 +1,8 @@
-require "yaml"
+require "../../../../concerns/mapping"
 require "../../backend"
 
 class Psykube::Kubernetes::Ingress::Spec::Rule::Http::Path
-  YAML.mapping(
+  Kubernetes.mapping(
     path: {type: String},
     backend: {type: Psykube::Kubernetes::Ingress::Spec::Backend}
   )

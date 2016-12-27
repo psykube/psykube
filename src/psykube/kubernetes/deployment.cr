@@ -1,18 +1,15 @@
 require "yaml"
 require "./shared/metadata"
+require "./concerns/resource"
 
 class Psykube::Kubernetes::Deployment
-  YAML.mapping(
-    kind: {type: String, setter: false, default: "Deployment"},
-    api_version: {type: String, key: "apiVersion", default: "extensions/v1beta1"},
-    metadata: {type: Shared::Metadata},
-    spec: {type: Spec},
-    status: {type: Status, nilable: true, setter: false}
-  )
+  Resource.definition("extensions/v1beta1", "Deployment", {
+    spec:   {type: Spec, default: Spec.new("")},
+    status: {type: Status, nilable: true, setter: false},
+  })
 
   def initialize(name : String)
-    @kind = "Deployment"
-    @api_version = "extensions/v1beta1"
+    initialize
     @metadata = Shared::Metadata.new(name)
     @spec = Spec.new(name)
   end

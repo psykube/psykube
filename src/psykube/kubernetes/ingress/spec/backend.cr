@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Backend
-  YAML.mapping(
+  Kubernetes.mapping(
     service_name: {type: String, key: "serviceName"},
     service_port: {type: UInt16, key: "servicePort"}
   )

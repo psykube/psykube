@@ -1,8 +1,8 @@
-require "yaml"
+require "../../concerns/mapping"
 require "../../shared/metadata"
 
 class Psykube::Kubernetes::Deployment::Spec::Template
-  YAML.mapping(
+  Kubernetes.mapping(
     metadata: {type: Shared::Metadata},
     spec: {type: Spec}
   )

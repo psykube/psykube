@@ -1,27 +1,15 @@
-require "yaml"
+require "./concerns/resource"
 require "./shared/metadata"
 
 class Psykube::Kubernetes::PersistentVolumeClaim
-  YAML.mapping(
-    kind: {type: String, setter: false, default: "ConfigMap"},
-    api_version: {type: String, key: "apiVersion", default: "v1"},
-    metadata: {type: Shared::Metadata, default: Shared::Metadata.new},
-    spec: {type: Psykube::Kubernetes::PersistentVolumeClaim::Spec},
-    status: {type: Psykube::Kubernetes::PersistentVolumeClaim::Status, nilable: true}
-  )
+  Resource.definition("v1", "PersistentVolumeClaim", {
+    spec:   {type: Spec, default: Spec.new("10Gi")},
+    status: {type: Status, nilable: true},
+  })
 
-  def initialize(name : String, size : String)
-    @kind = "PersistentVolumeClaim"
-    @api_version = "v1"
-    @metadata = Shared::Metadata.new(name)
-    @spec = Psykube::Kubernetes::PersistentVolumeClaim::Spec.new(size)
-  end
-
-  def initialize(name : String, size : String, access_modes : Array(String))
-    @kind = "PersistentVolumeClaim"
-    @api_version = "v1"
-    @metadata = Shared::Metadata.new(name)
-    @spec = Psykube::Kubernetes::PersistentVolumeClaim::Spec.new(size, access_modes)
+  def initialize(name : String, size : String, access_modes : Array(String) = ["ReadWriteOnce"])
+    initialize(name)
+    @spec = Spec.new(size, access_modes)
   end
 end
 

@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec
-  YAML.mapping(
+  Kubernetes.mapping(
     replicas: Int32 | Nil,
     selector: Shared::Selector,
     template: Template,

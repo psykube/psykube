@@ -1,7 +1,7 @@
-require "yaml"
+require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume::EmptyDir
-  YAML.mapping({
+  Kubernetes.mapping({
     medium: String,
-  }, true)
+  })
 end

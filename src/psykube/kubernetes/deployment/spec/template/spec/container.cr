@@ -1,7 +1,7 @@
-require "yaml"
+require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container
-  YAML.mapping({
+  Kubernetes.mapping({
     name:                     String,
     image:                    String,
     command:                  String | Array(String) | Nil,
@@ -17,7 +17,7 @@ class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container
     termination_message_path: {type: String, key: "terminationMessagePath", nilable: true},
     image_pull_policy:        {type: String, key: "imagePullPolicy", nilable: true},
     security_context:         {type: Shared::SecurityContext, nilable: true, key: "securityContext"},
-  }, true)
+  })
 
   def initialize(name, image)
     @name = name

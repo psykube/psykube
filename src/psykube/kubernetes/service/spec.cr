@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Service::Spec
-  YAML.mapping(
+  Kubernetes.mapping(
     ports: {type: Array(Psykube::Kubernetes::Service::Spec::Port), setter: false},
     selector: {type: Hash(String, String), default: {} of String => String},
     clusterIP: {type: String, nilable: true, setter: false},

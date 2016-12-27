@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::PersistentVolumeClaim::Spec
-  YAML.mapping(
+  Kubernetes.mapping(
     access_modes: {type: Array(String), key: "accessModes"},
     selector: {type: Shared::Selector, nilable: true},
     resources: {type: Resource},

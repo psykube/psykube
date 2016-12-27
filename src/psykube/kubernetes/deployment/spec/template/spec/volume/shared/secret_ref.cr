@@ -1,7 +1,7 @@
-require "yaml"
+require "../../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume::SecretRef
-  YAML.mapping({
+  Kubernetes.mapping({
     name: String,
-  }, true)
+  })
 end

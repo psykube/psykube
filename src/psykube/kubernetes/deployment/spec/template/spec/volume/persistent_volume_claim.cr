@@ -1,10 +1,10 @@
-require "yaml"
+require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume::PersistentVolumeClaim
-  YAML.mapping({
+  Kubernetes.mapping({
     claim_name: {type: String, key: "claimName"},
     read_only:  {type: Bool, nilable: true, key: "readOnly"},
-  }, true)
+  })
 
   def initialize(@claim_name : String)
   end

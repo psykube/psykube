@@ -1,7 +1,8 @@
 require "yaml"
+require "../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Metadata
-  YAML.mapping(
+  Kubernetes.mapping(
     name: {type: String, nilable: true},
     generateName: {type: String, nilable: true},
     namespace: {type: String, nilable: true},
@@ -27,7 +28,7 @@ class Psykube::Kubernetes::Shared::Metadata
   end
 
   class OwnerReference
-    YAML.mapping(
+    Kubernetes.mapping(
       apiVersion: {type: String},
       kind: {type: String},
       name: {type: String},
