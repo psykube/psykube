@@ -19,7 +19,6 @@ module Psykube::Commands::Helpers
   def build_tag(cmd : Commander::Command, options : Commander::Options)
     file = options.string["file"]
     tag = options.string["tag"]
-    err_help(cmd, "flag: `--tag` required") if tag.empty?
     Generator::List.new(file).image(tag)
   end
 

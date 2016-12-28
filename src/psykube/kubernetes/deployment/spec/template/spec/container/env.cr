@@ -4,7 +4,7 @@ class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container::Env
   Kubernetes.mapping({
     name:       String,
     value:      String | Nil,
-    value_from: {type: ValueFrom, nilable: true, key: "valueFrom"},
+    value_from: ValueFrom | Nil,
   })
 
   def initialize(@name : String, @value : String)

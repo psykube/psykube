@@ -2,7 +2,7 @@ require "../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Status
   Kubernetes.mapping(
-    loadBalancer: {type: Shared::Status::LoadBalancer, setter: false}
+    load_balancer: {type: Shared::Status::LoadBalancer, setter: false, nilable: true}
   )
 end
 

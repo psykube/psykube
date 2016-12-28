@@ -2,8 +2,8 @@ require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Backend
   Kubernetes.mapping(
-    service_name: {type: String, key: "serviceName"},
-    service_port: {type: UInt16, key: "servicePort"}
+    service_name: String,
+    service_port: UInt16
   )
 
   def initialize(service_name : String, service_port : UInt16)

@@ -2,8 +2,8 @@ require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Tls
   Kubernetes.mapping(
-    hosts: {type: Array(String)},
-    secret_name: {type: String, key: "secretName"}
+    hosts: Array(String),
+    secret_name: String
   )
 
   def initialize(host : String)

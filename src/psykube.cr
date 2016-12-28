@@ -13,6 +13,7 @@ cli = Commander::Command.new do |cmd|
   cmd.commands.add Psykube::Commands::Generate
   cmd.commands.add Psykube::Commands::Apply
   cmd.commands.add Psykube::Commands::Push
+  cmd.commands.add Psykube::Commands::CopyNamespace
 end
 
 Commander.run(cli, ARGV)

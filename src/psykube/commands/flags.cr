@@ -9,6 +9,14 @@ module Psykube::Commands::Flags
     flag.description = "The namespace to deploy in"
   end
 
+  Push = Commander::Flag.new do |flag|
+    flag.name = "push"
+    flag.short = "-p"
+    flag.long = "--push"
+    flag.default = true
+    flag.description = "Push to the docker registry"
+  end
+
   Image = Commander::Flag.new do |flag|
     flag.name = "image"
     flag.short = "-i"
@@ -37,7 +45,16 @@ module Psykube::Commands::Flags
     flag.name = "tag"
     flag.short = "-t"
     flag.long = "--tag"
-    flag.default = ""
+    flag.default = "gitsha-#{`git rev-parse HEAD`.strip}"
     flag.description = "the image tag"
+  end
+
+  Resources = Commander::Flag.new do |flag|
+    flag.name = "resources"
+    flag.short = "-r"
+    flag.long = "--resources"
+    flag.default = "rc,cm,services"
+    # flag.default = "rc,cm,deployments,services,pvc"
+    flag.description = "the resources to copy"
   end
 end

@@ -6,6 +6,7 @@ require "./generator/*"
 class Psykube::Generator
   alias TemplateData = Hash(String, String)
 
+  getter raw_manifest
   getter manifest
   getter cluster_name
 
@@ -22,17 +23,18 @@ class Psykube::Generator
   end
 
   def initialize(generator : Generator)
+    @raw_manifest = generator.raw_manifest
     @manifest = generator.manifest
     @cluster_name = generator.cluster_name
     @image = generator.image
   end
 
   def initialize(filename : String, cluster_name : String = "", image : String | Nil = nil, template_data : TemplateData = TemplateData.new)
-    pre_template_manifest = Manifest.from_yaml File.read(filename)
+    @raw_manifest = Manifest.from_yaml File.read(filename)
     template = Crustache.parse File.read(filename)
 
     data = {
-      "metadata" => {"name" => pre_template_manifest.name}.merge(template_data),
+      "metadata" => {"name" => @raw_manifest.name}.merge(template_data),
       "cluster"  => {"name" => cluster_name},
       "env"      => ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] },
     }
@@ -44,15 +46,6 @@ class Psykube::Generator
 
   def image
     @image ||= [@manifest.registry_host, @manifest.registry_user, @manifest.name].compact.join('/')
-  end
-
-  def image(sha : Bool)
-    if sha
-      STDERR.puts "building docker image..."
-      [image, `docker build -q .`.strip].join("@")
-    else
-      image
-    end
   end
 
   def image(tag : String)

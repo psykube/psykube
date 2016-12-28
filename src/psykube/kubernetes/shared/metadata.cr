@@ -3,21 +3,21 @@ require "../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Metadata
   Kubernetes.mapping(
-    name: {type: String, nilable: true},
-    generateName: {type: String, nilable: true},
-    namespace: {type: String, nilable: true},
-    selfLink: {type: String, nilable: true, setter: false},
+    name: String | Nil,
+    generate_name: String | Nil,
+    namespace: String | Nil,
+    self_link: {type: String, nilable: true, setter: false},
     uid: {type: String, nilable: true, setter: false},
-    resourceVersion: {type: String, nilable: true, setter: false},
+    resource_version: {type: String, nilable: true, setter: false},
     generation: {type: Int32, nilable: true, setter: false},
-    creationTimestamp: {type: Time, nilable: true, setter: false},
-    deletionTimestamp: {type: Time, nilable: true, setter: false},
-    deletionGracePeriodSeconds: {type: Int32, nilable: true, setter: false},
-    labels: {type: Hash(String, String), nilable: true},
-    annotations: {type: Hash(String, String), nilable: true},
-    ownerReferences: {type: Array(OwnerReference), nilable: true, setter: false},
-    finalizers: {type: Array(String), nilable: true},
-    clusterName: {type: String, nilable: true}
+    creation_timestamp: {type: Time, nilable: true, setter: false},
+    deletion_timestamp: {type: Time, nilable: true, setter: false},
+    deletion_grace_period_seconds: {type: Int32, nilable: true, setter: false},
+    labels: Hash(String, String) | Nil,
+    annotations: Hash(String, String) | Nil,
+    owner_references: {type: Array(OwnerReference), nilable: true, setter: false},
+    finalizers: Array(String) | Nil,
+    cluster_name: String | Nil
   )
 
   def initialize

@@ -2,10 +2,10 @@ require "../../concerns/mapping"
 
 class Psykube::Kubernetes::PersistentVolumeClaim::Spec
   Kubernetes.mapping(
-    access_modes: {type: Array(String), key: "accessModes"},
-    selector: {type: Shared::Selector, nilable: true},
-    resources: {type: Resource},
-    volume_name: {type: String, key: "volumeName", nilable: true, setter: false}
+    access_modes: Array(String),
+    selector: Shared::Selector | Nil,
+    resources: Resource,
+    volume_name: {type: String, nilable: true, setter: false}
   )
 
   def initialize(size : String, @access_modes : Array(String))

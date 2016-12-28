@@ -2,10 +2,10 @@ require "../../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container::Env::ValueFrom
   Kubernetes.mapping({
-    field_ref:          {type: FieldRef, nilable: true, key: "fieldRef"},
-    resource_field_ref: {type: ResourceFieldRef, nilable: true, key: "resourceFieldRef"},
-    config_map_key_ref: {type: KeyRef, nilable: true, key: "configMapKeyRef"},
-    secret_key_ref:     {type: KeyRef, nilable: true, key: "secretKeyRef"},
+    field_ref:          FieldRef | Nil,
+    resource_field_ref: ResourceFieldRef | Nil,
+    config_map_key_ref: KeyRef | Nil,
+    secret_key_ref:     KeyRef | Nil,
   })
 
   def initialize

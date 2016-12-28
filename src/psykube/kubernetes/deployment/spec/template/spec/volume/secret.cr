@@ -2,9 +2,9 @@ require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume::Secret
   Kubernetes.mapping({
-    secret_name:  {type: String, key: "secretName"},
+    secret_name:  String,
     items:        Array(Item),
-    default_mode: {type: UInt16, nilable: true, key: "defaultMode"},
+    default_mode: UInt16 | Nil,
   })
 end
 

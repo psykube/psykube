@@ -1,4 +1,4 @@
-require "../../concerns/mapping"
+require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Status::LoadBalancer::Ingress
   Kubernetes.mapping(

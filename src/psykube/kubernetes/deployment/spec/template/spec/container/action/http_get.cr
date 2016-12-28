@@ -6,7 +6,7 @@ class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container::Action::
     port:         UInt16,
     host:         String | Nil,
     scheme:       String | Nil,
-    http_headers: {type: Array(HttpHeader), nilable: true, key: "httpHeaders"},
+    http_headers: Array(HttpHeader) | Nil,
   })
 
   def initialize(@port : UInt16)

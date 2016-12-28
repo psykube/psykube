@@ -4,8 +4,8 @@ class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Container
   class Lifecycle::Event
     Kubernetes.mapping({
       exec:       Action::Exec | Nil,
-      http_get:   {type: Action::HttpGet, nilable: true, key: "httpGet"},
-      tcp_socket: {type: Action::TcpSocket, nilable: true, key: "tcpSocket"},
+      http_get:   Action::HttpGet | Nil,
+      tcp_socket: Action::TcpSocket | Nil,
     })
   end
 end

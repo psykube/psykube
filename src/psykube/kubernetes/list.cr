@@ -15,8 +15,9 @@ class Psykube::Kubernetes::List
                         Deployment |
                         Secret |
                         PersistentVolumeClaim
+
   Resource.definition("v1", "List", {
-    items: {type: Array(ListableTypes)},
+    items: {type: Array(ListableTypes), default: [] of ListableTypes},
   })
 
   def initialize(&block : List -> _)

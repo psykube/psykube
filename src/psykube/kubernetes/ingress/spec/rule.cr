@@ -2,8 +2,8 @@ require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Rule
   Kubernetes.mapping(
-    host: {type: String, nilable: true},
-    http: {type: Psykube::Kubernetes::Ingress::Spec::Rule::Http}
+    host: String | Nil,
+    http: Psykube::Kubernetes::Ingress::Spec::Rule::Http
   )
 
   def initialize(host : String, paths : Array(Psykube::Kubernetes::Ingress::Spec::Rule::Http::Path))

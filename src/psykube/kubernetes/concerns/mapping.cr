@@ -8,7 +8,16 @@ module Psykube::Kubernetes
       {% properties[key] = {type: value} unless value.is_a?(HashLiteral) || value.is_a?(NamedTupleLiteral) %}
     {% end %}
 
+    {% kube_properties = {} of MacroId => _ %}
+
     {% for key, value in properties %}
+      {% kube_properties[key.stringify.underscore] = properties[key] %}
+      {% parts = key.stringify.split("_") %}
+      {% camel_key = parts[0] + parts[1..-1].join("_").camelcase }
+      {% kube_properties[key.stringify.underscore][:key] = properties[key][:key] || camel_key %}
+    {% end %}
+
+    {% for key, value in kube_properties %}
       @{{key.id}} : {{value[:type]}} {{ (value[:nilable] ? "?" : "").id }}
 
       {% if value[:setter] == nil ? true : value[:setter] %}
@@ -25,7 +34,7 @@ module Psykube::Kubernetes
     {% end %}
 
     def initialize
-      {% for key, value in properties %}
+      {% for key, value in kube_properties %}
         {% unless value[:nilable] || value[:type].stringify =~ /\|/ %}
           {% if value[:default] %}
             @{{key.id}} = {{ value[:default] }}
@@ -36,8 +45,8 @@ module Psykube::Kubernetes
       {% end %}
     end
 
-    ::YAML.mapping({{properties}}, true)
-    ::JSON.mapping({{properties}}, true)
+    ::YAML.mapping({{kube_properties}}, true)
+    ::JSON.mapping({{kube_properties}}, true)
   end
 
   macro mapping(**properties)

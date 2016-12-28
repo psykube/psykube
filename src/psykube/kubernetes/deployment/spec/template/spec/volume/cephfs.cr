@@ -3,13 +3,13 @@ require "yaml"
 class Psykube::Kubernetes::Deployment::Spec::Template::Spec::Volume
   class Cephfs
     Kubernetes.mapping({
-      monitors:    {type: Array(String)},
+      monitors:    Array(String),
       path:        String,
       user:        String,
       keyring:     String,
-      secret_file: {type: String, key: "secretFile"},
-      secret_ref:  {type: SecretRef, key: "secretRef"},
-      read_only:   {type: Bool, nilable: true, key: "readOnly"},
+      secret_file: String,
+      secret_ref:  SecretRef,
+      read_only:   Bool | Nil,
     })
   end
 end
