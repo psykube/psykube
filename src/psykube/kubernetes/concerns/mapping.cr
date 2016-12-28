@@ -2,39 +2,44 @@ require "json"
 require "yaml"
 
 module Psykube::Kubernetes
+
   macro mapping(properties)
+
     # Manipulate properties
     {% for key, value in properties %}
       {% properties[key] = {type: value} unless value.is_a?(HashLiteral) || value.is_a?(NamedTupleLiteral) %}
     {% end %}
 
-    {% kube_properties = {} of MacroId => _ %}
+    {% obj_properties = {} of MacroId => _ %}
+    {% settings = {} of MacroId => _ %}
 
     {% for key, value in properties %}
-      {% kube_properties[key.stringify.underscore] = properties[key] %}
-      {% parts = key.stringify.split("_") %}
-      {% camel_key = parts[0] + parts[1..-1].join("_").camelcase }
-      {% kube_properties[key.stringify.underscore][:key] = properties[key][:key] || camel_key %}
+      {% prop_key = key.stringify.underscore %}
+      {% obj_properties[prop_key] = {} of MacroId => _ %}
+      {% settings[prop_key] = {} of MacroId => _ %}
+
+      # Copy the valid properties
+      {% obj_properties[prop_key][:type] = properties[key][:type] %}
+      {% obj_properties[prop_key][:nilable] = properties[key][:nilable] %}
+      {% obj_properties[prop_key][:getter] = properties[key][:getter] %}
+      {% obj_properties[prop_key][:setter] = properties[key][:setter] %}
+      {% obj_properties[prop_key][:default] = properties[key][:default] %}
+      {% settings[prop_key][:clean] = properties[key][:clean] %}
+      {% settings[prop_key][:type] = properties[key][:type] %}
+
+      # set the proper key
+      {% if properties[key][:key] %}
+        {% obj_properties[prop_key][:key] = properties[key][:key] %}
+      {% else %}
+        {% key_parts = prop_key.split("_") %}
+        {% camel_key = key_parts[0] + key_parts[1..-1].join("_").camelcase }
+        {% obj_properties[prop_key][:key] = camel_key %}
+      {% end %}
     {% end %}
 
-    {% for key, value in kube_properties %}
-      @{{key.id}} : {{value[:type]}} {{ (value[:nilable] ? "?" : "").id }}
-
-      {% if value[:setter] == nil ? true : value[:setter] %}
-        def {{key.id}}=(_{{key.id}} : {{value[:type]}} {{ (value[:nilable] ? "?" : "").id }})
-          @{{key.id}} = _{{key.id}}
-        end
-      {% end %}
-
-      {% if value[:getter] == nil ? true : value[:getter] %}
-        def {{key.id}}
-          @{{key.id}}
-        end
-      {% end %}
-    {% end %}
-
+    # Initialize all default attributes
     def initialize
-      {% for key, value in kube_properties %}
+      {% for key, value in obj_properties %}
         {% unless value[:nilable] || value[:type].stringify =~ /\|/ %}
           {% if value[:default] %}
             @{{key.id}} = {{ value[:default] }}
@@ -45,8 +50,29 @@ module Psykube::Kubernetes
       {% end %}
     end
 
-    ::YAML.mapping({{kube_properties}}, true)
-    ::JSON.mapping({{kube_properties}}, true)
+    module Cleaner
+      def clean!
+        {% for key, value in settings %}
+          {% if value[:clean] %}
+            @{{key.id}} = nil
+          {% end %}
+          cleanable = @{{key.id}}
+          if cleanable.responds_to?(:clean!)
+            cleanable.clean!
+          elsif cleanable.responds_to?(:each)
+            cleanable.each do |v|
+              v.clean! if v.responds_to? :clean!
+            end
+          end
+        {% end %}
+        self
+      end
+    end
+
+    include Cleaner
+
+    ::YAML.mapping({{obj_properties}}, true)
+    ::JSON.mapping({{obj_properties}}, true)
   end
 
   macro mapping(**properties)

@@ -17,22 +17,30 @@ module Psykube::Commands
 
       puts "Copying Namespace: `#{from}` to `#{to}` (resources: #{resources.split(",").join(", ")})..."
       io = IO::Memory.new
-      # io = STDERR
-      Process.run("kubectl", ["get", resources, "-o=json"], output: io, error: STDERR).tap do |process|
+      Process.run("kubectl", ["--export", "--namespace=#{from}", "get", resources, "-o=json"], output: io, error: STDERR).tap do |process|
         exit(process.exit_status) unless process.success?
       end
       io.rewind
-      list = Kubernetes::List.from_json(io)
-      puts list.to_yaml
 
-      # tag = Helpers.build_tag(cmd, options)
-      # Process.run("docker", ["build", "-t=#{tag}", "."], output: STDOUT, error: STDERR).tap do |process|
-      #   exit(process.exit_status) unless process.success?
-      # end
-      # puts "Pushing to Docker Registry..."
-      # Process.run("docker", ["push", tag], output: STDOUT, error: STDERR).tap do |process|
-      #   exit(process.exit_status) unless process.success?
-      # end
+      # Build the list of existing resources
+      list = Kubernetes::List.from_json(io)
+
+      # Get or build the namespace
+      io = IO::Memory.new
+      Process.run("kubectl", ["get", "namespace", to, "--export", "-o=json"], output: io)
+      namespace = Kubernetes::Namespace.from_json(io) rescue Kubernetes::Namespace.new(to)
+      list.unshift namespace
+
+      # Clean the list
+      list.clean!
+
+      Tempfile.open("manifests") do |file|
+        file.print list.to_json
+        file.flush
+        Process.run("kubectl", ["apply", "--namespace=#{to}", "-f=#{file.path}"], output: STDOUT, error: STDERR).tap do |process|
+          exit(process.exit_status) unless process.success?
+        end
+      end
     end
   end
 end

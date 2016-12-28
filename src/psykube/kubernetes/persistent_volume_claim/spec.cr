@@ -5,7 +5,7 @@ class Psykube::Kubernetes::PersistentVolumeClaim::Spec
     access_modes: Array(String),
     selector: Shared::Selector | Nil,
     resources: Resource,
-    volume_name: {type: String, nilable: true, setter: false}
+    volume_name: {type: String, nilable: true, setter: false, clean: true}
   )
 
   def initialize(size : String, @access_modes : Array(String))

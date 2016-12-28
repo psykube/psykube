@@ -16,6 +16,8 @@ class Psykube::Kubernetes::List
                         Secret |
                         PersistentVolumeClaim
 
+  delegate unshift, to: @items
+
   Resource.definition("v1", "List", {
     items: {type: Array(ListableTypes), default: [] of ListableTypes},
   })
@@ -42,5 +44,10 @@ class Psykube::Kubernetes::List
   end
 
   def <<(item : Nil)
+  end
+
+  def clean!
+    @items.each(&.clean!)
+    self
   end
 end

@@ -2,11 +2,11 @@ require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Service::Spec::Port
   Kubernetes.mapping(
-    name: String,
+    name: String | Nil,
     protocol: String,
     port: UInt16,
-    targetPort: UInt16 | Nil,
-    nodePort: UInt16 | Nil
+    target_port: UInt16 | Nil,
+    node_port: {type: UInt16, nilable: true, clean: true}
   )
 
   def initialize(name : String, port_number : UInt16)

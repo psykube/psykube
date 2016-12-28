@@ -53,8 +53,7 @@ module Psykube::Commands::Flags
     flag.name = "resources"
     flag.short = "-r"
     flag.long = "--resources"
-    flag.default = "rc,cm,services"
-    # flag.default = "rc,cm,deployments,services,pvc"
+    flag.default = "rc,cm,deployments,services,pvc"
     flag.description = "the resources to copy"
   end
 end
