@@ -6,6 +6,7 @@ require "./ingress"
 require "./deployment"
 require "./secret"
 require "./persistent_volume_claim"
+require "./horizontal_pod_autoscaler"
 
 class Psykube::Kubernetes::List
   alias ListableTypes = Psykube::Kubernetes::Namespace |
@@ -14,7 +15,8 @@ class Psykube::Kubernetes::List
                         Psykube::Kubernetes::Ingress |
                         Psykube::Kubernetes::Deployment |
                         Psykube::Kubernetes::Secret |
-                        Psykube::Kubernetes::PersistentVolumeClaim
+                        Psykube::Kubernetes::PersistentVolumeClaim |
+                        Psykube::Kubernetes::HorizontalPodAutoscaler
 
   YAML.mapping(
     api_version: {type: String, key: "apiVersion", default: "v1"},
