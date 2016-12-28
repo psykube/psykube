@@ -17,6 +17,8 @@ cli = Commander::Command.new do |cmd|
   cmd.commands.add Psykube::Commands::Exec
   cmd.commands.add Psykube::Commands::PortForward
   cmd.commands.add Psykube::Commands::Delete
+  cmd.commands.add Psykube::Commands::Status
+  cmd.commands.add Psykube::Commands::Version
 end
 
 Commander.run(cli, ARGV[0..(ARGV.index("--") || -1)])

@@ -15,7 +15,7 @@ module Psykube::Commands
 
       exit(1) unless from && to
 
-      puts "Copying Namespace: `#{from}` to `#{to}` (resources: #{resources.split(",").join(", ")})..."
+      puts "Copying Namespace: `#{from}` to `#{to}` (resources: #{resources.split(",").join(", ")})...".colorize(:cyan)
       io = IO::Memory.new
       Process.run("kubectl", ["--export", "--namespace=#{from}", "get", resources, "-o=json"], output: io, error: STDERR).tap do |process|
         exit(process.exit_status) unless process.success?

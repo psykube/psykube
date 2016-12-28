@@ -6,6 +6,8 @@ require "./generator/*"
 class Psykube::Generator
   alias TemplateData = Hash(String, String)
 
+  @raw = false
+
   getter raw_manifest
   getter manifest
   getter cluster_name
@@ -22,6 +24,12 @@ class Psykube::Generator
     new(generator).result
   end
 
+  def initialize(@manifest : Manifest, @cluster_name : String, image : String | Nil)
+    @raw_manifest = @manifest
+    @raw = false
+    @image = image unless image.to_s.empty?
+  end
+
   def initialize(generator : Generator)
     @raw_manifest = generator.raw_manifest
     @manifest = generator.manifest
@@ -29,7 +37,7 @@ class Psykube::Generator
     @image = generator.image
   end
 
-  def initialize(filename : String, cluster_name : String = "", image : String | Nil = nil, template_data : TemplateData = TemplateData.new)
+  def initialize(filename : String, @cluster_name : String = "", image : String | Nil = nil, template_data : TemplateData = TemplateData.new)
     @raw_manifest = Manifest.from_yaml File.read(filename)
     template = Crustache.parse File.read(filename)
 
@@ -40,8 +48,11 @@ class Psykube::Generator
     }
 
     @manifest = Manifest.from_yaml Crustache.render template, data
-    @cluster_name = cluster_name
     @image = image unless image.to_s.empty?
+  end
+
+  def raw
+    return nil if @raw
   end
 
   def image

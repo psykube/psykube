@@ -9,6 +9,14 @@ module Psykube::Commands::Flags
     flag.description = "The namespace to deploy in"
   end
 
+  CopyNamespace = Commander::Flag.new do |flag|
+    flag.name = "copy-namespace"
+    flag.short = "-c"
+    flag.long = "--copy-namespace"
+    flag.default = ""
+    flag.description = "The namespace copy"
+  end
+
   Push = Commander::Flag.new do |flag|
     flag.name = "push"
     flag.short = "-p"
@@ -69,7 +77,7 @@ module Psykube::Commands::Flags
     flag.name = "resources"
     flag.short = "-r"
     flag.long = "--resources"
-    flag.default = "rc,cm,deployments,services,pvc"
+    flag.default = "cm,secrets,deployments,services,pvc"
     flag.description = "the resources to copy"
   end
 end

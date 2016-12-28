@@ -9,7 +9,7 @@ module Psykube::Commands
     cmd.flags.add Flags::Tag
     cmd.flags.add Flags::File
     cmd.run do |options, arguments|
-      puts "Building Docker Container..."
+      puts "Building Docker Container...".colorize(:cyan)
       tag = Helpers.build_tag(cmd, options)
       Process.run("docker", ["build", "-t=#{tag}", "."], output: STDOUT, error: STDERR).tap do |process|
         exit(process.exit_status) unless process.success?
