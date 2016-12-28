@@ -5,7 +5,7 @@ require "./concerns/resource"
 class Psykube::Kubernetes::Pod
   Resource.definition("extensions/v1beta1", "Pod", {
     spec:   {type: Spec},
-    status: {type: Status, nilable: true, setter: false},
+    status: {type: Status, nilable: true, clean: true, setter: false},
   })
 end
 

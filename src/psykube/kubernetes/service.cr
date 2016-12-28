@@ -4,7 +4,7 @@ require "./shared/status"
 class Psykube::Kubernetes::Service
   Resource.definition("v1", "Service", {
     spec:   Spec,
-    status: {type: Shared::Status, nilable: true, setter: false},
+    status: {type: Shared::Status, nilable: true, clean: true, setter: false},
   })
 
   def initialize(name : String)

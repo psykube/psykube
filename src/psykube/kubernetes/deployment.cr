@@ -5,7 +5,7 @@ require "./concerns/resource"
 class Psykube::Kubernetes::Deployment
   Resource.definition("extensions/v1beta1", "Deployment", {
     spec:   {type: Spec, default: Spec.new("")},
-    status: {type: Status, nilable: true, setter: false},
+    status: {type: Status, nilable: true, clean: true, setter: false},
   })
 
   def initialize(name : String)

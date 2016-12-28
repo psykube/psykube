@@ -1,11 +1,11 @@
-require "yaml"
+require "../concerns/mapping"
 
 class Psykube::Kubernetes::HorizontalPodAutoscaler::Spec
-  YAML.mapping(
+  Kubernetes.mapping(
     scale_target_ref: {type: Psykube::Kubernetes::HorizontalPodAutoscaler::Spec::ScaleTargetRef, key: "scaleTargetRef"},
     min_replicas: {type: UInt8, key: "minReplicas"},
     max_replicas: {type: UInt8, key: "maxReplicas"},
-    target_cpu_utilization_percentage: {type: UInt8, key: "targetCPUUtilizationPercentage", default: 0}
+    target_cpu_utilization_percentage: {type: UInt8, key: "targetCPUUtilizationPercentage", default: 0.to_u8}
   )
 
   def initialize(api_version : String, kind : String, name : String, min_replicas : UInt8, max_replicas : UInt8)

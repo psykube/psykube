@@ -4,7 +4,7 @@ require "./shared/metadata"
 class Psykube::Kubernetes::PersistentVolumeClaim
   Resource.definition("v1", "PersistentVolumeClaim", {
     spec:   {type: Spec, default: Spec.new("10Gi")},
-    status: Status | Nil,
+    status: {type: Status, nilable: true, clean: true, setter: false},
   })
 
   def initialize(name : String, size : String, access_modes : Array(String) = ["ReadWriteOnce"])
