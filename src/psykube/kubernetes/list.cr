@@ -6,6 +6,8 @@ require "./deployment"
 require "./secret"
 require "./pod"
 require "./persistent_volume_claim"
+require "./horizontal_pod_autoscaler"
+require "./concerns/resource"
 require "./concerns/resource"
 
 class Psykube::Kubernetes::List
@@ -16,7 +18,8 @@ class Psykube::Kubernetes::List
                         Deployment |
                         Secret |
                         PersistentVolumeClaim |
-                        Pod
+                        Pod |
+                        HorizontalPodAutoscaler
 
   delegate :select, :[], :[]?, :find, :unshift, to: @items
 
