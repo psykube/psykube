@@ -29,6 +29,30 @@ module Psykube::Commands::Helpers
     match_labels.map(&.join("=")).join(",")
   end
 
+  def get_running_pod(cmd : Commander::Command, options : Commander::Options)
+    namespace = options.string["namespace"]
+    selector_labels = Helpers.build_selector_labels(cmd, options)
+    io = IO::Memory.new
+    Process.run("kubectl", ["--namespace=#{namespace}", "get", "pods", "--selector=#{selector_labels}", "-o=json"], output: io, error: STDERR).tap do |process|
+      exit(process.exit_status) unless process.success?
+    end
+    io.rewind
+    pod_list = Kubernetes::List.from_json(io)
+    pod = pod_list.find do |pod|
+      if pod.is_a?(Kubernetes::Pod)
+        (pod.status || Kubernetes::Pod::Status.new).phase == "Running"
+      end
+    end
+
+    # Exec into the pod
+    if pod.is_a? Kubernetes::Pod
+      pod
+    else
+      STDERR.puts "Error: There are no running pods, try running `psykube status`"
+      exit 2
+    end
+  end
+
   def err_help(cmd, msg : String)
     STDERR.puts("  Error: #{msg}".colorize(:red))
     STDERR.puts(cmd.help)
