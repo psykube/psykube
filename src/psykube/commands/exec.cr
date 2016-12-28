@@ -11,14 +11,14 @@ module Psykube::Commands
     cmd.flags.add Flags::Namespace
     cmd.flags.add Flags::File
     cmd.flags.add Flags::AllocateStdIn
+    cmd.flags.add Flags::AllocateTty
     cmd.run do |options, arguments|
       namespace = options.string["namespace"]
       stdin = options.bool["stdin"]
       tty = options.bool["stdin"]
-      command = arguments[0]?
 
-      unless arguments[0]
-        puts "Error: argument <command> required"
+      if arguments.empty?
+        puts "Error: argument <command> required".colorize(:red)
       end
 
       # Kubernetes::Pod.from_json(File.read("test.json"))
@@ -42,8 +42,7 @@ module Psykube::Commands
         args = ["--namespace=#{namespace}", "exec", pod.name || ""]
         args << "-i" if stdin
         args << "-t" if tty
-        args << (command || "")
-        puts (["kubectl"] + args).join(" ")
+        args.concat(arguments)
         Process.exec("kubectl", args)
       else
         STDERR.puts "Error: There are no running pods, try running `psykube status`"
