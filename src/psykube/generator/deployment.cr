@@ -30,22 +30,11 @@ class Psykube::Generator
 
     def generate_volume(mount_path : String, volume : Manifest::Volume)
       volume_name = name_from_mount_path(mount_path)
-      kube_volume = (volume.spec ? volume.spec : Volume.new(volume_name)).as(Volume)
-      kube_volume.persistent_volume_claim =
-        generate_volume_claim(mount_path, volume.claim)
-      kube_volume
-    end
-
-    def generate_volume_claim(mount_path : String, volume_claim : Nil)
-    end
-
-    def generate_volume_claim(mount_path : String, volume_claim : Manifest::Volume::Claim)
-      volume_name = name_from_mount_path(mount_path)
-      Volume::PersistentVolumeClaim.new(volume_name, volume_claim.read_only)
+      volume.to_deployment_volume(volume_name)
     end
 
     private def generate_container
-      Container.new(manifest.name, container_image).tap do |container|
+      Container.new(manifest.name, image(true)).tap do |container|
         container.env = generate_container_env
         container.volume_mounts = generate_container_volume_mounts(manifest.volumes)
         container.liveness_probe = generate_container_liveness_probe(manifest.healthcheck)
@@ -138,12 +127,11 @@ class Psykube::Generator
 
     private def expand_env(key : String, value : Manifest::Env)
       value_from = Container::Env::ValueFrom.new.tap do |value_from|
-        if value.config_map
+        case
+        when value.config_map
           value_from.config_map_key_ref = expand_env_config_map(value.config_map)
-        end
-
-        if value.secret
-          value_from.secret_key_ref = expand_env_secret(value.config_map)
+        when value.secret
+          value_from.secret_key_ref = expand_env_secret(value.secret)
         end
       end
       Container::Env.new(key, value_from)

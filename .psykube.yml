@@ -1,12 +1,8 @@
-name: my-app
+name: test-app
 
 # Specify where to push the docker image
 registry_host: gcr.io
 registry_user: commercial-tribe
-
-# specify the tags that we need to set
-tags:
-  - latest
 
 # Define config maps to be used in this app
 config_map:
@@ -53,7 +49,6 @@ service: true
 volumes:
   /app:
     spec:
-      name: "something"
       hostPath:
         path: /tmp/test
   /myVol:

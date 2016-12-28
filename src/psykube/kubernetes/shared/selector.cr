@@ -4,7 +4,7 @@ class Psykube::Kubernetes::Shared::Selector
   alias MatchLabels = Hash(String, String)
 
   Kubernetes.mapping({
-    match_labels:      {type: MatchLabels, nilable: true},
+    match_labels:      {type: MatchLabels, nilable: true, key: "matchLabels"},
     match_expressions: {type: Array(MatchExpression), nilable: true},
   })
 

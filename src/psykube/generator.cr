@@ -1,16 +1,20 @@
+require "file_utils"
 require "crustache"
 require "./manifest"
 require "./generator/*"
 
 class Psykube::Generator
-  alias TemplateData = Hash(String, Hash(String, String))
+  alias TemplateData = Hash(String, String)
 
   getter manifest
   getter cluster_name
-  getter tag
 
-  def self.yaml(filename : String, cluster_name : String, tag : String = "latest", template_data : TemplateData = TemplateData.new)
-    new(filename, cluster_name, tag, template_data)
+  def self.yaml(filename : String, cluster_name : String, image : String = "", template_data : TemplateData = TemplateData.new)
+    new(filename, cluster_name, image, template_data).to_yaml
+  end
+
+  def self.json(filename : String, cluster_name : String, image : String = "", template_data : TemplateData = TemplateData.new)
+    new(filename, cluster_name, image, template_data).to_json
   end
 
   def self.result(generator : Generator)
@@ -20,20 +24,39 @@ class Psykube::Generator
   def initialize(generator : Generator)
     @manifest = generator.manifest
     @cluster_name = generator.cluster_name
-    @tag = generator.tag
+    @image = generator.image
   end
 
-  def initialize(filename : String, cluster_name : String, tag : String = "latest", template_data : TemplateData = TemplateData.new)
+  def initialize(filename : String, cluster_name : String = "", image : String | Nil = nil, template_data : TemplateData = TemplateData.new)
+    pre_template_manifest = Manifest.from_yaml File.read(filename)
     template = Crustache.parse File.read(filename)
 
-    data = template_data.merge({
-      "cluster" => {"name" => cluster_name},
-      "env"     => ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] },
-    })
+    data = {
+      "metadata" => {"name" => pre_template_manifest.name}.merge(template_data),
+      "cluster"  => {"name" => cluster_name},
+      "env"      => ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] },
+    }
 
     @manifest = Manifest.from_yaml Crustache.render template, data
     @cluster_name = cluster_name
-    @tag = tag
+    @image = image unless image.to_s.empty?
+  end
+
+  def image
+    @image ||= [@manifest.registry_host, @manifest.registry_user, @manifest.name].compact.join('/')
+  end
+
+  def image(sha : Bool)
+    if sha
+      STDERR.puts "building docker image..."
+      [image, `docker build -q .`.strip].join("@")
+    else
+      image
+    end
+  end
+
+  def image(tag : String)
+    [image, tag].join(":")
   end
 
   protected def result
@@ -44,18 +67,12 @@ class Psykube::Generator
     result.to_yaml
   end
 
-  private def cluster_manifest
-    manifest.clusters[cluster_name]
+  def to_json
+    result.to_json
   end
 
-  private def container_image
-    parts = [
-      manifest.registry_host,
-      manifest.registry_user,
-      manifest.name,
-    ]
-    image = parts.compact.join("/")
-    [image, tag].join(":")
+  private def cluster_manifest
+    manifest.clusters[cluster_name]
   end
 
   private def lookup_port(port : UInt16)
