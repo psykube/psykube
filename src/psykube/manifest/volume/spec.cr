@@ -2,10 +2,10 @@ require "yaml"
 
 require "../../kubernetes/concerns/mapping"
 require "./claim"
-require "../../kubernetes/deployment/spec/template/spec/volume"
+require "../../kubernetes/pod/spec/volume"
 
 class Psykube::Manifest::Volume::Spec
-  alias KubeVolume = Kubernetes::Deployment::Spec::Template::Spec::Volume
+  alias KubeVolume = Kubernetes::Pod::Spec::Volume
   Kubernetes.mapping({
     host_path:               {type: KubeVolume::HostPath, nilable: true, key: "hostPath"},
     empty_dir:               {type: KubeVolume::EmptyDir, nilable: true, key: "emptyDir"},

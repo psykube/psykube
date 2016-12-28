@@ -21,21 +21,9 @@ env:
   RAZ:
     config_map: "some.value"
 
-  # define an env var that references a named config-map
-  BAR:
-    config_map:
-      name: some-config-map
-      key: some-key
-
       # define an env var that references this templates secrets
   BAZ:
-    secret: some-key
-
-  # define an env var that references a named secret
-  TAZ:
-    secret:
-      name: super-secret
-      key: name
+    secret: apiKey
 
 # define global ingress settings
 ingress:
@@ -57,7 +45,6 @@ volumes:
       storage_class: slow
       access_modes:
         - ReadWriteOnce
-  /auth: 50Gi
 
 # Set the ports: this will create the ports on the container and on the service
 ports:

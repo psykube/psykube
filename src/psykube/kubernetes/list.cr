@@ -4,6 +4,7 @@ require "./config_map"
 require "./ingress"
 require "./deployment"
 require "./secret"
+require "./pod"
 require "./persistent_volume_claim"
 require "./concerns/resource"
 
@@ -14,9 +15,10 @@ class Psykube::Kubernetes::List
                         Ingress |
                         Deployment |
                         Secret |
-                        PersistentVolumeClaim
+                        PersistentVolumeClaim |
+                        Pod
 
-  delegate unshift, to: @items
+  delegate :select, :[], :[]?, :find, :unshift, to: @items
 
   Resource.definition("v1", "List", {
     items: {type: Array(ListableTypes), default: [] of ListableTypes},

@@ -1,12 +1,13 @@
 require "../kubernetes/deployment"
+require "../kubernetes/pod"
 require "./concerns/*"
 
 class Psykube::Generator
   class Deployment < Generator
     include Concerns::Volumes
 
-    alias Volume = Kubernetes::Deployment::Spec::Template::Spec::Volume
-    alias Container = Kubernetes::Deployment::Spec::Template::Spec::Container
+    alias Volume = Kubernetes::Pod::Spec::Volume
+    alias Container = Kubernetes::Pod::Spec::Container
 
     protected def result
       Kubernetes::Deployment.new(manifest.name).tap do |deployment|
@@ -48,7 +49,7 @@ class Psykube::Generator
 
     private def generate_container_ports(ports : Hash(String, UInt16))
       ports.map do |name, port|
-        Kubernetes::Deployment::Spec::Template::Spec::Container::Port.new(name, port)
+        Container::Port.new(name, port)
       end
     end
 

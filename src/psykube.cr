@@ -14,6 +14,7 @@ cli = Commander::Command.new do |cmd|
   cmd.commands.add Psykube::Commands::Apply
   cmd.commands.add Psykube::Commands::Push
   cmd.commands.add Psykube::Commands::CopyNamespace
+  cmd.commands.add Psykube::Commands::Exec
 end
 
 Commander.run(cli, ARGV)

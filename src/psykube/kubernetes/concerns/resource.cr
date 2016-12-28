@@ -13,6 +13,10 @@ module Psykube::Kubernetes::Resource
       @metadata = Shared::Metadata.new(name)
     end
 
+    def name
+      @metadata.name
+    end
+
     Kubernetes.mapping({{properties}})
   end
 

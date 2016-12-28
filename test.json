@@ -1,40 +1,197 @@
 {
-    "kind": "Service",
+    "kind": "Pod",
     "apiVersion": "v1",
     "metadata": {
-        "name": "kube-pingfederate-admin",
-        "namespace": "apps",
-        "selfLink": "/api/v1/namespaces/apps/services/kube-pingfederate-admin",
-        "uid": "951f6149-b715-11e6-8619-42010af00023",
-        "resourceVersion": "10805210",
-        "creationTimestamp": "2016-11-30T15:56:40Z",
+        "name": "test-app-3365953884-wnnuv",
+        "generateName": "test-app-3365953884-",
+        "namespace": "default",
+        "selfLink": "/api/v1/namespaces/default/pods/test-app-3365953884-wnnuv",
+        "uid": "9f7985de-cd35-11e6-8289-42010af000c7",
+        "resourceVersion": "17611129",
+        "creationTimestamp": "2016-12-28T19:41:27Z",
+        "labels": {
+            "app": "test-app",
+            "pod-template-hash": "3365953884"
+        },
         "annotations": {
-            "kubectl.kubernetes.io/last-applied-configuration": "{\"kind\":\"Service\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"kube-pingfederate-admin\",\"creationTimestamp\":null},\"spec\":{\"ports\":[{\"protocol\":\"TCP\",\"port\":443,\"targetPort\":9999}],\"selector\":{\"run\":\"kube-pingfederate\"},\"type\":\"LoadBalancer\"},\"status\":{\"loadBalancer\":{}}}"
-        }
+            "kubernetes.io/created-by": "{\"kind\":\"SerializedReference\",\"apiVersion\":\"v1\",\"reference\":{\"kind\":\"ReplicaSet\",\"namespace\":\"default\",\"name\":\"test-app-3365953884\",\"uid\":\"9f78cd58-cd35-11e6-8289-42010af000c7\",\"apiVersion\":\"extensions\",\"resourceVersion\":\"17610829\"}}\n",
+            "kubernetes.io/limit-ranger": "LimitRanger plugin set: cpu request for container test-app"
+        },
+        "ownerReferences": [
+            {
+                "apiVersion": "extensions/v1beta1",
+                "kind": "ReplicaSet",
+                "name": "test-app-3365953884",
+                "uid": "9f78cd58-cd35-11e6-8289-42010af000c7",
+                "controller": true
+            }
+        ]
     },
     "spec": {
-        "ports": [
+        "volumes": [
             {
-                "protocol": "TCP",
-                "port": 443,
-                "targetPort": 9999,
-                "nodePort": 31800
+                "name": "test-app--app",
+                "hostPath": {
+                    "path": "/tmp/test"
+                }
+            },
+            {
+                "name": "test-app--myvol",
+                "persistentVolumeClaim": {
+                    "claimName": "test-app--myvol"
+                }
+            },
+            {
+                "name": "default-token-9lzca",
+                "secret": {
+                    "secretName": "default-token-9lzca",
+                    "defaultMode": 420
+                }
             }
         ],
-        "selector": {
-            "run": "kube-pingfederate"
-        },
-        "clusterIP": "10.123.240.119",
-        "type": "LoadBalancer",
-        "sessionAffinity": "None"
+        "containers": [
+            {
+                "name": "test-app",
+                "image": "gcr.io/commercial-tribe/test-app:gitsha-7e028042d370557b767ce122309bbbc6dde1d581",
+                "ports": [
+                    {
+                        "name": "http",
+                        "containerPort": 80,
+                        "protocol": "TCP"
+                    }
+                ],
+                "env": [
+                    {
+                        "name": "APP_SOURCE",
+                        "value": "jetson"
+                    },
+                    {
+                        "name": "RAZ",
+                        "valueFrom": {
+                            "configMapKeyRef": {
+                                "name": "test-app",
+                                "key": "some.value"
+                            }
+                        }
+                    },
+                    {
+                        "name": "BAZ",
+                        "valueFrom": {
+                            "secretKeyRef": {
+                                "name": "test-app",
+                                "key": "apiKey"
+                            }
+                        }
+                    },
+                    {
+                        "name": "HTTP_PORT",
+                        "value": "80"
+                    }
+                ],
+                "resources": {
+                    "requests": {
+                        "cpu": "100m"
+                    }
+                },
+                "volumeMounts": [
+                    {
+                        "name": "test-app--app",
+                        "mountPath": "/app"
+                    },
+                    {
+                        "name": "test-app--myvol",
+                        "mountPath": "/myVol"
+                    },
+                    {
+                        "name": "default-token-9lzca",
+                        "readOnly": true,
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+                    }
+                ],
+                "livenessProbe": {
+                    "httpGet": {
+                        "path": "/",
+                        "port": 80,
+                        "scheme": "HTTP"
+                    },
+                    "timeoutSeconds": 1,
+                    "periodSeconds": 10,
+                    "successThreshold": 1,
+                    "failureThreshold": 3
+                },
+                "readinessProbe": {
+                    "httpGet": {
+                        "path": "/",
+                        "port": 80,
+                        "scheme": "HTTP"
+                    },
+                    "timeoutSeconds": 1,
+                    "periodSeconds": 10,
+                    "successThreshold": 1,
+                    "failureThreshold": 3
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "imagePullPolicy": "IfNotPresent"
+            }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "nodeName": "gke-staging-primary-ed80d5b5-4okw",
+        "securityContext": {}
     },
     "status": {
-        "loadBalancer": {
-            "ingress": [
-                {
-                    "ip": "104.196.171.71"
-                }
-            ]
-        }
+        "phase": "Running",
+        "conditions": [
+            {
+                "type": "Initialized",
+                "status": "True",
+                "lastProbeTime": null,
+                "lastTransitionTime": "2016-12-28T19:41:27Z"
+            },
+            {
+                "type": "Ready",
+                "status": "False",
+                "lastProbeTime": null,
+                "lastTransitionTime": "2016-12-28T19:41:27Z",
+                "reason": "ContainersNotReady",
+                "message": "containers with unready status: [test-app]"
+            },
+            {
+                "type": "PodScheduled",
+                "status": "True",
+                "lastProbeTime": null,
+                "lastTransitionTime": "2016-12-28T19:41:27Z"
+            }
+        ],
+        "hostIP": "10.142.0.2",
+        "podIP": "10.120.0.34",
+        "startTime": "2016-12-28T19:41:27Z",
+        "containerStatuses": [
+            {
+                "name": "test-app",
+                "state": {
+                    "running": {
+                        "startedAt": "2016-12-28T19:43:07Z"
+                    }
+                },
+                "lastState": {
+                    "terminated": {
+                        "exitCode": 137,
+                        "reason": "Error",
+                        "startedAt": "2016-12-28T19:42:07Z",
+                        "finishedAt": "2016-12-28T19:43:07Z",
+                        "containerID": "docker://78688749f8cd8055524721b677e82d49985d6751d9a52d36bcafdcd1b2c2fc14"
+                    }
+                },
+                "ready": false,
+                "restartCount": 1,
+                "image": "gcr.io/commercial-tribe/test-app:gitsha-7e028042d370557b767ce122309bbbc6dde1d581",
+                "imageID": "docker://sha256:2394b39c6649d7383dafe8211b914144448f777e376227f4738dab0026397d81",
+                "containerID": "docker://840fe461f31e6167a5e96c280ea7d84d055d6a1d519eb617deedae6ff937512b"
+            }
+        ]
     }
 }

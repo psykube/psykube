@@ -17,6 +17,22 @@ module Psykube::Commands::Flags
     flag.description = "Push to the docker registry"
   end
 
+  AllocateStdIn = Commander::Flag.new do |flag|
+    flag.name = "stdin"
+    flag.short = "-i"
+    flag.long = "--stdin"
+    flag.default = false
+    flag.description = "Allocate Stdin"
+  end
+
+  AllocateTty = Commander::Flag.new do |flag|
+    flag.name = "tty"
+    flag.short = "-t"
+    flag.long = "--tty"
+    flag.default = false
+    flag.description = "Allocate TTY"
+  end
+
   Image = Commander::Flag.new do |flag|
     flag.name = "image"
     flag.short = "-i"
