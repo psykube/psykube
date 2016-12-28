@@ -168,7 +168,7 @@ class Psykube::Generator
       port_env = {"PORT" => lookup_port("default").to_s}
       manifest.port_map.each_with_object(manifest.env.dup) do |(name, port), env|
         env["#{name.underscore.upcase}_PORT"] = port.to_s
-      end
+      end.merge(port_env)
     end
   end
 end
