@@ -1,6 +1,4 @@
 require "../kubernetes/list"
-require "../kubernetes/service"
-require "../kubernetes/ingress"
 
 class Psykube::Generator
   class List < Generator
@@ -14,6 +12,7 @@ class Psykube::Generator
           list << service
           list << Ingress.result(self)
         end
+        list << Autoscale.result(self)
       end
     end
   end

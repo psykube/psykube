@@ -3,10 +3,16 @@ os:
 - osx
 sudo: required
 language: bash
-install: "./bin/install-crystal"
-script: crystal spec
+install:
+  - "./bin/install-crystal"
+  - crystal deps
+script:
+  - crystal build ./src/psykube.cr
+  - crystal spec
 before_deploy:
-  - crystal build ./src/psykube
+  - git add -A
+  - git reset --hard
+  - crystal build --release ./src/psykube.cr
   - tar -cz psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
 deploy:
   skip_cleanup: true
