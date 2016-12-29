@@ -44,6 +44,10 @@ volumes:
     spec:
       hostPath:
         path: /tmp/test
+  /app/key.pem:
+    spec:
+      secretKeyRef:
+        name: keyname
   /myVol:
     claim:
       size: 100Gi
@@ -63,9 +67,9 @@ healthcheck:
     path: /
 
 # Define deployment autoscaling
-# autoscale:
-#   min: 2
-#   max: 5
+autoscale:
+  min: 2
+  max: 5
 
 # Cluster Specific Settings
 clusters:
