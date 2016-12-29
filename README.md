@@ -28,8 +28,7 @@ Generates and outputs the kubernetes manifests for the specified cluster.
 Lists help for any command.
 
 ## `port-forward <local> <remote>`
-Finds a running pod beloning to this app and forwards the specified remote port
-to the specified local port.
+Finds a running pod belonging to this app and forwards the specified remote port to the specified local port.
 
 ## `push`
 Builds and pushes the docker image to the registry.    
