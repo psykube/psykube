@@ -1,11 +1,11 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::PersistentVolumeClaim::Spec
-  YAML.mapping(
-    access_modes: {type: Array(String), key: "accessModes"},
-    selector: {type: Shared::Selector, nilable: true},
-    resources: {type: Resource},
-    volume_name: {type: String, key: "volumeName", nilable: true, setter: false}
+  Kubernetes.mapping(
+    access_modes: Array(String),
+    selector: Shared::Selector | Nil,
+    resources: Resource,
+    volume_name: {type: String, nilable: true, setter: false, clean: true}
   )
 
   def initialize(size : String, @access_modes : Array(String))

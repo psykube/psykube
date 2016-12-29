@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Status::LoadBalancer::Ingress
-  YAML.mapping(
+  Kubernetes.mapping(
     ip: {type: String, setter: false},
     hostname: {type: String, setter: false}
   )

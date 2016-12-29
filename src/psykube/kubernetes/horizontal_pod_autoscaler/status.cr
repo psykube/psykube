@@ -1,7 +1,8 @@
 require "yaml"
+require "../concerns/mapping"
 
 class Psykube::Kubernetes::HorizontalPodAutoscaler::Status
-  YAML.mapping(
+  Kubernetes.mapping(
     observed_generation: {type: UInt8, key: "observedGeneration", nilable: true},
     last_scale_time: {type: String, key: "lastScaleTime"},
     current_replicas: {type: UInt8, key: "currentReplicas"},

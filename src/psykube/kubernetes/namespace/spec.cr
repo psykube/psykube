@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Namespace::Spec
-  YAML.mapping(
+  Kubernetes.mapping(
     finalizers: Array(String)
   )
 end

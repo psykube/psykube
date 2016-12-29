@@ -1,11 +1,11 @@
-require "yaml"
+require "../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Status
-  YAML.mapping({
-    observed_generation:  {type: Int32, key: "observedGeneration", setter: false},
-    replicas:             {type: Int32, setter: false},
-    updated_replicas:     {type: Int32, key: "updatedReplicas", setter: false},
-    available_replicas:   {type: Int32, key: "availableReplicas", setter: false},
-    unavailable_replicas: {type: Int32, key: "unavailableReplicas", setter: false},
-  }, true)
+  Kubernetes.mapping({
+    observed_generation:  {type: UInt32, setter: false, nilable: true},
+    replicas:             {type: UInt32, setter: false, nilable: true},
+    updated_replicas:     {type: UInt32, setter: false, nilable: true},
+    available_replicas:   {type: UInt32, setter: false, nilable: true},
+    unavailable_replicas: {type: UInt32, setter: false, nilable: true},
+  })
 end

@@ -1,22 +1,23 @@
 require "yaml"
+require "../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Metadata
-  YAML.mapping(
-    name: {type: String, nilable: true},
-    generateName: {type: String, nilable: true},
-    namespace: {type: String, nilable: true},
-    selfLink: {type: String, nilable: true, setter: false},
-    uid: {type: String, nilable: true, setter: false},
-    resourceVersion: {type: String, nilable: true, setter: false},
-    generation: {type: Int32, nilable: true, setter: false},
-    creationTimestamp: {type: Time, nilable: true, setter: false},
-    deletionTimestamp: {type: Time, nilable: true, setter: false},
-    deletionGracePeriodSeconds: {type: Int32, nilable: true, setter: false},
-    labels: {type: Hash(String, String), nilable: true},
-    annotations: {type: Hash(String, String), nilable: true},
-    ownerReferences: {type: Array(OwnerReference), nilable: true, setter: false},
-    finalizers: {type: Array(String), nilable: true},
-    clusterName: {type: String, nilable: true}
+  Kubernetes.mapping(
+    name: String | Nil,
+    generate_name: String | Nil,
+    namespace: {type: String, nilable: true, clean: true},
+    self_link: {type: String, nilable: true, setter: false, clean: true},
+    uid: {type: String, nilable: true, setter: false, clean: true},
+    resource_version: {type: String, nilable: true, setter: false, clean: true},
+    generation: {type: Int32, nilable: true, setter: false, clean: true},
+    creation_timestamp: {type: Time, nilable: true, setter: false, clean: true},
+    deletion_timestamp: {type: Time, nilable: true, setter: false, clean: true},
+    deletion_grace_period_seconds: {type: Int32, nilable: true, setter: false, clean: true},
+    labels: Hash(String, String) | Nil,
+    annotations: Hash(String, String) | Nil,
+    owner_references: {type: Array(OwnerReference), nilable: true, setter: false, clean: true},
+    finalizers: {type: Array(String), nilable: true, clean: true},
+    cluster_name: {type: String, nilable: true, clean: true}
   )
 
   def initialize
@@ -26,8 +27,14 @@ class Psykube::Kubernetes::Shared::Metadata
     @name = name
   end
 
+  def clean!
+    annotations = self.annotations || {} of String => String
+    annotations.delete("kubectl.kubernetes.io/last-applied-configuration") if annotations["kubectl.kubernetes.io/last-applied-configuration"]?
+    super
+  end
+
   class OwnerReference
-    YAML.mapping(
+    Kubernetes.mapping(
       apiVersion: {type: String},
       kind: {type: String},
       name: {type: String},

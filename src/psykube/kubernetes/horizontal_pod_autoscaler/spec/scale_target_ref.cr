@@ -1,7 +1,7 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::HorizontalPodAutoscaler::Spec::ScaleTargetRef
-  YAML.mapping(
+  Kubernetes.mapping(
     kind: {type: String},
     name: {type: String},
     api_version: {type: String, key: "apiVersion"}

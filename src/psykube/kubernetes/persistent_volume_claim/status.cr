@@ -1,9 +1,9 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::PersistentVolumeClaim::Status
-  YAML.mapping(
-    phase: {type: String},
-    access_modes: {type: Array(String), key: "accessModes"},
-    capacity: {type: Hash(String, String)}
+  Kubernetes.mapping(
+    phase: String,
+    access_modes: Array(String) | Nil,
+    capacity: Hash(String, String) | Nil
   )
 end

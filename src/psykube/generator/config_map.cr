@@ -4,7 +4,7 @@ class Psykube::Generator
   class ConfigMap < Generator
     protected def result
       unless combined_config_map.empty?
-        Kubernetes::ConfigMap.new(cluster_name, combined_config_map)
+        Kubernetes::ConfigMap.new(manifest.name, combined_config_map)
       end
     end
 

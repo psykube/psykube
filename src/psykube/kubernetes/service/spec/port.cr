@@ -1,12 +1,12 @@
-require "yaml"
+require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Service::Spec::Port
-  YAML.mapping(
-    name: {type: String},
-    protocol: {type: String},
-    port: {type: UInt16},
-    targetPort: {type: UInt16, nilable: true},
-    nodePort: {type: UInt16, nilable: true}
+  Kubernetes.mapping(
+    name: String | Nil,
+    protocol: String,
+    port: UInt16,
+    target_port: UInt16 | Nil,
+    node_port: {type: UInt16, nilable: true, clean: true}
   )
 
   def initialize(name : String, port_number : UInt16)

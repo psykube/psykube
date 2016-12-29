@@ -1,15 +1,15 @@
-require "yaml"
+require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec
-  YAML.mapping(
+  Kubernetes.mapping(
     replicas: Int32 | Nil,
     selector: Shared::Selector,
     template: Template,
     strategy: Strategy | Nil,
-    min_ready_seconds: {type: Int32, nilable: true, key: "minReadySeconds"},
-    revision_history_limit: {type: Int32, nilable: true, key: "revisionHistoryLimit"},
+    min_ready_seconds: UInt32 | Nil,
+    revision_history_limit: UInt32 | Nil,
     paused: Bool | Nil,
-    rollback_to: {type: RollbackTo, key: "rollbackTo", nilable: true}
+    rollback_to: RollbackTo | Nil
   )
 
   def initialize(name : String)

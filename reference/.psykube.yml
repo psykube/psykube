@@ -1,0 +1,322 @@
+# = Name ==
+# Every application needs a name, this will be used as the name in every
+# Kubernetes manifest.
+name: test-app # required
+
+# = Docker Registry Settings ==
+# Specify where to push the docker image during the push command. We use google
+# gloud, but you can omit the registry_host if you use docker hub
+registry_user: commercial-tribe  # required
+registry_host: gcr.io
+
+# = Config Maps ==
+# Config maps to generate for this application. This section allows for global
+# config maps, they will be combined with the cluster config maps specified
+# below.
+config_map:
+  some.value: "goop"
+
+# = Secrets ==
+# Secrets to generate for this application. This section allows for global
+# secrets, they will be combined with the cluster secrets specified
+# below.
+secrets:
+  apiKey: "1234"
+
+# = Environment Variables ==
+# Setup the environment for the application. There are a few ways in which we
+# can provision values.
+env:
+  # You can define a direct value.
+  APP_ID: "1234"
+
+  # You can reference a named config map value as specified in the global and
+  # cluster config maps for this application.
+  SOME_VALUE:
+    config_map: "some.value"
+
+  # You can reference a named secret value as specified in the global and
+  # cluster secrets for this application.
+  API_KEY:
+    secret: apiKey
+
+  # You can define a named config map within the namespace of this application.
+  MY_ACCOUNT_ID:
+    config_map:
+      name: my_account
+      key: "id"
+
+  # You can define a named secret map within the namespace of this application.
+  MY_ACCOUNT_ID:
+    secret:
+      name: my_account
+      key: "id"
+
+# = Volumes ==
+# Volumes allow you to mount and create volumes for your application. There are
+# a few options, outlined below. Volumes always have a key of their mount path.
+volumes:
+  # You can use the Kubernetes API directly by specifying a spec field. Refer to
+  # http://kubernetes.io/docs/user-guide/volumes/#types-of-volumes for details.
+  /app:
+    spec:
+      hostPath:
+        path: /tmp/test
+
+  # You can also create a claim, this will create a PersistentVolumeClaim in
+  # Kubernetes and mount it to your application. For more information see:
+  # http://kubernetes.io/docs/user-guide/persistent-volumes/#persistentvolumeclaims
+  # Note: PersistentVolumeClaims require some setup in your cluster, so be sure you have
+  # them setup correctly.
+  /myVol:
+    claim:
+      size: 100Gi
+      storage_class: slow
+      access_modes:
+        - ReadWriteOnce
+
+  # You can also create a claim using the default storage_class, all this requires
+  # is a string for the size. Note: This requires you to have a default storage
+  # class set within your cluster.
+  /vol3: 5Gi
+
+# = Ports ==
+# Ports specify what ports are exposed on the container and within the service.
+# Ports will also generate environment variables available to your service in
+# the form of {NAME}_PORT. A port named default OR the first port in this list
+# will also be assigned to the `PORT` environment variable.
+ports:
+  http: 80
+
+# = Service ==
+# Specify whether or not this application is exposed as a service.
+service: true  # default: true
+
+# = Ingress ==
+# Ingress allows you to setup external routes to your application by utilizing the
+# Kubernetes Ingress controller.
+# Note: ingress will be disabled is `service` is `false`.
+
+# Global ingress settings allow you set global settings for ingress.
+ingress:
+  # Enable tls for all hosts, this will generate secrets that match the
+  # hostname for each host, e.x. `www.example.com` will have a secret name of
+  # `www-example-com`.
+  tls: true
+
+  # Annotations allow you set annotations on the ingress record.
+  annotations:
+    kubernetes.io/tls-acme: "true"
+
+  # Hosts specify which hosts, ingress can belong to. There are a few ways to
+  # specify hosts.
+
+  # you can specify a single host, this will map to a host and respond at
+  # root path.
+  host: www.example.com
+
+  # You can specify multiple hosts, this will map to each host and respond to
+  # at root path for each.
+  hosts:
+    - www.example.com
+
+  # You can specify a dictionary of hosts, allowing for additional settings.
+  hosts:
+    www.example.com:
+      # You can enable tls on a single host.
+      tls: true
+
+      # You can also enable tls on a single host and specify additional settings.
+      tls:
+        secret_name: my-tls-secret
+
+      # You can specify a port for each host. Ports can either be a named
+      # port as listed in "ports" in this file or an integer.
+      port: default
+
+      # Within host settings you can specify a single path to respond to.
+      # if `path` or `paths` is not specified, it will default to the root.
+      path: /
+
+      # You can also specify multiple paths
+      paths:
+        - /auth
+        - /api
+
+      # You can also specify a port for each path. Ports can either be a named
+      # port as listed in "ports" in this file or an integer.
+      paths:
+        /auth:
+          port: default
+
+# = Autoscaling ==
+# Autoscale the application, set this
+autoscale:
+  min: 3 # required if autoscale is provided
+  max: 10 # required if autoscale is provided
+
+# = Healthcheck ==
+# Healthchecks allow for kubernetes to ensure your application remains up.
+# There are a few configuration options:
+healthcheck:
+  # Also apply this check to check and see if the container is ready
+  readiness: true # default: true
+
+  # HTTP checks allow you to hit an http endpoint on the host
+  http:
+    port: default # optional, default: default
+    path: /
+
+  # Exec allows you to run a command in the container, this can either be a string
+  # or an array of strings.
+  exec:
+    command: "./check-status.sh arg"
+
+  exec:
+    command:
+      - "./check-status.sh"
+      - "arg"
+
+
+# = Cluster Settings ==
+# When running the `apply` and `generate` commands, you specify a cluster that
+# will apply the following cluster specific settings. The cluster names can be
+# whatever you want them to be.
+# clusters:
+  staging:
+    # = Ingress ==
+    # Ingress allows you to setup external routes to your application by utilizing the
+    # Kubernetes Ingress controller. These settings will be combined with the
+    # global settings to make up this clusters Ingress manifest.
+    # Note: ingress will be disabled is `service` is `false`.
+    ingress:
+      # Enable tls for all hosts, this will generate secrets that match the
+      # hostname for each host, e.x. `www.example.com` will have a secret name of
+      # `www-example-com`.
+      tls: true
+
+      # Annotations allow you set annotations on the ingress record.
+      annotations:
+        kubernetes.io/tls-acme: "true"
+
+      # Hosts specify which hosts, ingress can belong to. There are a few ways to
+      # specify hosts.
+
+      # you can specify a single host, this will map to a host and respond at
+      # root path.
+      host: staging.example.com
+
+      # You can specify multiple hosts, this will map to each host and respond to
+      # at root path for each.
+      hosts:
+        - staging.example.com
+
+      # You can specify a dictionary of hosts, allowing for additional settings.
+      hosts:
+        www.example.com:
+          # You can enable tls on a single host.
+          tls: true
+
+          # You can also enable tls on a single host and specify additional settings.
+          tls:
+            secret_name: my-tls-secret
+
+          # You can specify a port for each host. Ports can either be a named
+          # port as listed in "ports" in this file or an integer.
+          port: default
+
+          # Within host settings you can specify a single path to respond to.
+          # if `path` or `paths` is not specified, it will default to the root.
+          path: /
+
+          # You can also specify multiple paths
+          paths:
+            - /auth
+            - /api
+
+          # You can also specify a port for each path. Ports can either be a named
+          # port as listed in "ports" in this file or an integer.
+          paths:
+            /auth:
+              port: default
+
+    # Config map to generate for this application. This section allows for
+    # a cluster specific config_map, they will be combined with the global
+    # config_map specified above.
+    config_map:
+      some.value: "tada"
+
+    # Secrets to generate for this application. This section allows for
+    # cluster specific secrets, they will be combined with the global
+    # secrets specified above.
+    secrets:
+      apiKey: "supersecretapikey"
+
+  production:
+    # = Ingress ==
+    # Ingress allows you to setup external routes to your application by utilizing the
+    # Kubernetes Ingress controller. These settings will be combined with the
+    # global settings to make up this clusters Ingress manifest.
+    # Note: ingress will be disabled is `service` is `false`.
+    ingress:
+      # Enable tls for all hosts, this will generate secrets that match the
+      # hostname for each host, e.x. `www.example.com` will have a secret name of
+      # `www-example-com`.
+      tls: true
+
+      # Annotations allow you set annotations on the ingress record.
+      annotations:
+        kubernetes.io/tls-acme: "true"
+
+      # Hosts specify which hosts, ingress can belong to. There are a few ways to
+      # specify hosts.
+
+      # you can specify a single host, this will map to a host and respond at
+      # root path.
+      host: www.example.com
+
+      # You can specify multiple hosts, this will map to each host and respond to
+      # at root path for each.
+      hosts:
+        - www.example.com
+
+      # You can specify a dictionary of hosts, allowing for additional settings.
+      hosts:
+        www.example.com:
+          # You can enable tls on a single host.
+          tls: true
+
+          # You can also enable tls on a single host and specify additional settings.
+          tls:
+            secret_name: my-tls-secret
+
+          # You can specify a port for each host. Ports can either be a named
+          # port as listed in "ports" in this file or an integer.
+          port: default
+
+          # Within host settings you can specify a single path to respond to.
+          # if `path` or `paths` is not specified, it will default to the root.
+          path: /
+
+          # You can also specify multiple paths
+          paths:
+            - /auth
+            - /api
+
+          # You can also specify a port for each path. Ports can either be a named
+          # port as listed in "ports" in this file or an integer.
+          paths:
+            /auth:
+              port: default
+
+    # Config map to generate for this application. This section allows for
+    # a cluster specific config_map, they will be combined with the global
+    # config_map specified above.
+    config_map:
+      some.value: "tada"
+
+    # Secrets to generate for this application. This section allows for
+    # cluster specific secrets, they will be combined with the global
+    # secrets specified above.
+    secrets:
+      apiKey: "supersecretapikey"

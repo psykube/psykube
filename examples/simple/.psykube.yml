@@ -1,0 +1,17 @@
+name: test-app
+registry_user: commercial-tribe
+ports:
+  http: 80
+ingress:
+  tls: true
+  annotations:
+    kubernetes.io/tls-acme: "true"
+clusters:
+  staging:
+    ingress:
+      host: psykube-simple.{{metadata.namespace}}.commercialtribe.ninja
+  production:
+    ingress:
+      host: psykube-simple.commercialtribe.net
+    config_map:
+      some.value: "tada"

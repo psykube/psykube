@@ -2,6 +2,9 @@ require "yaml"
 
 class Psykube::Manifest::Ingress::Host::Path
   YAML.mapping(
-    port: UInt16
+    port: String | UInt16
   )
+
+  def initialize(@port : String | UInt16)
+  end
 end

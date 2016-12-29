@@ -1,38 +1,35 @@
-require "yaml"
 require "./namespace"
 require "./service"
 require "./config_map"
 require "./ingress"
 require "./deployment"
 require "./secret"
+require "./pod"
 require "./persistent_volume_claim"
 require "./horizontal_pod_autoscaler"
+require "./concerns/resource"
+require "./concerns/resource"
 
 class Psykube::Kubernetes::List
-  alias ListableTypes = Psykube::Kubernetes::Namespace |
-                        Psykube::Kubernetes::ConfigMap |
-                        Psykube::Kubernetes::Service |
-                        Psykube::Kubernetes::Ingress |
-                        Psykube::Kubernetes::Deployment |
-                        Psykube::Kubernetes::Secret |
-                        Psykube::Kubernetes::PersistentVolumeClaim |
-                        Psykube::Kubernetes::HorizontalPodAutoscaler
+  alias ListableTypes = Namespace |
+                        ConfigMap |
+                        Service |
+                        Ingress |
+                        Deployment |
+                        Secret |
+                        PersistentVolumeClaim |
+                        Pod |
+                        HorizontalPodAutoscaler
 
-  YAML.mapping(
-    api_version: {type: String, key: "apiVersion", default: "v1"},
-    kind: {type: String, default: "List"},
-    items: {type: Array(ListableTypes)}
-  )
+  delegate :select, :[], :[]?, :find, :unshift, to: @items
+
+  Resource.definition("v1", "List", {
+    items: {type: Array(ListableTypes), default: [] of ListableTypes},
+  })
 
   def initialize(&block : List -> _)
     initialize
     yield self
-  end
-
-  def initialize
-    @api_version = "v1"
-    @kind = "List"
-    @items = Array(ListableTypes).new
   end
 
   def initialize(items : Array(ListableTypes | Nil))
@@ -52,5 +49,10 @@ class Psykube::Kubernetes::List
   end
 
   def <<(item : Nil)
+  end
+
+  def clean!
+    @items.each(&.clean!)
+    self
   end
 end

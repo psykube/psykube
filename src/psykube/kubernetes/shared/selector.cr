@@ -1,12 +1,12 @@
-require "yaml"
+require "../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Selector
   alias MatchLabels = Hash(String, String)
 
-  YAML.mapping({
-    match_labels:      {type: MatchLabels, nilable: true},
-    match_expressions: {type: Array(MatchExpression), nilable: true},
-  }, true)
+  Kubernetes.mapping({
+    match_labels:      MatchLabels | Nil,
+    match_expressions: Array(MatchExpression) | Nil,
+  })
 
   def initialize(app_label : String)
     initialize({"app" => app_label})

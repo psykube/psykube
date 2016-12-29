@@ -1,8 +1,8 @@
-require "yaml"
+require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Rule::Http
-  YAML.mapping(
-    paths: {type: Array(Psykube::Kubernetes::Ingress::Spec::Rule::Http::Path), nilable: true}
+  Kubernetes.mapping(
+    paths: Array(Psykube::Kubernetes::Ingress::Spec::Rule::Http::Path) | Nil
   )
 
   def initialize(paths : Array(Psykube::Kubernetes::Ingress::Spec::Rule::Http::Path))

@@ -1,9 +1,9 @@
-require "yaml"
+require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Tls
-  YAML.mapping(
-    hosts: {type: Array(String)},
-    secret_name: {type: String, key: "secretName"}
+  Kubernetes.mapping(
+    hosts: Array(String),
+    secret_name: String
   )
 
   def initialize(host : String)
