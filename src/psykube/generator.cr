@@ -42,9 +42,11 @@ class Psykube::Generator
     template = Crustache.parse File.read(filename)
 
     data = {
-      "metadata" => {"name" => @raw_manifest.name}.merge(template_data),
-      "cluster"  => {"name" => cluster_name},
-      "env"      => ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] },
+      "metadata" => {
+        "namespace"    => @raw_manifest.name,
+        "cluster_name" => cluster_name,
+      }.merge(template_data),
+      "env" => ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] },
     }
 
     @manifest = Manifest.from_yaml Crustache.render template, data
