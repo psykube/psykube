@@ -4,7 +4,7 @@ services:
 sudo: required
 env:
   global:
-    - PSYKUBE_VERSION=v0.1.0.beta-1
+    - PSYKUBE_VERSION=v0.1.0-beta1
 script: "true"
 before_deploy:
   - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl
