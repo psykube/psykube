@@ -64,19 +64,11 @@ class Psykube::Generator
       rules.empty? ? nil : rules
     end
 
-    private def generate_host_paths(host, paths : Manifest::Ingress::Host::PathStrings)
-      name_map = Manifest::Ingress::Host::PathPortMap.new
-      paths.each do |path|
-        name_map[path] = "default".as(String)
-      end
-      generate_host_paths(host, name_map)
-    end
-
-    private def generate_host_paths(host, paths : Manifest::Ingress::Host::PathPortMap)
+    private def generate_host_paths(host, paths : Manifest::Ingress::Host::PathMap)
       rules = [] of Kubernetes::Ingress::Spec::Rule
-      kube_paths = paths.map do |path, port_or_name|
+      kube_paths = paths.map do |path, path_spec|
         Kubernetes::Ingress::Spec::Rule::Http::Path.new(
-          path, manifest.name, lookup_port(port_or_name)
+          path, manifest.name, lookup_port(path_spec.port)
         )
       end
       rules << Kubernetes::Ingress::Spec::Rule.new(host, kube_paths)

@@ -41,4 +41,27 @@ Prints the psykube version.
 
 ## The Psykube YAML
 
-### TODO!
+A .psykube.yml is required in the root for each app. This can be overridden with
+the `-f` or `--file` flag on any command.
+
+### Template Variables
+The .psykube.yml allows for templating using the Mustache template syntax. The
+following variables are available within the template:
+
+| Var | Description
+|---|---
+| `metadata.namespace` | The namespace provided with the `--namespace` flag on the command.
+| `metadata.cluster_name` | The name of the cluster.
+| `metadata.name` | The name of the application.
+| `env.{name}` | An environment variable referenced by name.
+
+#### Example
+
+```yaml
+ingress:
+  host: {{metadata.namespace}}.k8s.example.com
+```
+
+### .psykube.yml Reference
+You can find a detailed example of the `.psykube.yml` in [reference/.psykube.yml](./reference/.psykube.yml)
+More examples can be found in the example dir.

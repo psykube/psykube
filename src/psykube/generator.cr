@@ -78,7 +78,7 @@ class Psykube::Generator
   end
 
   private def cluster_manifest
-    manifest.clusters[cluster_name]
+    manifest.clusters[cluster_name]? || Manifest::Cluster.new
   end
 
   private def lookup_port(port : UInt16)
