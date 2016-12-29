@@ -8,6 +8,10 @@ class Psykube::Manifest::Ingress::Host
     tls: Tls | Nil | Bool,
     paths: PathStrings | PathPortMap
   )
+
+  def initialize
+    @paths = ["/"]
+  end
 end
 
 require "./host/*"
