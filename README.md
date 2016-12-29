@@ -65,3 +65,5 @@ ingress:
 ### .psykube.yml Reference
 You can find a detailed example of the `.psykube.yml` in [reference/.psykube.yml](./reference/.psykube.yml)
 More examples can be found in the example dir.
+
+**NOTE:** There is also an example .travis.yml file with an example of how to deploy to google container engine.
