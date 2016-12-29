@@ -9,11 +9,9 @@ ingress:
 clusters:
   staging:
     ingress:
-      hosts:
-        - psykube-simple.{{metadata.namespace}}.commercialtribe.ninja
+      host: psykube-simple.{{metadata.namespace}}.commercialtribe.ninja
   production:
     ingress:
-      hosts:
-        - psykube-simple.commercialtribe.net
+      host: psykube-simple.commercialtribe.net
     config_map:
       some.value: "tada"
