@@ -5,7 +5,7 @@ require "./push"
 module Psykube::Commands
   Status = Commander::Command.new do |cmd|
     cmd.use = "status <cluster>"
-    cmd.short = "Status of the kubernetes resources"
+    cmd.short = "Status of the pods belonging to this app."
     cmd.long = cmd.short
     cmd.flags.add Flags::Namespace
     cmd.flags.add Flags::File

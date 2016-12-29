@@ -6,7 +6,7 @@ require "./flags"
 module Psykube::Commands
   Generate = Commander::Command.new do |cmd|
     cmd.use = "generate <cluster>"
-    cmd.short = "Generates the kubernetes manifests"
+    cmd.short = "Generates the kubernetes manifests."
     cmd.long = cmd.short
     cmd.flags.add Flags::Namespace
     cmd.flags.add Flags::File

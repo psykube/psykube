@@ -4,7 +4,7 @@ require "./psykube/commands/*"
 
 cli = Commander::Command.new do |cmd|
   cmd.use = "psykube"
-  cmd.long = "A tool for interacting and deploying to kubernetes clusters within CI/CD environments."
+  cmd.long = "A tool for managing the Kubernetes lifecycle of a single container application."
 
   cmd.run do |options, arguments|
     puts cmd.help

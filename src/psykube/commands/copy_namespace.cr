@@ -5,7 +5,7 @@ require "../kubernetes/list"
 module Psykube::Commands
   CopyNamespace = Commander::Command.new do |cmd|
     cmd.use = "copy-namespace <from> <to>"
-    cmd.short = "Copys a kubernetes namespace"
+    cmd.short = "Copys a kubernetes namespace."
     cmd.long = cmd.short
     cmd.flags.add Flags::Resources
     cmd.run do |options, arguments|

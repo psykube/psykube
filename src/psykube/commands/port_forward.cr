@@ -6,7 +6,7 @@ require "./push"
 module Psykube::Commands
   PortForward = Commander::Command.new do |cmd|
     cmd.use = "port-forward <local> <remote>"
-    cmd.short = "Exec a command in a running pod for this app."
+    cmd.short = "Forward a port of a running pod for this app to the local machine."
     cmd.long = cmd.short
     cmd.flags.add Flags::Namespace
     cmd.flags.add Flags::File

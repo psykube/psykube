@@ -5,7 +5,7 @@ require "./push"
 module Psykube::Commands
   Delete = Commander::Command.new do |cmd|
     cmd.use = "delete <cluster>"
-    cmd.short = "Deletes the kubernetes manifests"
+    cmd.short = "Deletes the kubernetes manifests."
     cmd.long = cmd.short
     cmd.flags.add Flags::Namespace
     cmd.flags.add Flags::File

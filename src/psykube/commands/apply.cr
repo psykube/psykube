@@ -6,7 +6,7 @@ require "./copy_namespace"
 module Psykube::Commands
   Apply = Commander::Command.new do |cmd|
     cmd.use = "apply <cluster>"
-    cmd.short = "Applys the kubernetes manifests"
+    cmd.short = "Applys the kubernetes manifests."
     cmd.long = cmd.short
     cmd.flags.add Flags::Namespace
     cmd.flags.add Flags::File
