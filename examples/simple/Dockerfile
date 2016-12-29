@@ -1,6 +1,10 @@
-FROM ruby
-RUN gem install rack
-ARG NPM_TOKEN
+FROM crystallang/crystal
+
+# Run and build
+ADD server.cr server.cr
+RUN crystal build ./server.cr
+
 ENV PORT 8080
-ADD server.rb server.rb
-CMD ruby server.rb
+# Set env
+
+CMD ./server
