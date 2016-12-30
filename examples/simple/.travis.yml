@@ -4,14 +4,14 @@ services:
 sudo: required
 env:
   global:
-    - PSYKUBE_VERSION=v0.1.0.beta-1
+    - PSYKUBE_VERSION=v0.1.0-beta1
 script: "true"
 before_deploy:
   - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl
   - sudo chown -R $USER /home/travis/.config/gcloud
-  - curl -sSL https://github.com/CommercialTribe/psykube/releases/download/$PSYKUBE_VERSION/psykube-linux-$PSYKUBE_VERSION.tar.gz | tar -xzC /usr/local/bin
+  - curl -sSL https://github.com/CommercialTribe/psykube/releases/download/$PSYKUBE_VERSION/psykube-linux-$PSYKUBE_VERSION.tar.gz | sudo tar -xzC /usr/local/bin
   - echo $GCLOUD_ENCODED_CREDS | base64 -d > /tmp/gcloud.json
-  - gcloud auth activate-service-account $(jq ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
+  - gcloud auth activate-service-account $(jq -r ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
 
 deploy:
   # ALWAYS Push branch to docker registry
