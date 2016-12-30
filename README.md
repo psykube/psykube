@@ -2,7 +2,16 @@
 A tool for managing the Kubernetes lifecycle of a single container application.
 
 # Installation
-Visit the releases tab on github, and install the latest version for your OS.
+
+## Homebrew for OSX
+You can install `psykube` on OSX using homebrew by running: 
+
+```sh
+brew install commercialtribe/tools/psykube
+```
+
+## Binaries
+You can also download the [pre-built binaries](https://github.com/CommercialTribe/psykube/releases).
 
 # Usage
 `psykube [command] [arguments]`
