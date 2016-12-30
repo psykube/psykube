@@ -1,2 +1,5 @@
-build:
-	crystal build --release src/psykube.cr
+deps:
+	shards install
+
+build: deps
+	crystal build --release ./src/psykube.cr
