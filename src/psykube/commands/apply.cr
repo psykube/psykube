@@ -22,9 +22,7 @@ module Psykube::Commands
       Tempfile.open("manifests") do |file|
         file.print Helpers.build_gen(cmd, arguments, options).to_json
         file.flush
-        Process.run("kubectl", ["apply", "--namespace=#{options.string["namespace"]}", "-f=#{file.path}"], output: STDOUT, error: STDERR).tap do |process|
-          exit(process.exit_status) unless process.success?
-        end
+        Process.exec("kubectl", ["apply", "--namespace=#{options.string["namespace"]}", "-f=#{file.path}"])
       end
     end
   end

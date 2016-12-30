@@ -14,7 +14,7 @@ module Psykube::Commands
       Process.run("docker", ["build", "-t=#{tag}", "."], output: STDOUT, error: STDERR).tap do |process|
         exit(process.exit_status) unless process.success?
       end
-      puts "Pushing to Docker Registry..."
+      puts "Pushing to Docker Registry...".colorize(:cyan)
       Process.run("docker", ["push", tag], output: STDOUT, error: STDERR).tap do |process|
         exit(process.exit_status) unless process.success?
       end
