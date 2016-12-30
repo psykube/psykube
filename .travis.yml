@@ -7,12 +7,10 @@ install:
   - "./bin/install-crystal"
   - crystal deps
 script:
-  - crystal build ./src/psykube.cr
+  - make build
   - crystal spec
 before_deploy:
-  - git add -A
-  - git reset --hard
-  - crystal build --release ./src/psykube.cr
+  - make build
   - tar -cz psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
 deploy:
   skip_cleanup: true
