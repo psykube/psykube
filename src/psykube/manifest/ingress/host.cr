@@ -18,6 +18,7 @@ class Psykube::Manifest::Ingress::Host
 
   def paths
     paths = @paths
+    path = @path
     path_map = case paths
                when PathMap
                  paths
@@ -28,7 +29,7 @@ class Psykube::Manifest::Ingress::Host
                else
                  PathMap.new
                end
-    path_map[@path] = Path.new(@port) if paths
+    path_map[@path] = Path.new(@port) if path
     path_map
   end
 end

@@ -30,9 +30,7 @@ class Psykube::Generator
     end
 
     private def cluster_hosts
-      (manifest_ingress.hosts || {} of String => Manifest::Ingress::Host).merge(
-        cluster_manifest_ingress.hosts || {} of String => Manifest::Ingress::Host
-      )
+      manifest_ingress.hosts.merge cluster_manifest_ingress.hosts
     end
 
     private def generate_tls

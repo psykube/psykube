@@ -17,7 +17,7 @@ class Psykube::Manifest::Ingress
 
   def hosts
     hosts = @hosts
-    host = self.host
+    host = @host
     host_hash = case hosts
                 when HostHash
                   hosts
