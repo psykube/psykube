@@ -21,7 +21,7 @@ module Psykube::Commands
       pod = Helpers.get_running_pod(cmd, options)
       args = ["--namespace=#{namespace}", "port-forward", pod.name || ""]
       args << [local, remote].join(":") if local && remote
-      Process.exec("kubectl", args, input: false)
+      Process.exec(ENV["KUBECTL_BIN"], args, input: false)
     end
   end
 end

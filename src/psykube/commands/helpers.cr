@@ -33,7 +33,7 @@ module Psykube::Commands::Helpers
     namespace = options.string["namespace"]
     selector_labels = Helpers.build_selector_labels(cmd, options)
     io = IO::Memory.new
-    Process.run("kubectl", ["--namespace=#{namespace}", "get", "pods", "--selector=#{selector_labels}", "-o=json"], output: io, error: STDERR).tap do |process|
+    Process.run(ENV["KUBECTL_BIN"], ["--namespace=#{namespace}", "get", "pods", "--selector=#{selector_labels}", "-o=json"], output: io, error: STDERR).tap do |process|
       exit(process.exit_status) unless process.success?
     end
     io.rewind

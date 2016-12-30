@@ -29,7 +29,7 @@ module Psykube::Commands
       args << "-i" if stdin
       args << "-t" if tty
       args.concat(arguments + rest)
-      Process.exec("kubectl", args, input: stdin ? STDIN : false, error: STDERR, output: STDOUT)
+      Process.exec(ENV["KUBECTL_BIN"], args, input: stdin ? STDIN : false, error: STDERR, output: STDOUT)
     end
   end
 end

@@ -17,7 +17,7 @@ module Psykube::Commands
 
       puts "Copying Namespace: `#{from}` to `#{to}` (resources: #{resources.split(",").join(", ")})...".colorize(:cyan)
       io = IO::Memory.new
-      Process.run("kubectl", ["--export", "--namespace=#{from}", "get", resources, "-o=json"], output: io, error: STDERR).tap do |process|
+      Process.run(ENV["KUBECTL_BIN"], ["--export", "--namespace=#{from}", "get", resources, "-o=json"], output: io, error: STDERR).tap do |process|
         exit(process.exit_status) unless process.success?
       end
       io.rewind
@@ -27,7 +27,7 @@ module Psykube::Commands
 
       # Get or build the namespace
       io = IO::Memory.new
-      Process.run("kubectl", ["get", "namespace", to, "--export", "-o=json"], output: io)
+      Process.run(ENV["KUBECTL_BIN"], ["get", "namespace", to, "--export", "-o=json"], output: io)
       namespace = Kubernetes::Namespace.from_json(io) rescue Kubernetes::Namespace.new(to)
       list.unshift namespace
 
@@ -37,7 +37,7 @@ module Psykube::Commands
       Tempfile.open("manifests") do |file|
         file.print list.to_json
         file.flush
-        Process.run("kubectl", ["apply", "--namespace=#{to}", "-f=#{file.path}"], output: STDOUT, error: STDERR).tap do |process|
+        Process.run(ENV["KUBECTL_BIN"], ["apply", "--namespace=#{to}", "-f=#{file.path}"], output: STDOUT, error: STDERR).tap do |process|
           exit(process.exit_status) unless process.success?
         end
       end

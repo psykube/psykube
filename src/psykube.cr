@@ -2,6 +2,9 @@ require "tempfile"
 require "commander"
 require "./psykube/commands/*"
 
+ENV["KUBECTL_BIN"] ||= `which kubectl`.strip
+ENV["DOCKER_BIN"] ||= `which docker`.strip
+
 cli = Commander::Command.new do |cmd|
   cmd.use = "psykube"
   cmd.long = "A tool for managing the Kubernetes lifecycle of a single container application."

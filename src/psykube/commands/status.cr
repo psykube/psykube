@@ -13,7 +13,7 @@ module Psykube::Commands
       namespace = options.string["namespace"]
       selector_labels = Helpers.build_selector_labels(cmd, options)
       puts "Pod status ============================="
-      Process.exec("kubectl", ["--namespace=#{namespace}", "get", "pods", "--selector=#{selector_labels}"])
+      Process.exec(ENV["KUBECTL_BIN"], ["--namespace=#{namespace}", "get", "pods", "--selector=#{selector_labels}"])
     end
   end
 end

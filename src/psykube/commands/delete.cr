@@ -16,7 +16,7 @@ module Psykube::Commands
       Tempfile.open("manifests") do |file|
         file.print Helpers.build_gen(cmd, arguments, options).to_json
         file.flush
-        Process.exec("kubectl", ["delete", "--namespace=#{options.string["namespace"]}", "-f=#{file.path}"])
+        Process.exec(ENV["KUBECTL_BIN"], ["delete", "--namespace=#{options.string["namespace"]}", "-f=#{file.path}"])
       end
     end
   end
