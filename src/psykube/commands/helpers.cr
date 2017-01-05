@@ -29,6 +29,10 @@ module Psykube::Commands::Helpers
     match_labels.map(&.join("=")).join(",")
   end
 
+  def add_build_args(args : Array, options : Commander::Options)
+      args += options.string["build-args"].split(",").map { |arg| "--build-arg=#{arg}" } unless options.string["build-args"].empty?
+  end
+
   def get_running_pod(cmd : Commander::Command, options : Commander::Options)
     namespace = options.string["namespace"]
     selector_labels = Helpers.build_selector_labels(cmd, options)

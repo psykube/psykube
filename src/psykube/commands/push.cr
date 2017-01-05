@@ -10,14 +10,10 @@ module Psykube::Commands
     cmd.flags.add Flags::File
     cmd.run do |options, arguments|
       puts "Building Docker Container...".colorize(:cyan)
+
       tag = Helpers.build_tag(cmd, options)
       args = ["build", "-t=#{tag}", "."]
-
-      # Add NPM_TOKEN as a docker build arg if it exists.
-      npm_token = ENV["NPM_TOKEN"]
-      if npm_token
-        args << "--build-arg=NPM_TOKEN=#{npm_token}";
-      end
+      Helpers.add_build_args(args, options)
 
       Process.run(ENV["DOCKER_BIN"], args, output: STDOUT, error: STDERR).tap do |process|
         exit(process.exit_status) unless process.success?
