@@ -29,6 +29,15 @@ module Psykube::Commands::Helpers
     match_labels.map(&.join("=")).join(",")
   end
 
+  def add_build_args(args : Array, options : Commander::Options)
+    file = options.string["file"]
+    puts file
+    manifest_args = (Generator.new(file).manifest.build_args || {} of String => String).map(&.join("="))
+    cli_args = options.string["build-args"].split(",").reject(&.empty?)
+    build_args = manifest_args | cli_args
+    args.concat build_args.map { |arg| "--build-arg=#{arg}" } unless build_args.empty?
+  end
+
   def get_running_pod(cmd : Commander::Command, options : Commander::Options)
     namespace = options.string["namespace"]
     selector_labels = Helpers.build_selector_labels(cmd, options)

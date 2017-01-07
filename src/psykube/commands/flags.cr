@@ -80,4 +80,12 @@ module Psykube::Commands::Flags
     flag.default = "cm,secrets,deployments,services,pvc"
     flag.description = "the resources to copy"
   end
+
+  BuildArgs = Commander::Flag.new do |flag|
+    flag.name = "build-args"
+    flag.short = "-a"
+    flag.long = "--build-args"
+    flag.default = ""
+    flag.description = "docker build args"
+  end
 end
