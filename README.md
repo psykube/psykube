@@ -4,7 +4,7 @@ A tool for managing the Kubernetes lifecycle of a single container application.
 # Installation
 
 ## Homebrew for OSX
-You can install `psykube` on OSX using homebrew by running: 
+You can install `psykube` on OSX using homebrew by running:
 
 ```sh
 brew install commercialtribe/tools/psykube
@@ -54,7 +54,7 @@ A .psykube.yml is required in the root for each app. This can be overridden with
 the `-f` or `--file` flag on any command.
 
 ### Template Variables
-The .psykube.yml allows for templating using the Mustache template syntax. The
+The .psykube.yml allows for expanding variables using the `<<var.name>>` template syntax. The
 following variables are available within the template:
 
 | Var | Description
@@ -68,7 +68,7 @@ following variables are available within the template:
 
 ```yaml
 ingress:
-  host: {{metadata.namespace}}.k8s.example.com
+  host: <<metadata.namespace>>.k8s.example.com
 ```
 
 ### .psykube.yml Reference

@@ -38,8 +38,9 @@ class Psykube::Generator
   end
 
   def initialize(filename : String, @cluster_name : String = "", image : String | Nil = nil, template_data : TemplateData = TemplateData.new)
-    @raw_manifest = Manifest.from_yaml File.read(filename)
-    template = Crustache.parse File.read(filename)
+    contents = File.read(filename)
+    @raw_manifest = Manifest.from_yaml contents
+    template = Crustache.parse contents.gsub(/<<(.+)>>/, "{{\\1}}")
 
     data = {
       "metadata" => {
