@@ -30,7 +30,7 @@ env:
   # You can define a direct value.
   APP_ID: "1234"
 
-  # You can reference a named config map value as specified in the global and
+  # You can reference a value of the config map value as specified in the global and
   # cluster config maps for this application.
   SOME_VALUE:
     config_map: "some.value"
