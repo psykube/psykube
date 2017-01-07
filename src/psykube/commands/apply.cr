@@ -13,11 +13,16 @@ module Psykube::Commands
     cmd.flags.add Flags::Image
     cmd.flags.add Flags::Push
     cmd.flags.add Flags::CopyNamespace
+    cmd.flags.add Flags::BuildArgs
     cmd.run do |options, arguments|
       CopyNamespace.invoke([
         options.string["copy-namespace"], options.string["namespace"],
       ]) unless options.string["copy-namespace"].empty?
-      Push.invoke([] of String)
+      if options.bool["push"] || !options.bool["image"]
+        push_args = ["--file=#{options.string["file"]}"]
+        push_args << "--build-args=#{options.string["build-args"]}" unless options.string["build-args"].empty?
+        Push.invoke(push_args)
+      end
       puts "Applying Kubernetes Manifests...".colorize(:cyan)
       Tempfile.open("manifests") do |file|
         file.print Helpers.build_gen(cmd, arguments, options).to_json

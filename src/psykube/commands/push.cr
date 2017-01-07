@@ -8,6 +8,7 @@ module Psykube::Commands
     cmd.long = cmd.short
     cmd.flags.add Flags::Tag
     cmd.flags.add Flags::File
+    cmd.flags.add Flags::BuildArgs
     cmd.run do |options, arguments|
       puts "Building Docker Container...".colorize(:cyan)
 
