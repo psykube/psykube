@@ -24,7 +24,9 @@ class Psykube::Kubernetes::List
   delegate :select, :[], :[]?, :find, :unshift, to: @items
 
   Resource.definition("v1", "List", {
-    items: {type: Array(ListableTypes), default: [] of ListableTypes},
+    items:            {type: Array(ListableTypes), default: [] of ListableTypes},
+    resource_version: String | Nil,
+    self_link:        String | Nil,
   })
 
   def initialize(&block : List -> _)
