@@ -52,6 +52,14 @@ env:
       name: my_account
       key: "id"
 
+  # You can reference the downward API by string value
+  IP_ADDR:
+    field: status.podIP
+
+  # You can also reference a resource field
+  MEMORY_LIMIT:
+    resource_field: limits.memory
+
 # = Volumes ==
 # Volumes allow you to mount and create volumes for your application. There are
 # a few options, outlined below. Volumes always have a key of their mount path.
