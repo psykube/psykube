@@ -31,7 +31,6 @@ module Psykube::Commands::Helpers
 
   def add_build_args(args : Array, options : Commander::Options)
     file = options.string["file"]
-    puts file
     manifest_args = (Generator.new(file).manifest.build_args || {} of String => String).map(&.join("="))
     cli_args = options.string["build-args"].split(",").reject(&.empty?)
     build_args = manifest_args | cli_args
