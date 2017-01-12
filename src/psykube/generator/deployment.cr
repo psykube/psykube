@@ -129,10 +129,14 @@ class Psykube::Generator
     private def expand_env(key : String, value : Manifest::Env)
       value_from = Container::Env::ValueFrom.new.tap do |value_from|
         case
-        when value.config_map
-          value_from.config_map_key_ref = expand_env_config_map(value.config_map)
-        when value.secret
-          value_from.secret_key_ref = expand_env_secret(value.secret)
+        when config_map = value.config_map
+          value_from.config_map_key_ref = expand_env_config_map(config_map)
+        when secret = value.secret
+          value_from.secret_key_ref = expand_env_secret(secret)
+        when field = value.field
+          value_from.field_ref = expand_env_field(field)
+        when resource_field = value.resource_field
+          value_from.resource_field_ref = expand_env_resource_field(resource_field)
         end
       end
       Container::Env.new(key, value_from)
@@ -140,9 +144,6 @@ class Psykube::Generator
 
     private def expand_env(key : String, value : String)
       Container::Env.new(key, value)
-    end
-
-    private def expand_env_config_map(value : Nil)
     end
 
     private def expand_env_config_map(key : String)
@@ -153,15 +154,35 @@ class Psykube::Generator
       Container::Env::ValueFrom::KeyRef.new(key_ref.name, key_ref.key)
     end
 
-    private def expand_env_secret(value : Nil)
-    end
-
     private def expand_env_secret(key : String)
       Container::Env::ValueFrom::KeyRef.new(manifest.name, key)
     end
 
     private def expand_env_secret(key_ref : Manifest::Env::KeyRef)
       Container::Env::ValueFrom::KeyRef.new(key_ref.name, key_ref.key)
+    end
+
+    private def expand_env_field(field : String)
+      Container::Env::ValueFrom::FieldRef.new(field)
+    end
+
+    private def expand_env_field(field_ref : Manifest::Env::FieldRef)
+      Container::Env::ValueFrom::FieldRef.new(
+        field_path: field_ref.path,
+        api_version: field_ref.api_version
+      )
+    end
+
+    private def expand_env_resource_field(resource_field : String)
+      Container::Env::ValueFrom::ResourceFieldRef.new(resource_field)
+    end
+
+    private def expand_env_resource_field(field_ref : Manifest::Env::ResourceFieldRef)
+      Container::Env::ValueFrom::ResourceFieldRef.new(
+        resource: field_ref.resource,
+        container_name: field_ref.container,
+        divisor: field_ref.divisor
+      )
     end
 
     private def env_with_ports
