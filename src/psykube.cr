@@ -1,5 +1,6 @@
 require "tempfile"
 require "commander"
+require "colorize"
 require "./psykube/commands/*"
 
 ENV["KUBECTL_BIN"] ||= `which kubectl`.strip
@@ -24,4 +25,9 @@ cli = Commander::Command.new do |cmd|
   cmd.commands.add Psykube::Commands::Version
 end
 
-Commander.run(cli, ARGV[0..(ARGV.index("--") || -1)])
+begin
+  Commander.run(cli, ARGV[0..(ARGV.index("--") || -1)])
+rescue e
+  STDERR.puts "Error: #{e.message}".colorize(:red)
+  exit(2)
+end

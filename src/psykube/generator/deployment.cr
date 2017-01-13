@@ -4,6 +4,8 @@ require "./concerns/*"
 
 class Psykube::Generator
   class Deployment < Generator
+    class InvalidHealthcheck < Exception; end
+
     include Concerns::Volumes
 
     alias Volume = Kubernetes::Pod::Spec::Volume
@@ -64,8 +66,8 @@ class Psykube::Generator
 
     private def generate_container_liveness_probe(healthcheck : Manifest::Healthcheck)
       Container::Probe.new.tap do |probe|
-        probe.http_get = generate_container_readiness_probe_http_get(healthcheck.http)
-        probe.tcp_socket = generate_container_readiness_probe_tcp_socket(healthcheck.tcp)
+        raise InvalidHealthcheck.new("Cannot perform http healthcheck without specifying ports.") if !manifest.ports && healthcheck.http
+        raise InvalidHealthcheck.new("Cannot perform tcp healthcheck without specifying ports.") if !manifest.ports && healthcheck.tcp
         probe.exec = generate_container_readiness_probe_exec(healthcheck.exec)
       end
     end
@@ -186,6 +188,7 @@ class Psykube::Generator
     end
 
     private def env_with_ports
+      return manifest.env unless manifest.ports
       port_env = {"PORT" => lookup_port("default").to_s}
       manifest.port_map.each_with_object(manifest.env.dup) do |(name, port), env|
         env["#{name.underscore.upcase}_PORT"] = port.to_s

@@ -9,7 +9,7 @@ class Psykube::Manifest
     tags:          {type: Array(String), default: [] of String},
     env:           {type: Hash(String, Env | String), default: {} of String => Env | String},
     ingress:       Ingress | Nil,
-    service:       {type: Bool, default: true},
+    service:       {type: Bool, default: true, getter: false},
     config_map:    {type: Hash(String, String), nilable: true},
     secrets:       {type: Hash(String, String), nilable: true},
     ports:         {type: Hash(String, UInt16), nilable: true},
@@ -22,6 +22,10 @@ class Psykube::Manifest
 
   def port_map
     ports || {} of String => UInt16
+  end
+
+  def service
+    @ports && @service
   end
 end
 

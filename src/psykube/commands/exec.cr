@@ -20,8 +20,7 @@ module Psykube::Commands
       rest = rest_index >= 0 ? ARGV[rest_index + 1..-1] : [] of String
 
       if arguments.empty? && rest.empty?
-        puts "Error: argument <command> required".colorize(:red)
-        exit 2
+        raise ArgumentError.new "argument <command> required"
       end
 
       pod = Helpers.get_running_pod(cmd, options)

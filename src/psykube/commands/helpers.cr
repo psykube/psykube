@@ -5,15 +5,14 @@ module Psykube::Commands::Helpers
   extend self
 
   def build_gen(cmd : Commander::Command, arguments : Commander::Arguments, options : Commander::Options)
-    cluster_name = arguments[0]?
+    cluster_name = arguments[0]? || ""
     file = options.string["file"]
     image = options.string["image"]
     namespace = options.string["namespace"] || "default"
 
-    err_help(cmd, "argument: `<cluster>` required") unless cluster_name
-    Generator::List.new(
-      file, cluster_name, image, {"namespace" => namespace}
-    )
+    Generator::List.new(file, cluster_name, image, {"namespace" => namespace}).tap do |gen|
+      STDERR.puts "WARNING: No cluster specified, this may have unintented results!".colorize(:yellow) unless gen.manifest.clusters.empty?
+    end
   end
 
   def build_tag(cmd : Commander::Command, options : Commander::Options)
@@ -56,14 +55,7 @@ module Psykube::Commands::Helpers
     if pod.is_a? Kubernetes::Pod
       pod
     else
-      STDERR.puts "Error: There are no running pods, try running `psykube status`"
-      exit 2
+      raise "There are no running pods, try running `psykube status`"
     end
-  end
-
-  def err_help(cmd, msg : String)
-    STDERR.puts("  Error: #{msg}".colorize(:red))
-    STDERR.puts(cmd.help)
-    exit(1)
   end
 end

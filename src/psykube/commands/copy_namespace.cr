@@ -13,7 +13,7 @@ module Psykube::Commands
       STDERR.puts "Error: Argument <from> required!" unless from = arguments[0]?
       STDERR.puts "Error: Argument <to> required!" unless to = arguments[1]?
 
-      exit(1) unless from && to
+      raise ArgumentError.new("Missing required arguments!") unless from && to
 
       puts "Copying Namespace: `#{from}` to `#{to}` (resources: #{resources.split(",").join(", ")})...".colorize(:cyan)
       io = IO::Memory.new

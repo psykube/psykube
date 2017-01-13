@@ -18,6 +18,8 @@ module Psykube::Commands
       STDERR.puts "Error: argument <local> required".colorize(:red) unless local
       STDERR.puts "Error: argument <remote> required".colorize(:red) unless remote
 
+      raise ArgumentError.new("Missing required arguments!") unless local && remote
+
       pod = Helpers.get_running_pod(cmd, options)
       args = ["--namespace=#{namespace}", "port-forward", pod.name || ""]
       args << [local, remote].join(":") if local && remote
