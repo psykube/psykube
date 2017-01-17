@@ -14,4 +14,8 @@ dependencies:
   commander:
     github: mrrooijen/commander
 
-# license: MIT
+license: MIT
+
+targets:
+  psykube:
+    main: src/psykube.cr

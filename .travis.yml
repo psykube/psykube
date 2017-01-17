@@ -1,17 +1,17 @@
 os:
-- linux
-- osx
+  - linux
+  - osx
 sudo: required
 language: bash
 install:
   - "./bin/install-crystal"
-  - crystal deps
+  - shards build
 script:
-  - make build
+  - shards build
   - crystal spec
 before_deploy:
-  - make build
-  - tar -cz psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
+  - shards build --release
+  - tar -cz ./bin/psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
 deploy:
   skip_cleanup: true
   provider: releases
