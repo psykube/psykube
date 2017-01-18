@@ -13,6 +13,8 @@ dependencies:
     github: MakeNowJust/crustache
   commander:
     github: mrrooijen/commander
+  promise:
+    github: jwaldrip/promise.cr
 
 license: MIT
 

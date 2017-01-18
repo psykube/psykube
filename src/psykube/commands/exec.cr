@@ -23,7 +23,7 @@ module Psykube::Commands
         raise ArgumentError.new "argument <command> required"
       end
 
-      pod = Helpers.get_running_pod(cmd, options)
+      pod = Helpers.get_pods(cmd, options).first
       args = ["--namespace=#{namespace}", "exec", pod.name || ""]
       args << "-i" if stdin
       args << "-t" if tty

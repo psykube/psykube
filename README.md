@@ -30,6 +30,9 @@ Deletes all associated kubernetes manifests for the current app.
 ## `exec <command>`
 Finds a running pod belonging to this app and executes a command within it.
 
+## `logs <command>`
+Lists the logs for the current application.
+
 ## `generate <cluster>`
 Generates and outputs the kubernetes manifests for the specified cluster.
 

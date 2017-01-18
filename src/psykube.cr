@@ -24,6 +24,7 @@ cli = Commander::Command.new do |cmd|
   cmd.commands.add Psykube::Commands::Delete
   cmd.commands.add Psykube::Commands::Status
   cmd.commands.add Psykube::Commands::Version
+  cmd.commands.add Psykube::Commands::Logs
 end
 
 begin

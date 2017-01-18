@@ -1,6 +1,4 @@
 require "commander"
-
-require "commander"
 require "./flags"
 
 module Psykube::Commands

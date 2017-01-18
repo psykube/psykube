@@ -11,7 +11,9 @@ module Psykube::Commands::Helpers
     namespace = options.string["namespace"] || "default"
 
     Generator::List.new(file, cluster_name, image, {"namespace" => namespace}).tap do |gen|
-      STDERR.puts "WARNING: No cluster specified, this may have unintented results!".colorize(:yellow) unless gen.manifest.clusters.empty?
+      unless gen.manifest.clusters.empty? || !cluster_name.empty?
+        STDERR.puts "WARNING: No cluster specified, this may have unintented results!".colorize(:yellow)
+      end
     end
   end
 
@@ -36,7 +38,7 @@ module Psykube::Commands::Helpers
     args.concat build_args.map { |arg| "--build-arg=#{arg}" } unless build_args.empty?
   end
 
-  def get_running_pod(cmd : Commander::Command, options : Commander::Options)
+  def get_pods(cmd : Commander::Command, options : Commander::Options, phase : String? = "Running")
     namespace = options.string["namespace"]
     selector_labels = Helpers.build_selector_labels(cmd, options)
     io = IO::Memory.new
@@ -45,15 +47,16 @@ module Psykube::Commands::Helpers
     end
     io.rewind
     pod_list = Kubernetes::List.from_json(io)
-    pod = pod_list.find do |pod|
+    pods = pod_list.items.select do |pod|
       if pod.is_a?(Kubernetes::Pod)
-        (pod.status || Kubernetes::Pod::Status.new).phase == "Running"
+        next pod unless phase
+        (pod.status || Kubernetes::Pod::Status.new).phase == phase
       end
     end
 
     # Exec into the pod
-    if pod.is_a? Kubernetes::Pod
-      pod
+    if pods.any?(&.is_a? Kubernetes::Pod)
+      pods
     else
       raise "There are no running pods, try running `psykube status`"
     end

@@ -1,6 +1,4 @@
 require "commander"
-
-require "commander"
 require "./flags"
 
 module Psykube::Commands
@@ -12,9 +10,6 @@ module Psykube::Commands
       File.open(".psykube.yml", "w+") do |file|
         manifest = Psykube::Manifest.from_yaml({{ `cat "reference/.psykube.yml"`.stringify }})
         manifest.name = File.basename Dir.current
-        # manifest.env = {
-        #   "KEY" => "value",
-        # }
         if ingress = manifest.ingress
           ingress.annotations = nil
           ingress.hosts = nil

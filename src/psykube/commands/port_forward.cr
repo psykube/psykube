@@ -20,7 +20,7 @@ module Psykube::Commands
 
       raise ArgumentError.new("Missing required arguments!") unless local && remote
 
-      pod = Helpers.get_running_pod(cmd, options)
+      pod = Helpers.get_pods(cmd, options).first
       args = ["--namespace=#{namespace}", "port-forward", pod.name || ""]
       args << [local, remote].join(":") if local && remote
       Process.exec(ENV["KUBECTL_BIN"], args, input: false)

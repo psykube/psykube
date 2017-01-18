@@ -8,3 +8,7 @@ shards:
     github: MakeNowJust/crustache
     version: 2.3.0
 
+  promise:
+    github: jwaldrip/promise.cr
+    version: 1.0.0
+
