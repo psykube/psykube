@@ -11,7 +11,7 @@ script:
   - crystal spec
 before_deploy:
   - shards build --release
-  - tar -cz ./bin/psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
+  - tar -czC ./bin psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
 deploy:
   skip_cleanup: true
   provider: releases
