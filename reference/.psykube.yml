@@ -21,7 +21,7 @@ config_map:
 # secrets, they will be combined with the cluster secrets specified
 # below.
 secrets:
-  apiKey: "1234"
+  secret_name: "1234"
 
 # = Environment Variables ==
 # Setup the environment for the application. There are a few ways in which we
@@ -190,7 +190,7 @@ healthcheck:
 # When running the `apply` and `generate` commands, you specify a cluster that
 # will apply the following cluster specific settings. The cluster names can be
 # whatever you want them to be.
-# clusters:
+clusters:
   staging:
     # = Ingress ==
     # Ingress allows you to setup external routes to your application by utilizing the

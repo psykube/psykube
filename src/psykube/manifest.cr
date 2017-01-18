@@ -6,14 +6,13 @@ class Psykube::Manifest
     name:          String,
     registry_host: String | Nil,
     registry_user: String,
-    tags:          {type: Array(String), default: [] of String},
     env:           {type: Hash(String, Env | String), default: {} of String => Env | String},
     ingress:       Ingress | Nil,
     service:       {type: Bool, default: true, getter: false},
     config_map:    {type: Hash(String, String), nilable: true},
     secrets:       {type: Hash(String, String), nilable: true},
     ports:         {type: Hash(String, UInt16), nilable: true},
-    clusters:      {type: Hash(String, Cluster), default: {} of String => Cluster},
+    clusters:      {type: Hash(String, Cluster), nilable: true, getter: false},
     healthcheck:   {type: Bool | Healthcheck, default: true},
     volumes:       {type: VolumeMap, nilable: true},
     autoscale:     {type: Autoscale, nilable: true},
@@ -26,6 +25,26 @@ class Psykube::Manifest
 
   def service
     @ports && @service
+  end
+
+  def clusters
+    @clusters || {} of String => Cluster
+  end
+
+  def env=(hash : Hash(String, String))
+    @env = Hash(String, Env | String).new.tap do |h|
+      hash.each do |k, v|
+        h[k] = hash[k]
+      end
+    end
+  end
+
+  def env=(hash : Hash(String, Env))
+    @env = Hash(String, Env | String).new.tap do |h|
+      hash.each do |k, v|
+        h[k] = hash[k]
+      end
+    end
   end
 end
 

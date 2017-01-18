@@ -19,6 +19,7 @@ cli = Commander::Command.new do |cmd|
   cmd.commands.add Psykube::Commands::Push
   cmd.commands.add Psykube::Commands::CopyNamespace
   cmd.commands.add Psykube::Commands::Exec
+  cmd.commands.add Psykube::Commands::Init
   cmd.commands.add Psykube::Commands::PortForward
   cmd.commands.add Psykube::Commands::Delete
   cmd.commands.add Psykube::Commands::Status
