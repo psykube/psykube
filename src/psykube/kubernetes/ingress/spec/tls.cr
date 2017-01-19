@@ -10,7 +10,7 @@ class Psykube::Kubernetes::Ingress::Spec::Tls
     initialize(host, nil)
   end
 
-  def initialize(host : String, secret_name : String | Nil)
+  def initialize(host : String, secret_name : String?)
     initialize([host], secret_name || host.downcase.gsub(/\./, "-"))
   end
 

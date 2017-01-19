@@ -4,8 +4,8 @@ class Psykube::Kubernetes::Shared::Selector
   alias MatchLabels = Hash(String, String)
 
   Kubernetes.mapping({
-    match_labels:      MatchLabels | Nil,
-    match_expressions: Array(MatchExpression) | Nil,
+    match_labels:      MatchLabels?,
+    match_expressions: Array(MatchExpression)?,
   })
 
   def initialize(app_label : String)

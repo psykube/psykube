@@ -2,10 +2,10 @@ require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Service::Spec::Port
   Kubernetes.mapping(
-    name: String | Nil,
+    name: String?,
     protocol: String,
     port: UInt16,
-    target_port: UInt16 | Nil,
+    target_port: UInt16?,
     node_port: {type: UInt16, nilable: true, clean: true}
   )
 

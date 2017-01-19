@@ -5,6 +5,6 @@ class Psykube::Kubernetes::Pod::Spec::Volume::Fc
     target_wwns: {type: Array(String), key: "targetWWNs"},
     lun:         UInt16,
     fs_type:     String,
-    read_only:   Bool | Nil,
+    read_only:   Bool?,
   })
 end

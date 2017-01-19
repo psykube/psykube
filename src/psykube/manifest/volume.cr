@@ -1,10 +1,9 @@
-require "yaml"
 require "../kubernetes/deployment"
 
 class Psykube::Manifest::Volume
-  YAML.mapping({
-    claim: Claim | Nil,
-    spec:  Spec | Nil,
+  Manifest.mapping({
+    claim: Claim?,
+    spec:  Spec?,
   })
 
   def to_deployment_volume(name)

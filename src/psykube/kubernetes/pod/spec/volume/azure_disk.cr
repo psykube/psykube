@@ -6,6 +6,6 @@ class Psykube::Kubernetes::Pod::Spec::Volume::AzureDisk
     disk_uri:     {type: String, key: "diskURI"},
     caching_mode: String,
     fs_type:      String,
-    read_only:    Bool | Nil,
+    read_only:    Bool?,
   })
 end

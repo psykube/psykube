@@ -2,10 +2,10 @@ require "../../../../concerns/mapping"
 
 class Psykube::Kubernetes::Pod::Spec::Container::Env::ValueFrom
   Kubernetes.mapping({
-    field_ref:          FieldRef | Nil,
-    resource_field_ref: ResourceFieldRef | Nil,
-    config_map_key_ref: KeyRef | Nil,
-    secret_key_ref:     KeyRef | Nil,
+    field_ref:          FieldRef?,
+    resource_field_ref: ResourceFieldRef?,
+    config_map_key_ref: KeyRef?,
+    secret_key_ref:     KeyRef?,
   })
 
   def initialize

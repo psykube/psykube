@@ -1,4 +1,3 @@
-require "yaml"
 require "./shared/metadata"
 require "./concerns/resource"
 

@@ -2,9 +2,9 @@ require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec
   Kubernetes.mapping(
-    backend: Psykube::Kubernetes::Ingress::Spec::Backend | Nil,
-    tls: Array(Psykube::Kubernetes::Ingress::Spec::Tls) | Nil,
-    rules: Array(Psykube::Kubernetes::Ingress::Spec::Rule) | Nil
+    backend: Psykube::Kubernetes::Ingress::Spec::Backend?,
+    tls: Array(Psykube::Kubernetes::Ingress::Spec::Tls)?,
+    rules: Array(Psykube::Kubernetes::Ingress::Spec::Rule)?
   )
 
   def initialize

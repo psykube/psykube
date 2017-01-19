@@ -40,7 +40,8 @@ module Psykube::Kubernetes
     # Initialize all default attributes
     def initialize
       {% for key, value in obj_properties %}
-        {% unless value[:nilable] || value[:type].stringify =~ /\|/ %}
+        # {{ value[:type].stringify }}
+        {% unless value[:nilable] || value[:type].stringify =~ /\|/ || value[:type].stringify =~ /^::Union/ %}
           {% if value[:default] %}
             @{{key.id}} = {{ value[:default] }}
           {% else %}
@@ -76,6 +77,6 @@ module Psykube::Kubernetes
   end
 
   macro mapping(**properties)
-    Psykube::Kubernetes.mapping({{properties}})
+    ::Psykube::Kubernetes.mapping({{properties}})
   end
 end

@@ -1,12 +1,10 @@
-require "yaml"
-
 class Psykube::Manifest::Healthcheck
-  YAML.mapping(
+  Manifest.mapping({
     readiness: {type: Bool, default: true},
-    http: {type: Http, nilable: true},
-    tcp: {type: Tcp, nilable: true},
-    exec: {type: Exec, nilable: true}
-  )
+    http:      {type: Http, nilable: true},
+    tcp:       {type: Tcp, nilable: true},
+    exec:      {type: Exec, nilable: true},
+  })
 end
 
 def initialize

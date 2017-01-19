@@ -1,15 +1,13 @@
-require "yaml"
-
 class Psykube::Manifest::Ingress::Host
   alias PathList = Array(String)
   alias PathMap = Hash(String, Path)
 
-  YAML.mapping(
-    tls: Tls | Nil | Bool,
-    port: {type: UInt16 | String, default: "default"},
-    path: {type: String, default: "/"},
-    paths: {type: PathList | PathMap, nilable: true, getter: false}
-  )
+  Manifest.mapping({
+    tls:   Tls | Bool | Nil,
+    port:  {type: UInt16 | String, default: "default"},
+    path:  {type: String, default: "/"},
+    paths: {type: PathList | PathMap, nilable: true, getter: false},
+  })
 
   def initialize
     @path = "/"

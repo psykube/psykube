@@ -7,6 +7,6 @@ class Psykube::Kubernetes::Pod::Spec::Volume::Iscsi
     lun:             UInt16,
     iscsi_interface: String,
     fs_type:         String,
-    read_only:       Bool | Nil,
+    read_only:       Bool?,
   })
 end

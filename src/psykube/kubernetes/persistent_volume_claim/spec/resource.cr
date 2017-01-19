@@ -2,8 +2,8 @@ require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::PersistentVolumeClaim::Spec::Resource
   Kubernetes.mapping(
-    limits: Hash(String, String) | Nil,
-    requests: Hash(String, String) | Nil
+    limits: Hash(String, String)?,
+    requests: Hash(String, String)?
   )
 
   def initialize(size : String)

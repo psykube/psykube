@@ -3,7 +3,7 @@ require "../../concerns/mapping"
 class Psykube::Kubernetes::PersistentVolumeClaim::Spec
   Kubernetes.mapping(
     access_modes: Array(String),
-    selector: Shared::Selector | Nil,
+    selector: Shared::Selector?,
     resources: Resource,
     volume_name: {type: String, nilable: true, setter: false, clean: true}
   )

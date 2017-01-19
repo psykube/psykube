@@ -2,7 +2,7 @@ require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Rule
   Kubernetes.mapping(
-    host: String | Nil,
+    host: String?,
     http: Psykube::Kubernetes::Ingress::Spec::Rule::Http
   )
 

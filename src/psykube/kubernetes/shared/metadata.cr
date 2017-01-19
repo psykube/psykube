@@ -1,10 +1,9 @@
-require "yaml"
 require "../concerns/mapping"
 
 class Psykube::Kubernetes::Shared::Metadata
   Kubernetes.mapping(
-    name: String | Nil,
-    generate_name: String | Nil,
+    name: String?,
+    generate_name: String?,
     namespace: {type: String, nilable: true, clean: true},
     self_link: {type: String, nilable: true, setter: false, clean: true},
     uid: {type: String, nilable: true, setter: false, clean: true},

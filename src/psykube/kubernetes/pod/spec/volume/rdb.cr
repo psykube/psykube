@@ -10,7 +10,7 @@ class Psykube::Kubernetes::Pod::Spec::Volume
       user:       String,
       keyring:    String,
       secret_ref: SecretRef,
-      read_only:  Bool | Nil,
+      read_only:  Bool?,
     })
   end
 end

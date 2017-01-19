@@ -1,10 +1,8 @@
-require "yaml"
-
 class Psykube::Manifest::Autoscale
-  YAML.mapping({
+  Manifest.mapping({
     min: {type: UInt8},
     max: {type: UInt8},
-  }, true)
+  })
 
   def initialize
     @min = 1.to_u8

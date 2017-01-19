@@ -5,7 +5,7 @@ class Psykube::Kubernetes::Pod::Spec::Volume::DownwardAPI::Item
     path:               String,
     field_ref:          FieldRef,
     resource_field_ref: ResourceFieldRef,
-    default_mode:       UInt16 | Nil,
+    default_mode:       UInt16?,
   })
 end
 

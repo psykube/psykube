@@ -6,7 +6,7 @@ class Psykube::Kubernetes::Pod::Spec::Volume
       driver:     String,
       fs_type:    String,
       secret_ref: SecretRef,
-      read_only:  Bool | Nil,
+      read_only:  Bool?,
       options:    Hash(String, String) | Nil,
     })
   end

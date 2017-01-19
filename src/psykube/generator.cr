@@ -24,7 +24,7 @@ class Psykube::Generator
     new(generator).result
   end
 
-  def initialize(@manifest : Manifest, @cluster_name : String, image : String | Nil)
+  def initialize(@manifest : Manifest, @cluster_name : String, image : String?)
     @raw_manifest = @manifest
     @raw = false
     @image = image unless image.to_s.empty?
@@ -37,7 +37,7 @@ class Psykube::Generator
     @image = generator.image
   end
 
-  def initialize(filename : String, @cluster_name : String = "", image : String | Nil = nil, template_data : TemplateData = TemplateData.new)
+  def initialize(filename : String, @cluster_name : String = "", image : String? = nil, template_data : TemplateData = TemplateData.new)
     contents = File.read(filename)
     @raw_manifest = Manifest.from_yaml contents
     template = Crustache.parse contents.gsub(/<<(.+)>>/, "{{\\1}}")

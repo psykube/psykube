@@ -17,10 +17,10 @@ module Psykube::Kubernetes::Resource
       @metadata.name
     end
 
-    Kubernetes.mapping({{properties}})
+    ::Psykube::Kubernetes.mapping({{properties}})
   end
 
   macro definition(api_version, kind, **properties)
-    Resource.mapping(api_version, kind, {{properties}})
+    ::Psykube::Resource.mapping(api_version, kind, {{properties}})
   end
 end

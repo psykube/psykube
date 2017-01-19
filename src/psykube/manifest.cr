@@ -1,13 +1,17 @@
 require "yaml"
 
 class Psykube::Manifest
+  macro mapping(properties)
+    ::YAML.mapping({{properties}}, true)
+  end
+
   alias VolumeMap = Hash(String, Volume | String)
-  YAML.mapping({
+  mapping({
     name:          String,
-    registry_host: String | Nil,
+    registry_host: String?,
     registry_user: String,
     env:           {type: Hash(String, Env | String), default: {} of String => Env | String},
-    ingress:       Ingress | Nil,
+    ingress:       Ingress?,
     service:       {type: Bool, default: true, getter: false},
     config_map:    {type: Hash(String, String), nilable: true},
     secrets:       {type: Hash(String, String), nilable: true},
@@ -17,7 +21,7 @@ class Psykube::Manifest
     volumes:       {type: VolumeMap, nilable: true},
     autoscale:     {type: Autoscale, nilable: true},
     build_args:    {type: Hash(String, String), nilable: true},
-  }, true)
+  })
 
   def port_map
     ports || {} of String => UInt16

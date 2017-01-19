@@ -9,7 +9,7 @@ class Psykube::Kubernetes::Pod::Spec::Volume
       keyring:     String,
       secret_file: String,
       secret_ref:  SecretRef,
-      read_only:   Bool | Nil,
+      read_only:   Bool?,
     })
   end
 end

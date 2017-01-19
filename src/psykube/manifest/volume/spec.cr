@@ -1,5 +1,3 @@
-require "yaml"
-
 require "../../kubernetes/concerns/mapping"
 require "./claim"
 require "../../kubernetes/pod/spec/volume"

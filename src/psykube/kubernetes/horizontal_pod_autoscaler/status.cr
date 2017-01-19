@@ -1,4 +1,3 @@
-require "yaml"
 require "../concerns/mapping"
 
 class Psykube::Kubernetes::HorizontalPodAutoscaler::Status

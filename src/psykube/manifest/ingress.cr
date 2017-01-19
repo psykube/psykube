@@ -1,15 +1,13 @@
-require "yaml"
-
 class Psykube::Manifest::Ingress
   alias HostHash = Hash(String, Host)
   alias HostnameList = Array(String)
 
-  YAML.mapping({
+  Manifest.mapping({
     annotations: Hash(String, String) | Nil,
-    tls:         Bool | Nil,
-    host:        String | Nil,
+    tls:         Bool?,
+    host:        String?,
     hosts:       {type: HostnameList | HostHash, nilable: true, getter: false},
-  }, true)
+  })
 
   def hosts?
     !@hosts.nil?

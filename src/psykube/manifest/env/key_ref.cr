@@ -1,8 +1,6 @@
-require "yaml"
-
 class Psykube::Manifest::Env::KeyRef
-  YAML.mapping(
+  Manifest.mapping({
     name: String,
-    key: String
-  )
+    key:  String,
+  })
 end

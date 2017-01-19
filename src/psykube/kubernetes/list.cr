@@ -25,8 +25,8 @@ class Psykube::Kubernetes::List
 
   Resource.definition("v1", "List", {
     items:            {type: Array(ListableTypes), default: [] of ListableTypes},
-    resource_version: String | Nil,
-    self_link:        String | Nil,
+    resource_version: String?,
+    self_link:        String?,
   })
 
   def initialize(&block : List -> _)
@@ -34,7 +34,7 @@ class Psykube::Kubernetes::List
     yield self
   end
 
-  def initialize(items : Array(ListableTypes | Nil))
+  def initialize(items : Array(ListableTypes?))
     initialize
     concat(items)
   end
@@ -42,7 +42,7 @@ class Psykube::Kubernetes::List
   def concat(items : Nil)
   end
 
-  def concat(items : Array(ListableTypes | Nil))
+  def concat(items : Array(ListableTypes?))
     items.each { |item| self << item }
   end
 

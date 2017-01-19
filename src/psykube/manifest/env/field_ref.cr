@@ -1,8 +1,6 @@
-require "yaml"
-
 class Psykube::Manifest::Env::FieldRef
-  YAML.mapping(
+  Manifest.mapping({
     api_version: String?,
-    path: String
-  )
+    path:        String,
+  })
 end

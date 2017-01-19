@@ -4,9 +4,9 @@ class Psykube::Kubernetes::Pod::Spec::Container::Action::HttpGet
   Kubernetes.mapping({
     path:         {type: String, default: "/"},
     port:         UInt16,
-    host:         String | Nil,
-    scheme:       String | Nil,
-    http_headers: Array(HttpHeader) | Nil,
+    host:         String?,
+    scheme:       String?,
+    http_headers: Array(HttpHeader)?,
   })
 
   def initialize(@port : UInt16)

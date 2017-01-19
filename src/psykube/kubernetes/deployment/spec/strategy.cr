@@ -2,8 +2,8 @@ require "../../concerns/mapping"
 
 class Psykube::Kubernetes::Deployment::Spec::Strategy
   Kubernetes.mapping({
-    type:           String | Nil,
-    rolling_update: RollingUpdate | Nil,
+    type:           String?,
+    rolling_update: RollingUpdate?,
   })
 end
 
