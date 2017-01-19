@@ -18,24 +18,7 @@ class Psykube::Generator
       end
     end
 
-    private def generate_volumes
-      manifest_volumes.map do |mount_path, spec|
-        generate_volume(mount_path, spec)
-      end
-    end
-
-    def generate_volume(mount_path : String, size : String)
-      volume_name = name_from_mount_path(mount_path)
-      Volume.new(volume_name).tap do |volume|
-        volume.persistent_volume_claim = Volume::PersistentVolumeClaim.new(volume_name)
-      end
-    end
-
-    def generate_volume(mount_path : String, volume : Manifest::Volume)
-      volume_name = name_from_mount_path(mount_path)
-      volume.to_deployment_volume(volume_name)
-    end
-
+    # Containers
     private def generate_container
       Container.new(manifest.name, image("gitsha-#{`git rev-parse HEAD`.strip}")).tap do |container|
         container.env = generate_container_env
@@ -46,6 +29,26 @@ class Psykube::Generator
       end
     end
 
+    # Volumes
+    private def generate_volumes
+      manifest_volumes.map do |mount_path, spec|
+        generate_volume(mount_path, spec)
+      end
+    end
+
+    private def generate_volume(mount_path : String, size : String)
+      volume_name = name_from_mount_path(mount_path)
+      Volume.new(volume_name).tap do |volume|
+        volume.persistent_volume_claim = Volume::PersistentVolumeClaim.new(volume_name)
+      end
+    end
+
+    private def generate_volume(mount_path : String, volume : Manifest::Volume)
+      volume_name = name_from_mount_path(mount_path)
+      volume.to_deployment_volume(volume_name)
+    end
+
+    # Ports
     private def generate_container_ports(ports : Nil)
     end
 
@@ -55,6 +58,7 @@ class Psykube::Generator
       end
     end
 
+    # Healthchecks
     private def generate_container_liveness_probe(healthcheck : Nil)
     end
 
@@ -68,35 +72,10 @@ class Psykube::Generator
       Container::Probe.new.tap do |probe|
         raise InvalidHealthcheck.new("Cannot perform http healthcheck without specifying ports.") if !manifest.ports && healthcheck.http
         raise InvalidHealthcheck.new("Cannot perform tcp healthcheck without specifying ports.") if !manifest.ports && healthcheck.tcp
-        probe.exec = generate_container_readiness_probe_exec(healthcheck.exec)
+        probe.http_get = generate_container_probe_http_get(healthcheck.http)
+        probe.exec = generate_container_probe_exec(healthcheck.exec)
+        probe.tcp_socket = generate_container_probe_tcp_socket(healthcheck.tcp)
       end
-    end
-
-    private def generate_container_readiness_probe_http_get(http : Nil)
-    end
-
-    private def generate_container_readiness_probe_tcp_socket(tcp : Nil)
-    end
-
-    private def generate_container_readiness_probe_exec(exec : Nil)
-    end
-
-    private def generate_container_readiness_probe_http_get(http_check : Manifest::Healthcheck::Http)
-      Container::Action::HttpGet.new(lookup_port http_check.port) do |http|
-        http.path = http_check.path
-        http.host = http_check.host
-        http.scheme = http_check.scheme
-        http_headers = Container::Action::HttpGet::HttpHeader.from_hash(http_check.headers)
-        http.http_headers = http_headers unless http_headers.empty?
-      end
-    end
-
-    private def generate_container_readiness_probe_tcp_socket(tcp : Manifest::Healthcheck::Tcp)
-      Container::Action::TcpSocket.new(lookup_port tcp.port)
-    end
-
-    private def generate_container_readiness_probe_exec(exec : Manifest::Healthcheck::Exec)
-      Container::Action::Exec.new(exec.command)
     end
 
     private def generate_container_readiness_probe(healthcheck : Nil)
@@ -112,6 +91,34 @@ class Psykube::Generator
       end
     end
 
+    private def generate_container_probe_http_get(http : Nil)
+    end
+
+    private def generate_container_probe_tcp_socket(tcp : Nil)
+    end
+
+    private def generate_container_probe_exec(exec : Nil)
+    end
+
+    private def generate_container_probe_http_get(http_check : Manifest::Healthcheck::Http)
+      Container::Action::HttpGet.new(lookup_port http_check.port) do |http|
+        http.path = http_check.path
+        http.host = http_check.host
+        http.scheme = http_check.scheme
+        http_headers = Container::Action::HttpGet::HttpHeader.from_hash(http_check.headers)
+        http.http_headers = http_headers unless http_headers.empty?
+      end
+    end
+
+    private def generate_container_probe_tcp_socket(tcp : Manifest::Healthcheck::Tcp)
+      Container::Action::TcpSocket.new(lookup_port tcp.port)
+    end
+
+    private def generate_container_probe_exec(exec : Manifest::Healthcheck::Exec)
+      Container::Action::Exec.new(exec.command)
+    end
+
+    # Volume Mounts
     private def generate_container_volume_mounts(volumes : Nil)
     end
 
@@ -122,6 +129,7 @@ class Psykube::Generator
       end
     end
 
+    # Environment
     private def generate_container_env
       env_with_ports.map do |key, value|
         expand_env(key, value)
