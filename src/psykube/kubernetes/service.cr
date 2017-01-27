@@ -2,7 +2,8 @@ require "./concerns/resource"
 require "./shared/status"
 
 class Psykube::Kubernetes::Service
-  Resource.definition("v1", "Service", {
+  include Psykube::Kubernetes::Resource
+  definition("v1", "Service", {
     spec:   Spec,
     status: {type: Shared::Status, nilable: true, clean: true, setter: false},
   })

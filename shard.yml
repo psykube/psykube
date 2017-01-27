@@ -11,8 +11,9 @@ description: |
 dependencies:
   crustache:
     github: MakeNowJust/crustache
-  commander:
-    github: mrrooijen/commander
+  admiral:
+    github: jwaldrip/admiral.cr
+    # path: "../../jwaldrip/admiral.cr"
 
 license: MIT
 

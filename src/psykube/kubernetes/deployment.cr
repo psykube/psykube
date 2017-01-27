@@ -2,7 +2,8 @@ require "./shared/metadata"
 require "./concerns/resource"
 
 class Psykube::Kubernetes::Deployment
-  Resource.definition("extensions/v1beta1", "Deployment", {
+  include Psykube::Kubernetes::Resource
+  definition("extensions/v1beta1", "Deployment", {
     spec:   {type: Spec, default: Spec.new("")},
     status: {type: Status, nilable: true, clean: true, setter: false},
   })

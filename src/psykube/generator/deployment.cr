@@ -20,12 +20,14 @@ class Psykube::Generator
 
     # Containers
     private def generate_container
-      Container.new(manifest.name, image("gitsha-#{`git rev-parse HEAD`.strip}")).tap do |container|
+      Container.new(manifest.name, image).tap do |container|
         container.env = generate_container_env
         container.volume_mounts = generate_container_volume_mounts(manifest.volumes)
         container.liveness_probe = generate_container_liveness_probe(manifest.healthcheck)
         container.readiness_probe = generate_container_readiness_probe(manifest.healthcheck)
         container.ports = generate_container_ports(manifest.ports)
+        container.command = generate_container_command(manifest.command)
+        container.args = generate_container_args(manifest.args)
       end
     end
 
@@ -201,6 +203,24 @@ class Psykube::Generator
       manifest.port_map.each_with_object(manifest.env.dup) do |(name, port), env|
         env["#{name.underscore.upcase}_PORT"] = port.to_s
       end.merge(port_env)
+    end
+
+    private def generate_container_command(string : String)
+      generate_container_command [string]
+    end
+
+    private def generate_container_command(strings : Array(String))
+      strings
+    end
+
+    private def generate_container_command(strings : Nil) : Nil
+    end
+
+    private def generate_container_args(strings : Array(String))
+      strings
+    end
+
+    private def generate_container_args(strings : Nil) : Nil
     end
   end
 end

@@ -11,6 +11,7 @@ require "./concerns/resource"
 require "./concerns/resource"
 
 class Psykube::Kubernetes::List
+  include Psykube::Kubernetes::Resource
   alias ListableTypes = Namespace |
                         ConfigMap |
                         Service |
@@ -23,7 +24,7 @@ class Psykube::Kubernetes::List
 
   delegate :select, :[], :[]?, :find, :unshift, to: @items
 
-  Resource.definition("v1", "List", {
+  definition("v1", "List", {
     items:            {type: Array(ListableTypes), default: [] of ListableTypes},
     resource_version: String?,
     self_link:        String?,

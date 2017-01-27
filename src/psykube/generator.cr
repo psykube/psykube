@@ -6,11 +6,10 @@ require "./generator/*"
 class Psykube::Generator
   alias TemplateData = Hash(String, String)
 
-  @raw = false
-
   getter raw_manifest
   getter manifest
   getter cluster_name
+  getter tag : String = "gitsha-#{`git rev-parse HEAD`.strip}"
 
   def self.yaml(filename : String, cluster_name : String, image : String = "", template_data : TemplateData = TemplateData.new)
     new(filename, cluster_name, image, template_data).to_yaml
@@ -25,49 +24,48 @@ class Psykube::Generator
   end
 
   def initialize(@manifest : Manifest, @cluster_name : String, image : String?)
-    @raw_manifest = @manifest
-    @raw = false
     @image = image unless image.to_s.empty?
   end
 
   def initialize(generator : Generator)
-    @raw_manifest = generator.raw_manifest
     @manifest = generator.manifest
     @cluster_name = generator.cluster_name
     @image = generator.image
+    @tag = generator.tag
   end
 
-  def initialize(filename : String, @cluster_name : String = "", image : String? = nil, template_data : TemplateData = TemplateData.new)
+  def initialize(filename : String,
+                 @cluster_name : String = "",
+                 @image : String? = nil,
+                 tag : String? = nil,
+                 template_data : TemplateData = TemplateData.new)
+    @tag = tag if tag
     contents = File.read(filename)
-    @raw_manifest = Manifest.from_yaml contents
+    raw_manifest = Manifest.from_yaml contents
     template = Crustache.parse contents.gsub(/<<(.+)>>/, "{{\\1}}")
 
     data = {
       "metadata" => {
-        "namespace"    => @raw_manifest.name,
+        "namespace"    => raw_manifest.name,
         "cluster_name" => cluster_name,
       }.merge(template_data),
       "env" => ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] },
     }
 
     @manifest = Manifest.from_yaml Crustache.render template, data
-    @image = image unless image.to_s.empty?
-  end
-
-  def raw
-    return nil if @raw
   end
 
   def image
-    @image ||= [@manifest.registry_host, @manifest.registry_user, @manifest.name].compact.join('/')
+    if @manifest.image && (@manifest.registry_user || @manifest.registry_host)
+      raise "Cannot specify both `image` and `registry` infromation in the same manifest!"
+    end
+    (@image ||= @manifest.image || default_image).tap do |image|
+      raise "Image is not specified." unless image
+    end
   end
 
-  def image(tag : String)
-    [image, tag].join(":")
-  end
-
-  protected def result
-    {} of String => String
+  private def default_image
+    [@manifest.registry_host, @manifest.registry_user, @manifest.name].compact.join('/') + ":" + @tag
   end
 
   def to_yaml
@@ -76,6 +74,18 @@ class Psykube::Generator
 
   def to_json
     result.to_json
+  end
+
+  def context_name
+    cluster_manifest.context_name || manifest.context_name
+  end
+
+  def namespace
+    cluster_manifest.namespace || manifest.namespace
+  end
+
+  protected def result
+    {} of String => String
   end
 
   private def cluster_manifest

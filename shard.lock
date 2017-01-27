@@ -1,8 +1,8 @@
 version: 1.0
 shards:
-  commander:
-    github: mrrooijen/commander
-    version: 0.3.3
+  admiral:
+    github: jwaldrip/admiral.cr
+    commit: 7cacb7e96a122b55b8f3bb9ad350d3e2e1aefbb7
 
   crustache:
     github: MakeNowJust/crustache

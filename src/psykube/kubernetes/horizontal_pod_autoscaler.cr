@@ -2,7 +2,8 @@ require "./shared/metadata"
 require "./concerns/resource"
 
 class Psykube::Kubernetes::HorizontalPodAutoscaler
-  Resource.definition("autoscaling/v1", "HorizontalPodAutoscaler", {
+  include Psykube::Kubernetes::Resource
+  definition("autoscaling/v1", "HorizontalPodAutoscaler", {
     spec:   {type: Spec, nilable: true},
     status: {type: Status, nilable: true, clean: true, setter: false},
   })

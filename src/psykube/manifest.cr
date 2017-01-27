@@ -9,7 +9,12 @@ class Psykube::Manifest
   mapping({
     name:          String,
     registry_host: String?,
-    registry_user: String,
+    registry_user: String?,
+    context_name:  String?,
+    namespace:     String?,
+    image:         String?,
+    command:       Array(String) | String | Nil,
+    args:          Array(String)?,
     env:           {type: Hash(String, Env | String), default: {} of String => Env | String},
     ingress:       Ingress?,
     service:       {type: Bool, default: true, getter: false},

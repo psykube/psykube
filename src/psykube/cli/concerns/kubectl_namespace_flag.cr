@@ -1,0 +1,11 @@
+module Psykube::Commands::KubectlNamespaceFlag
+  private macro included
+    define_flag namespace,
+                description: "The namespace to use when invoking kubectl.",
+                short: n
+  end
+
+  private def namespace
+    flags.namespace || generator.namespace
+  end
+end
