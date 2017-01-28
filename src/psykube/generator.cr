@@ -10,6 +10,7 @@ class Psykube::Generator
   getter manifest
   getter cluster_name
   getter tag : String = "gitsha-#{`git rev-parse HEAD`.strip}"
+  getter image : String
 
   def self.yaml(filename : String, cluster_name : String, image : String = "", template_data : TemplateData = TemplateData.new)
     new(filename, cluster_name, image, template_data).to_yaml
@@ -23,9 +24,9 @@ class Psykube::Generator
     new(generator).result
   end
 
-  def initialize(@manifest : Manifest, @cluster_name : String, image : String?)
-    @image = image unless image.to_s.empty?
-  end
+  # def initialize(@manifest : Manifest, @cluster_name : String, image : String?)
+  #   @image = image if image
+  # end
 
   def initialize(generator : Generator)
     @manifest = generator.manifest
@@ -36,7 +37,7 @@ class Psykube::Generator
 
   def initialize(filename : String,
                  @cluster_name : String = "",
-                 @image : String? = nil,
+                 image : String? = nil,
                  tag : String? = nil,
                  template_data : TemplateData = TemplateData.new)
     @tag = tag if tag
@@ -53,14 +54,13 @@ class Psykube::Generator
     }
 
     @manifest = Manifest.from_yaml Crustache.render template, data
+    validate_image!
+    @image = image || @manifest.image || default_image || raise("Image is not specified.")
   end
 
-  def image
+  def validate_image! : Nil
     if @manifest.image && (@manifest.registry_user || @manifest.registry_host)
       raise "Cannot specify both `image` and `registry` infromation in the same manifest!"
-    end
-    (@image ||= @manifest.image || default_image).tap do |image|
-      raise "Image is not specified." unless image
     end
   end
 

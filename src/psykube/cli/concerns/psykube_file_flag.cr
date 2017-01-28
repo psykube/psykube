@@ -9,11 +9,21 @@ module Psykube::Commands::PsykubeFileFlag
       default: "./.psykube.yml"
   end
 
+  private def image_flag
+    flags = @flags
+    return unless flags.responds_to? :image
+    flags.image
+  end
+
+  private def cluster_name
+    arguments.cluster
+  end
+
   private def generator
-    arguments = @arguments
     Generator::List.new(
       filename: flags.file,
-      image: arguments.responds_to?(:cluster) ? arguments.cluster : nil
+      cluster_name: cluster_name,
+      image: image_flag
     )
   end
 end

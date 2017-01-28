@@ -18,7 +18,7 @@ module Psykube::Commands::Docker
       args << "--build-arg=#{arg}"
     end
     args << "--tag=#{tag}"
-    args << "."
+    args << File.dirname(flags.file)
     Process.run(BIN, args, output: @output_io, error: @error_io).tap do |process|
       raise "docker exited unexpectedly" unless process.success?
     end

@@ -19,7 +19,7 @@ class Psykube::Kubernetes::Pod::Spec::Container
     security_context:         Shared::SecurityContext?,
   })
 
-  def initialize(name, image)
+  def initialize(name, image : String)
     @name = name
     @image = image
   end
