@@ -1,3 +1,4 @@
+require "digest/sha1"
 require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Ingress::Spec::Tls
@@ -11,7 +12,8 @@ class Psykube::Kubernetes::Ingress::Spec::Tls
   end
 
   def initialize(host : String, secret_name : String?)
-    initialize([host], secret_name || host.downcase.gsub(/\./, "-"))
+    secret_name ||= "cert-" + Digest::SHA1.hexdigest(host.downcase)
+    initialize([host], secret_name)
   end
 
   def initialize(hosts : Array(String), secret_name : String)

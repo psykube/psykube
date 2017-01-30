@@ -6,6 +6,6 @@ module Psykube::Commands::KubectlContextFlag
   end
 
   private def context
-    flags.context || generator.context_name
+    flags.context || generator.context
   end
 end

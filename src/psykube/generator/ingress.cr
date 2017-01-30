@@ -8,6 +8,7 @@ class Psykube::Generator
         ingress.spec.rules = [] of Kubernetes::Ingress::Spec::Rule
         ingress.spec.tls = generate_tls
         ingress.spec.rules = generate_rules
+        ingress.metadata.namespace = namespace
       end if manifest.service && cluster_manifest.ingress
     end
 

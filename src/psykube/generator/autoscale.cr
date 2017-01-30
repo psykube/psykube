@@ -10,7 +10,9 @@ class Psykube::Generator
           manifest.name,
           cluster_autoscale.min,
           cluster_autoscale.max
-        )
+        ).tap do |autoscale|
+          autoscale.metadata.namespace = namespace
+        end
       end
     end
 

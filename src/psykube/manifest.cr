@@ -10,7 +10,7 @@ class Psykube::Manifest
     name:          String,
     registry_host: String?,
     registry_user: String?,
-    context_name:  String?,
+    context:       String?,
     namespace:     String?,
     image:         String?,
     command:       Array(String) | String | Nil,

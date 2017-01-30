@@ -4,6 +4,7 @@ class Psykube::Generator
   class List < Generator
     protected def result
       Kubernetes::List.new do |list|
+        list.metadata.namespace = namespace
         list.concat PersistentVolumeClaims.result(self)
         list << ConfigMap.result(self)
         list << Secret.result(self)

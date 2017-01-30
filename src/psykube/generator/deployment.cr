@@ -15,6 +15,7 @@ class Psykube::Generator
       Kubernetes::Deployment.new(manifest.name).tap do |deployment|
         deployment.spec.template.spec.volumes = generate_volumes
         deployment.spec.template.spec.containers << generate_container
+        deployment.metadata.namespace = namespace
       end
     end
 
