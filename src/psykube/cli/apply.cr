@@ -11,12 +11,20 @@ class Psykube::Commands::Apply < Admiral::Command
   define_flag copy_namespace, description: "Copy from the specified namespace if this one does not exist."
   define_flag push : Bool, description: "Build and push the docker image.", default: true
   define_flag image, description: "Override the docker image."
+  define_flag copy_resources : String,
+    description: "The resource types to copy for copy-namespace.",
+    short: r,
+    long: resources,
+    default: CopyNamespace::DEFAULT_RESOURCES
+  define_flag force_copy : Bool,
+    description: "Copy the namspace even the destination already exists."
 
   private def image
     generator.manifest.image || flags.image
   end
 
   def run
+    kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy) if flags.copy_namespace
     docker_build_and_push(generator.image) if !image && flags.push
     kubectl_exec("apply", manifest: generator.result)
   end

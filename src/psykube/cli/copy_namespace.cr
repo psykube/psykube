@@ -2,6 +2,8 @@ require "admiral"
 require "./concerns/*"
 
 class Psykube::Commands::CopyNamespace < Admiral::Command
+  DEFAULT_RESOURCES = "cm,secrets,deployments,services,pvc"
+
   include Kubectl
   include KubectlClusterArg
   include PsykubeFileFlag
@@ -13,7 +15,7 @@ class Psykube::Commands::CopyNamespace < Admiral::Command
     description: "The resource types to copy.",
     short: r,
     long: resources,
-    default: "cm,secrets,deployments,services,pvc"
+    default: DEFAULT_RESOURCES
   define_flag force : Bool,
     description: "Copy the namspace even the destination already exists."
 
@@ -25,23 +27,6 @@ class Psykube::Commands::CopyNamespace < Admiral::Command
   end
 
   def run
-    begin
-      raise "forced" if flags.force
-      Kubernetes::Namespace.from_json(kubectl_json(resource: "namespace", name: arguments.to))
-      puts "Namespace exists, skipping copy...".colorize(:light_yellow)
-    rescue
-      puts "Copying Namespace: `#{arguments.from}` to `#{arguments.to}` (resources: #{flags.resources.split(",").join(", ")})...".colorize(:cyan)
-      # Gather the existing resources
-      json = kubectl_json(resource: flags.resources)
-      list = Kubernetes::List.from_json json
-
-      # Get or build the new namespace
-      namespace = Kubernetes::Namespace.new(arguments.to)
-      list.unshift namespace
-
-      # Clean the list
-      list.clean!
-      kubectl_run(command: "apply", manifest: list)
-    end
+    kubectl_copy_namespace(arguments.from, arguments.to, flags.resources, flags.force)
   end
 end

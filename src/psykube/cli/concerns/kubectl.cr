@@ -5,18 +5,20 @@ module Psykube::Commands::Kubectl
   def kubectl_json(resource : String,
                    name : String? = nil,
                    flags : Flags = Flags.new,
-                   export : Bool = true)
+                   export : Bool = true,
+                   namespace : String = namespace,
+                   panic : Bool = true)
     io = IO::Memory.new
     args = [resource]
     args << name if name
     flags.merge!({"--export" => export, "--output" => "json"})
-    kubectl_run(command: "get", args: args, flags: flags, output: io, input: false)
+    kubectl_run(command: "get", args: args, flags: flags, namespace: namespace, output: io, input: false, panic: panic)
     io.rewind
     io.gets_to_end
   end
 
   {% for m in %w(run exec new) %}
-  def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest : Kubernetes::Resource? = nil, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true)
+  def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest : Kubernetes::Resource? = nil, namespace : String = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
     {% for io in %w(input output error) %}
     {{io.id}}_io = {{io.id}} == true ? @{{io.id}}_io : {{io.id}}{% end %}
 
@@ -46,7 +48,7 @@ module Psykube::Commands::Kubectl
 
     puts ([BIN] + command_args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
     Process.{{m.id}}(command: BIN, args: command_args, input: input_io, output: output_io, error: error_io){% if m == "run" %}.tap do |process|
-      panic "Process: `#{BIN} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
+      self.panic "Process: `#{BIN} #{command_args.join(" ")}` exited unexpectedly".colorize(:red) if panic && !process.success?
     end{% end %}
   end
   {% end %}
@@ -72,6 +74,27 @@ module Psykube::Commands::Kubectl
       pods
     else
       raise "There are no running pods, try running `psykube status`"
+    end
+  end
+
+  def kubectl_copy_namespace(from : String, to : String, resources : String, force : Bool = false)
+    begin
+      raise "forced" if force
+      Kubernetes::Namespace.from_json(kubectl_json(resource: "namespace", name: to, panic: false))
+      puts "Namespace exists, skipping copy...".colorize(:light_yellow)
+    rescue
+      puts "Copying Namespace: `#{from}` to `#{to}` (resources: #{resources.split(",").join(", ")})...".colorize(:cyan)
+      # Gather the existing resources
+      json = kubectl_json(resource: resources, namespace: from)
+      list = Kubernetes::List.from_json json
+
+      # Get or build the new namespace
+      namespace = Kubernetes::Namespace.new(to)
+      list.unshift namespace
+
+      # Clean the list
+      list.clean!
+      kubectl_run(command: "apply", manifest: list)
     end
   end
 end
