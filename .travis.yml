@@ -16,3 +16,4 @@ deploy:
   file: "../psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz"
   on:
     repo: CommercialTribe/psykube
+    tags: true
