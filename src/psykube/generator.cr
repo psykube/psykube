@@ -42,17 +42,26 @@ class Psykube::Generator
     @context = context || raw_cluster_manifest.context || raw_manifest.context
     @cluster_name = cluster_name if cluster_name
     namespace ||= raw_cluster_manifest.namespace || raw_manifest.namespace
-    @namespace = namespace.sub(/^[^a-z0-9]+/, "").sub(/[^a-z0-9]+$/, "").sub(/[^-a-z0-9]/, "-") if namespace
+    @namespace = namespace.sub(/^[^a-z0-9]+/, "").sub(/[^a-z0-9]+$/, "").gsub(/[^-a-z0-9]/, "-") if namespace
     validate_image!
     @image = image || manifest.image || default_image || raise("Image is not specified.")
   end
 
   def raw_manifest
-    @raw_manifest ||= Manifest.from_yaml yaml
+    @raw_manifest ||= Manifest.from_yaml(Crustache.render template_yaml, {
+      "env" => env_hash,
+    })
   end
 
   def manifest
-    @manifest ||= Manifest.from_yaml Crustache.render template_yaml, template_data
+    @manifest ||= Manifest.from_yaml(Crustache.render template_yaml, {
+      "metadata" => {"namespace" => namespace, "cluster_name" => cluster_name},
+      "env"      => env_hash,
+    })
+  end
+
+  private def env_hash
+    ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] }
   end
 
   def validate_image! : Nil
@@ -79,13 +88,6 @@ class Psykube::Generator
 
   private def template_yaml
     @template_yaml ||= Crustache.parse yaml.gsub(/<<(.+)>>/, "{{\\1}}")
-  end
-
-  private def template_data
-    {
-      "metadata" => {"namespace" => namespace, "cluster_name" => cluster_name},
-      "env"      => ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] },
-    }
   end
 
   private def cluster_manifest
