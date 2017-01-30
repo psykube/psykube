@@ -25,7 +25,7 @@ class Psykube::Manifest
     healthcheck:   {type: Bool | Healthcheck, default: true},
     volumes:       {type: VolumeMap, nilable: true},
     autoscale:     {type: Autoscale, nilable: true},
-    build_args:    {type: Hash(String, String), nilable: true},
+    build_args:    {type: Hash(String, String), default: {} of String => String},
   })
 
   def port_map
