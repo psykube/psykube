@@ -34,7 +34,7 @@ module Psykube::Commands::Docker
   def docker_run(args)
     puts ([BIN] + args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
     Process.run(BIN, args, output: @output_io, error: @error_io).tap do |process|
-      panic "docker exited unexpectedly" unless process.success?
+      panic "Process: `#{BIN} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
     end
   end
 end

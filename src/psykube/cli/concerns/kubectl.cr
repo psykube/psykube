@@ -45,7 +45,9 @@ module Psykube::Commands::Kubectl
     end
 
     puts ([BIN] + command_args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
-    Process.{{m.id}}(command: BIN, args: command_args, input: input_io, output: output_io, error: error_io)
+    Process.{{m.id}}(command: BIN, args: command_args, input: input_io, output: output_io, error: error_io){% if m == "run" %}.tap do |process|
+      panic "Process: `#{BIN} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
+    end{% end %}
   end
   {% end %}
 
