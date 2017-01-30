@@ -2,6 +2,8 @@ require "yaml"
 version = YAML.parse(File.read "shard.yml")["version"].to_s
 if !ENV["TRAVIS_TAG"]?.to_s.empty? && ENV["TRAVIS_TAG"] != "v#{version}"
   raise "TRAVIS_TAG does not match version"
+elsif ENV["TRAVIS_TAG"]?
+  version = ENV["TRAVIS_TAG"]
 else
   match_rxp = /\d+$/
   digits = version.match(match_rxp)
