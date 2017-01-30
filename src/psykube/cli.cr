@@ -2,7 +2,7 @@ require "admiral"
 require "./cli/*"
 
 class Psykube::CLI < Admiral::Command
-  VERSION = {{ env("TRAVIS_TAG") || "git-#{`git rev-parse --short HEAD`}" }}
+  {{ run "#{__DIR__}/parse_version.cr" }}
 
   define_version VERSION
   define_help
