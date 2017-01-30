@@ -27,7 +27,7 @@ class Psykube::Generator
     end
 
     private def cluster_tls
-      manifest_ingress.tls || cluster_manifest_ingress.tls
+      [cluster_manifest_ingress.tls, manifest_ingress.tls].reject(&.nil?)[0]?
     end
 
     private def cluster_hosts
