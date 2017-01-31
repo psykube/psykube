@@ -31,6 +31,7 @@ class Psykube::Generator
   def initialize(generator : Generator)
     @manifest = generator.manifest
     @cluster_name = generator.cluster_name
+    @context = generator.context
     @namespace = generator.namespace
     @image = generator.image
     @tag = generator.tag
@@ -39,8 +40,8 @@ class Psykube::Generator
   def initialize(filename : String, cluster_name : String? = nil, context : String? = nil, namespace : String? = nil, image : String? = nil, tag : String? = nil)
     @yaml = File.read(filename)
     @tag = tag if tag
-    @context = context || raw_cluster_manifest.context || raw_manifest.context
     @cluster_name = cluster_name if cluster_name
+    @context = context || raw_cluster_manifest.context || raw_manifest.context
     namespace ||= raw_cluster_manifest.namespace || raw_manifest.namespace
     @namespace = namespace.sub(/^[^a-z0-9]+/, "").sub(/[^a-z0-9]+$/, "").gsub(/[^-a-z0-9]/, "-") if namespace
     validate_image!
