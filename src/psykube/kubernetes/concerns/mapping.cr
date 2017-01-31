@@ -72,8 +72,8 @@ module Psykube::Kubernetes
 
     include Cleaner
 
-    ::YAML.mapping({{obj_properties}}, true)
-    ::JSON.mapping({{obj_properties}}, true)
+    ::YAML.mapping({{obj_properties}})
+    ::JSON.mapping({{obj_properties}})
   end
 
   macro mapping(**properties)
