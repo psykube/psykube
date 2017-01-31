@@ -22,13 +22,13 @@ module Psykube::Commands::Docker
     build_args.each do |arg|
       args << "--build-arg=#{arg}"
     end
-    args << "--tag=#{tag}"
+    args << "--tag=#{generator.image tag}"
     args << File.dirname(flags.file)
     docker_run args
   end
 
   def docker_push(tag)
-    docker_run ["push", tag]
+    docker_run ["push", generator.image tag]
   end
 
   def docker_run(args)

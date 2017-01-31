@@ -70,6 +70,10 @@ class Psykube::Generator
     end
   end
 
+  def image(tag)
+    image.sub(/:.+$/, ":" + tag)
+  end
+
   private def default_image
     [manifest.registry_host, manifest.registry_user, manifest.name].compact.join('/') + ":" + @tag
   end
