@@ -4,6 +4,6 @@ module Psykube::Commands::ImageFlag
   end
 
   def image
-    flags.image || generator.image
+    image_flag || generator.image
   end
 end

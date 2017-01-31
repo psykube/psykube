@@ -11,6 +11,7 @@ module Psykube::Commands::Kubectl
     io = IO::Memory.new
     args = [resource]
     args << name if name
+    flags = Flags.new.merge(flags)
     flags.merge!({"--export" => export, "--output" => "json"})
     kubectl_run(command: "get", args: args, flags: flags, namespace: namespace, output: io, input: false, panic: panic)
     io.rewind
@@ -19,6 +20,7 @@ module Psykube::Commands::Kubectl
 
   {% for m in %w(run exec new) %}
   def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest : Kubernetes::Resource? = nil, namespace : String = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
+    flags = Flags.new.merge(flags)
     {% for io in %w(input output error) %}
     {{io.id}}_io = {{io.id}} == true ? @{{io.id}}_io : {{io.id}}{% end %}
 
@@ -57,7 +59,7 @@ module Psykube::Commands::Kubectl
     arguments = @arguments
     generator = Generator::Deployment.new(
       filename: flags.file,
-      image: arguments.responds_to?(:cluster) ? arguments.cluster : nil
+      image: image_flag
     )
     flags = Flags.new
     flags["--selector"] = generator.result.spec.selector.match_labels.try(&.map(&.join("=")).join(",")).to_s
@@ -94,7 +96,11 @@ module Psykube::Commands::Kubectl
 
       # Clean the list
       list.clean!
-      kubectl_run(command: "apply", manifest: list)
+      list.items.each do |item|
+        puts item.class
+        puts "type: #{item.type}" if item.is_a?(Kubernetes::Secret)
+        kubectl_run(command: "apply", manifest: item, flags: {"--force" => true})
+      end
     end
   end
 end

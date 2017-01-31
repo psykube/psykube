@@ -15,10 +15,6 @@ module Psykube::Commands::PsykubeFileFlag
     flags.image
   end
 
-  private def cluster_name
-    arguments.cluster
-  end
-
   private def generator
     Generator::List.new(
       filename: flags.file,

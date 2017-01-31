@@ -4,4 +4,8 @@ module Psykube::Commands::KubectlClusterArg
                     description: "The cluster to use when invoking commands.",
                     required: true
   end
+
+  private def cluster_name
+    arguments.cluster
+  end
 end
