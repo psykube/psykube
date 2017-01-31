@@ -97,8 +97,6 @@ module Psykube::Commands::Kubectl
       # Clean the list
       list.clean!
       list.items.each do |item|
-        puts item.class
-        puts "type: #{item.type}" if item.is_a?(Kubernetes::Secret)
         kubectl_run(command: "apply", manifest: item, flags: {"--force" => true})
       end
     end
