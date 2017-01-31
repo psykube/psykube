@@ -15,11 +15,18 @@ module Psykube::Commands::PsykubeFileFlag
     flags.image
   end
 
+  private def namespace_flag
+    flags = @flags
+    return unless flags.responds_to? :namespace
+    flags.namespace
+  end
+
   private def generator
     Generator::List.new(
       filename: flags.file,
       cluster_name: cluster_name,
-      image: image_flag
+      image: image_flag,
+      namespace: namespace_flag
     )
   end
 end

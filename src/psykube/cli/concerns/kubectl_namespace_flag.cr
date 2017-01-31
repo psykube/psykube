@@ -6,6 +6,6 @@ module Psykube::Commands::KubectlNamespaceFlag
   end
 
   private def namespace
-    flags.namespace || generator.namespace
+    generator.namespace
   end
 end
