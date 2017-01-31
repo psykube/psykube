@@ -30,7 +30,7 @@ module Psykube::Commands::Kubectl
 
     # Generate manifests and assign to --filename
     if manifest
-      file = Tempfile.new("manifest")
+      file = Tempfile.new(manifest.kind)
       file.print manifest.to_json
       file.flush
       flags["--filename"] = file.path
