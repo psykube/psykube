@@ -12,7 +12,7 @@ class Psykube::Commands::Status < Admiral::Command
       case pod
       when Kubernetes::Pod
         if (status = pod.status)
-          age_span = (Time.now - Time.parse(status.start_time.to_s, "%FT%X%z"))
+          age_span = (Time.now - (status.start_time || Time.now))
           age_string = ""
           age_string += "#{age_span.total_days.to_i}d" if age_span.total_days.to_i > 0
           age_string += "#{age_span.hours.to_i}h" if age_span.hours.to_i > 0

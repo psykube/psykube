@@ -8,7 +8,7 @@ class Psykube::Kubernetes::Pod::Status
     reason:             {type: String, setter: false, nilable: true},
     host_ip:            {type: String, setter: false, nilable: true, key: "hostIP"},
     pod_ip:             {type: String, setter: false, nilable: true, key: "podIP"},
-    start_time:         {type: String, setter: false, nilable: true},
+    start_time:         {type: Time, setter: false, nilable: true},
     container_statuses: {type: Array(ContainerStatus), setter: false, nilable: true},
   })
 end
