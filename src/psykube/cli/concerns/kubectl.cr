@@ -6,7 +6,7 @@ module Psykube::Commands::Kubectl
                    name : String? = nil,
                    flags : Flags = Flags.new,
                    export : Bool = true,
-                   namespace : String = namespace,
+                   namespace : String? = namespace,
                    panic : Bool = true)
     io = IO::Memory.new
     args = [resource]
@@ -19,7 +19,7 @@ module Psykube::Commands::Kubectl
   end
 
   {% for m in %w(run exec new) %}
-  def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest : Kubernetes::Resource? = nil, namespace : String = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
+  def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest : Kubernetes::Resource? = nil, namespace : String? = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
     flags = Flags.new.merge(flags)
     {% for io in %w(input output error) %}
     {{io.id}}_io = {{io.id}} == true ? @{{io.id}}_io : {{io.id}}{% end %}

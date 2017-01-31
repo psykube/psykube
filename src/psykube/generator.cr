@@ -12,7 +12,7 @@ class Psykube::Generator
   getter yaml : String = ""
   getter cluster_name : String = "default"
   getter context : String?
-  getter namespace : String = "default"
+  getter namespace : String? = nil
   getter tag : String = "gitsha-#{`git rev-parse HEAD`.strip}"
   getter image : String
 

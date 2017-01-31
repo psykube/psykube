@@ -24,7 +24,7 @@ class Psykube::Commands::Apply < Admiral::Command
   end
 
   def run
-    kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy) if flags.copy_namespace
+    kubectl_copy_namespace(flags.copy_namespace.to_s, namespace.to_s, flags.copy_resources, flags.force_copy) if flags.copy_namespace
     docker_build_and_push(generator.image) if !image && flags.push
     generator.result.items.map do |item|
       kubectl_new("apply", manifest: item)
