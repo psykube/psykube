@@ -22,16 +22,18 @@ module Psykube::Commands::Docker
     build_args.each do |arg|
       args << "--build-arg=#{arg}"
     end
-    args << "--tag=#{generator.image tag}"
+    image = tag.includes?(":") ? tag : generator.image(tag)
+    args << "--tag=#{image}"
     args << File.dirname(flags.file)
     docker_run args
   end
 
-  def docker_push(tag)
-    docker_run ["push", generator.image tag]
+  def docker_push(tag : String)
+    image = tag.includes?(":") ? tag : generator.image(tag)
+    docker_run ["push", image]
   end
 
-  def docker_run(args)
+  def docker_run(args : Array(String))
     puts ([BIN] + args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
     Process.run(BIN, args, output: @output_io, error: @error_io).tap do |process|
       panic "Process: `#{BIN} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
