@@ -28,6 +28,6 @@ class Psykube::Commands::Apply < Admiral::Command
     docker_build_and_push(generator.image) if !image && flags.push
     generator.result.items.map do |item|
       kubectl_new("apply", manifest: item)
-    end.each(&.wait)
+    end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
   end
 end
