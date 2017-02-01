@@ -77,6 +77,8 @@ module Psykube::Commands::Kubectl
     else
       raise "There are no running pods, try running `psykube status`"
     end
+  rescue e : Generator::ValidationError
+    panic "Error: #{e.message}".colorize(:red)
   end
 
   def kubectl_copy_namespace(from : String, to : String, resources : String, force : Bool = false)

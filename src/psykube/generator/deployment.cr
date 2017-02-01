@@ -160,6 +160,7 @@ class Psykube::Generator
     end
 
     private def expand_env_config_map(key : String)
+      raise ValidationError.new "ConfigMap `#{key}` not defined in cluster: `#{cluster_name}`." unless cluster_config_map.has_key? key
       Container::Env::ValueFrom::KeyRef.new(manifest.name, key)
     end
 
@@ -168,6 +169,7 @@ class Psykube::Generator
     end
 
     private def expand_env_secret(key : String)
+      raise ValidationError.new "Secret `#{key}` not defined in cluster: `#{cluster_name}`." unless cluster_secrets.has_key? key
       Container::Env::ValueFrom::KeyRef.new(manifest.name, key)
     end
 

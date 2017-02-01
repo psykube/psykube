@@ -10,5 +10,7 @@ class Psykube::Commands::Generate < Admiral::Command
 
   def run
     puts generator.to_json
+  rescue e : Generator::ValidationError
+    panic "Error: #{e.message}".colorize(:red)
   end
 end

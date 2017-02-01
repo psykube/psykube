@@ -29,5 +29,7 @@ class Psykube::Commands::Apply < Admiral::Command
     generator.result.items.map do |item|
       kubectl_new("apply", manifest: item)
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
+  rescue e : Generator::ValidationError
+    panic "Error: #{e.message}".colorize(:red)
   end
 end

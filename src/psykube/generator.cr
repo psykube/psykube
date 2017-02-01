@@ -4,6 +4,8 @@ require "./manifest"
 require "./generator/*"
 
 class Psykube::Generator
+  class ValidationError < Exception; end
+
   alias TemplateData = Hash(String, String)
 
   @manifest : Manifest?
@@ -101,6 +103,14 @@ class Psykube::Generator
 
   private def raw_cluster_manifest
     raw_manifest.clusters[cluster_name]? || Manifest::Cluster.new
+  end
+
+  private def cluster_config_map
+    (manifest.config_map || {} of String => String).merge(cluster_manifest.config_map || {} of String => String)
+  end
+
+  private def cluster_secrets
+    (manifest.secrets || {} of String => String).merge(cluster_manifest.secrets || {} of String => String)
   end
 
   private def lookup_port(port : UInt16)
