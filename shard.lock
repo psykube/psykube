@@ -2,7 +2,7 @@ version: 1.0
 shards:
   admiral:
     github: jwaldrip/admiral.cr
-    commit: 188d3b129f5edad4cabf8c82d93eee48b88c7256
+    commit: efb3b0a727dbb60bc865e4d9789c4472470b873d
 
   crustache:
     github: MakeNowJust/crustache

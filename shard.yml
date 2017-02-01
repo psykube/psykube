@@ -1,5 +1,5 @@
 name: psykube
-version: 1.5.2-beta3
+version: 1.5.2-beta4
 
 authors:
   - Jason Waldrip <jwaldrip@commercialtribe.com>
@@ -13,7 +13,7 @@ dependencies:
     github: MakeNowJust/crustache
   admiral:
     github: jwaldrip/admiral.cr
-    tag: v1.0.0-rc5
+    tag: v1.0.0-rc6
 
 license: MIT
 
