@@ -3,7 +3,7 @@
 
 A tool for managing the Kubernetes lifecycle of a single container application.
 
-![Psykube Duck](./psykube-duck.svg | width=100)
+![Psykube Duck](https://raw.githubusercontent.com/CommercialTribe/psykube/master/psykube-duck.svg)
 
 # Installation
 
