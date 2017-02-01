@@ -62,7 +62,7 @@ class Psykube::Generator
   end
 
   private def env_hash
-    ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] }
+    ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] }.reject { |k, v| v.empty? }
   end
 
   def validate_image! : Nil
