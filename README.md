@@ -74,7 +74,7 @@ following variables are available within the template:
 
 ```yaml
 ingress:
-  host: <<metadata.namespace>>.k8s.example.com
+  host: {{metadata.namespace}}.k8s.example.com
 ```
 
 ### .psykube.yml Reference
