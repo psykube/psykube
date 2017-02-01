@@ -1,6 +1,5 @@
 # Psykube
 [![Build Status](https://travis-ci.org/CommercialTribe/psykube.svg?branch=master)](https://travis-ci.org/CommercialTribe/psykube)
-[![GitHub release](https://img.shields.io/github/release/CommericalTribe/psykube.svg)](https://github.com/CommercialTribe/psykube/releases)
 
 A tool for managing the Kubernetes lifecycle of a single container application.
 
