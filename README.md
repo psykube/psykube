@@ -4,6 +4,8 @@
 
 A tool for managing the Kubernetes lifecycle of a single container application.
 
+![Psykube Duck](./psykube-duck.svg | width=100)
+
 # Installation
 
 ## Homebrew for OSX
