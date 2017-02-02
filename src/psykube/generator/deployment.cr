@@ -211,9 +211,9 @@ class Psykube::Generator
     end
 
     private def env_with_ports
-      return manifest.env unless manifest.ports
+      return manifest_env unless manifest.ports
       port_env = {"PORT" => lookup_port("default").to_s}
-      manifest.port_map.each_with_object(manifest.env.dup) do |(name, port), env|
+      manifest.ports.each_with_object(manifest_env.dup) do |(name, port), env|
         env["#{name.underscore.upcase}_PORT"] = port.to_s
       end.merge(port_env)
     end

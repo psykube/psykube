@@ -106,11 +106,11 @@ class Psykube::Generator
   end
 
   private def cluster_config_map
-    (manifest.config_map || {} of String => String).merge(cluster_manifest.config_map || {} of String => String)
+    manifest.config_map.merge cluster_manifest.config_map
   end
 
   private def cluster_secrets
-    (manifest.secrets || {} of String => String).merge(cluster_manifest.secrets || {} of String => String)
+    manifest.secrets.merge cluster_manifest.secrets
   end
 
   private def lookup_port(port : UInt16)
@@ -120,10 +120,14 @@ class Psykube::Generator
   private def lookup_port(port_name : String)
     if port_name.to_u16?
       port_name.to_u16
-    elsif port_name == "default" && !manifest.port_map.key?("default")
-      manifest.port_map.values.first
+    elsif port_name == "default" && !manifest.ports.key?("default")
+      manifest.ports.values.first
     else
-      manifest.port_map[port_name]
+      manifest.ports[port_name]
     end
+  end
+
+  private def manifest_env
+    manifest.env || {} of String => String | Manifest::Env
   end
 end
