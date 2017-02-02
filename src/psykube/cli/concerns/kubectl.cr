@@ -2,18 +2,31 @@ module Psykube::Commands::Kubectl
   alias Flags = Hash(String, String | Bool)
   BIN = ENV["KUBECTL_BIN"]? || `which kubectl`.strip
 
-  def kubectl_json(resource : String,
+  def kubectl_json(resource : String? = nil,
                    name : String? = nil,
                    flags : Flags = Flags.new,
+                   manifest : Kubernetes::Resource? = nil,
                    export : Bool = true,
                    namespace : String? = namespace,
+                   error : Bool | IO = true,
                    panic : Bool = true)
     io = IO::Memory.new
-    args = [resource]
+    args = [] of String
+    args << resource if resource
     args << name if name
     flags = Flags.new.merge(flags)
     flags.merge!({"--export" => export, "--output" => "json"})
-    kubectl_run(command: "get", args: args, flags: flags, namespace: namespace, output: io, input: false, panic: panic)
+    kubectl_run(
+      command: "get",
+      args: args,
+      flags: flags,
+      manifest: manifest,
+      namespace: namespace,
+      output: io,
+      input: false,
+      error: error,
+      panic: panic
+    )
     io.rewind
     io.gets_to_end
   end
@@ -57,12 +70,8 @@ module Psykube::Commands::Kubectl
 
   def kubectl_get_pods(phase : String? = "Running")
     arguments = @arguments
-    generator = Generator::Deployment.new(
-      filename: flags.file,
-      image: image_flag
-    )
     flags = Flags.new
-    flags["--selector"] = generator.result.spec.selector.match_labels.try(&.map(&.join("=")).join(",")).to_s
+    flags["--selector"] = deployment_generator.result.spec.selector.match_labels.try(&.map(&.join("=")).join(",")).to_s
     json = kubectl_json(resource: "pods", flags: flags, export: false)
     pods = Kubernetes::List.from_json(json).items.select do |pod|
       if pod.is_a?(Kubernetes::Pod)

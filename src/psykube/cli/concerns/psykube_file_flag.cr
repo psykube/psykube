@@ -21,6 +21,15 @@ module Psykube::Commands::PsykubeFileFlag
     flags.namespace
   end
 
+  private def deployment_generator
+    Generator::Deployment.new(
+      filename: flags.file,
+      image: image_flag,
+      cluster_name: cluster_name,
+      namespace: namespace_flag
+    )
+  end
+
   private def generator
     Generator::List.new(
       filename: flags.file,

@@ -7,6 +7,7 @@ class Psykube::Commands::Generate < Admiral::Command
   include KubectlNamespaceFlag
 
   define_help description: "Generate the kubernetes manifests."
+  define_flag image, description: "Override the docker image."
 
   def run
     puts generator.to_json

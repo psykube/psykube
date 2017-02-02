@@ -15,8 +15,18 @@ class Psykube::Generator
       Kubernetes::Deployment.new(manifest.name).tap do |deployment|
         deployment.spec.template.spec.volumes = generate_volumes
         deployment.spec.template.spec.containers << generate_container
+        deployment.spec.strategy = generate_strategy
+        deployment.spec.progress_deadline_seconds = manifest.deploy_timeout
         deployment.metadata.namespace = namespace
       end
+    end
+
+    # Strategy
+    private def generate_strategy
+      Kubernetes::Deployment::Spec::Strategy.new(
+        max_unavailable: manifest.max_unavailable,
+        max_surge: manifest.max_surge
+      )
     end
 
     # Containers
