@@ -1,14 +1,15 @@
 sudo: required
 language: bash
 install:
-- "./bin/install-crystal"
-- shards build
+  - "./bin/install-crystal"
+  - shards build
 script:
-- shards build
-- crystal spec
+  - shards build
+  - crystal spec
+  # - make test
 before_deploy:
-- shards build --release
-- tar -czC ./bin psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
+  - shards build --release
+  - tar -czC ./bin psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
 deploy:
   provider: releases
   api_key:
