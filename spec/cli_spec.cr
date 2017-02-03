@@ -38,9 +38,9 @@ describe "cli" do
   psykube "push"
 
   it "should run exec" do
-    Process.fork do
-      Psykube::CLI.run "exec default -- echo 'hello world'"
-    end.wait
+    Dir.cd("spec") do
+      Process.fork { Psykube::CLI.run "exec default -- echo 'hello world'" }.wait
+    end
   end
 
   it "should port forward" do
