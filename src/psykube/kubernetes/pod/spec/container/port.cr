@@ -2,7 +2,7 @@ require "../../../concerns/mapping"
 
 class Psykube::Kubernetes::Pod::Spec::Container::Port
   Kubernetes.mapping({
-    name:           String,
+    name:           String?,
     container_port: UInt16,
     host_port:      UInt16?,
     protocol:       String?,
