@@ -5,4 +5,4 @@ ENV TEXT "hello psykube"
 
 RUN gem install rack
 
-CMD rackup -b "run ->(env){ [200, {}, [ENV['TEXT']]] }" -p $PORT
+CMD rackup -b "run ->(env){ [200, {}, [ENV['TEXT']]] }" -p $PORT -b 0.0.0.0
