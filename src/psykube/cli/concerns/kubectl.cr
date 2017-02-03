@@ -40,7 +40,7 @@ module Psykube::Commands::Kubectl
     # Add context and namespace
     command_args = [command]
     command_args << "--context=#{context}" if context
-    command_args << "--namespace=#{namespace}" if namespace
+    command_args << "--namespace=#{NamespaceCleaner.clean(namespace)}" if namespace
     command_args.concat args
 
     # Generate manifests and assign to --filename
@@ -91,6 +91,8 @@ module Psykube::Commands::Kubectl
   end
 
   def kubectl_copy_namespace(from : String, to : String, resources : String, force : Bool = false)
+    from = NamespaceCleaner.clean(from)
+    to = NamespaceCleaner.clean(to)
     begin
       raise "forced" if force
       Kubernetes::Namespace.from_json(kubectl_json(resource: "namespace", name: to, panic: false))
