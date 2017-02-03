@@ -1,3 +1,5 @@
+require "tempfile"
+
 module Psykube::Commands::Kubectl
   alias Flags = Hash(String, String | Bool)
   BIN = ENV["KUBECTL_BIN"]? || `which kubectl`.strip

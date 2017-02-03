@@ -2,6 +2,7 @@ require "file_utils"
 require "crustache"
 require "./manifest"
 require "./generator/*"
+require "./namespace_cleaner"
 
 class Psykube::Generator
   class ValidationError < Exception; end

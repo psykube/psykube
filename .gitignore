@@ -5,4 +5,4 @@
 .idea/
 /bin/psykube
 /.psykube.yml
-/test/.psykube.yml
+/spec/.psykube.yml
