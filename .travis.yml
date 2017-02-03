@@ -4,6 +4,7 @@ services:
   - docker
 env:
   global:
+    - PSYKUBE_DEBUG=true
     - KUBECTL_BIN=/usr/lib/google-cloud-sdk/bin/kubectl
     - CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
 before_script:
