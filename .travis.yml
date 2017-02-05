@@ -18,6 +18,7 @@ before_script:
   - gcloud docker --authorize-only
 install:
   - "./bin/install-crystal"
+  - shards install
 script:
   - crystal spec --verbose
 before_deploy:
