@@ -1,6 +1,10 @@
 require "admiral"
 require "./concerns/*"
 
+def current_docker_user
+  `#{Psykube::Commands::Docker::BIN} info`.lines.find(&.=~ /^Username/).try(&.split(":")[1]?).to_s.strip
+end
+
 class Psykube::Commands::Init < Admiral::Command
   include PsykubeFileFlag
 
@@ -8,6 +12,9 @@ class Psykube::Commands::Init < Admiral::Command
 
   define_flag overwrite : Bool, "Overwrite the file if it exists", short: o
   define_flag name, default: File.basename(Dir.current)
+  define_flag registry_host
+  define_flag registry_user : String, default: current_docker_user
+  define_flag image
 
   def overwrite?
     return true if flags.overwrite
@@ -25,8 +32,9 @@ class Psykube::Commands::Init < Admiral::Command
           ingress.annotations = nil
           ingress.hosts = nil
         end
-        manifest.registry_host = nil
-        manifest.registry_user = `docker info`.lines.find(&.=~ /^Username/).try(&.split(":")[1]?.to_s.strip)
+        manifest.image = flags.image
+        manifest.registry_host = flags.registry_host
+        manifest.registry_user = flags.registry_user
         manifest.healthcheck = true
         manifest.volumes = nil
         manifest.clusters = nil
