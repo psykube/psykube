@@ -1,5 +1,6 @@
 require "admiral"
 require "./cli/*"
+require "./namespace_cleaner"
 
 class Psykube::CLI < Admiral::Command
   {{ run "#{__DIR__}/parse_version.cr" }}

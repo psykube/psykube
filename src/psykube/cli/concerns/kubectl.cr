@@ -1,3 +1,5 @@
+require "tempfile"
+
 module Psykube::Commands::Kubectl
   alias Flags = Hash(String, String | Bool)
   BIN = ENV["KUBECTL_BIN"]? || `which kubectl`.strip
@@ -33,6 +35,7 @@ module Psykube::Commands::Kubectl
 
   {% for m in %w(run exec new) %}
   def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest : Kubernetes::Resource? = nil, namespace : String? = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
+    File.exists?(BIN) || self.panic("kubectl not found")
     flags = Flags.new.merge(flags)
     {% for io in %w(input output error) %}
     {{io.id}}_io = {{io.id}} == true ? @{{io.id}}_io : {{io.id}}{% end %}
@@ -40,7 +43,7 @@ module Psykube::Commands::Kubectl
     # Add context and namespace
     command_args = [command]
     command_args << "--context=#{context}" if context
-    command_args << "--namespace=#{namespace}" if namespace
+    command_args << "--namespace=#{NamespaceCleaner.clean(namespace)}" if namespace
     command_args.concat args
 
     # Generate manifests and assign to --filename
@@ -91,6 +94,8 @@ module Psykube::Commands::Kubectl
   end
 
   def kubectl_copy_namespace(from : String, to : String, resources : String, force : Bool = false)
+    from = NamespaceCleaner.clean(from)
+    to = NamespaceCleaner.clean(to)
     begin
       raise "forced" if force
       Kubernetes::Namespace.from_json(kubectl_json(resource: "namespace", name: to, panic: false))

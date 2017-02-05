@@ -34,6 +34,7 @@ module Psykube::Commands::Docker
   end
 
   def docker_run(args : Array(String))
+    File.exists?(BIN) || panic("docker not found")
     puts ([BIN] + args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
     Process.run(BIN, args, output: @output_io, error: @error_io).tap do |process|
       panic "Process: `#{BIN} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
