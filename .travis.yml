@@ -18,10 +18,8 @@ before_script:
   - gcloud docker --authorize-only
 install:
   - "./bin/install-crystal"
-  - shards build
 script:
-  - shards build
-  - crystal spec
+  - crystal spec --verbose
 before_deploy:
   - shards build --release
   - tar -czC ./bin psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
