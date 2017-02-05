@@ -35,7 +35,7 @@ class Psykube::Commands::Init < Admiral::Command
         manifest.config_map = nil
         manifest.ingress = nil
         manifest.clusters = {
-          "default" => Manifest::Cluster.new(context: `kubectl config current-context`.strip),
+          "default" => Manifest::Cluster.new(context: `#{Kubectl::BIN} config current-context`.strip),
         }
         manifest.to_yaml(file)
       end

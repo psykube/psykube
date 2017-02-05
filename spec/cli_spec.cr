@@ -2,8 +2,6 @@ require "spec"
 require "../src/psykube/cli"
 require "http/client"
 
-Dir.cd("spec")
-
 class Exited < Exception; end
 
 class Admiral::Command
@@ -25,44 +23,46 @@ macro psykube(command, timeout = 30)
   end
 end
 
-describe String do
-  psykube "init --overwrite --name=psykube-test"
-  psykube "generate default"
-  psykube "apply default"
-  psykube "status default"
-  psykube "push"
+Dir.cd("spec") do
+  describe String do
+    psykube "init --overwrite --name=psykube-test"
+    psykube "generate default"
+    psykube "apply default"
+    psykube "status default"
+    psykube "push"
 
-  it "should set up the environment" do
-    kubectl "delete namespace"
-    kubectl "create namespace psykube-test"
-    kubectl "--namespace=psykube-test run hello-world --image=tutumcloud/hello-world --port=80 --expose"
-  end
+    it "should set up the environment" do
+      kubectl "delete namespace"
+      kubectl "create namespace psykube-test"
+      kubectl "--namespace=psykube-test run hello-world --image=tutumcloud/hello-world --port=80 --expose"
+    end
 
-  it "should run exec" do
-    Process.fork { Psykube::CLI.run "exec default -- echo 'hello world'" }.wait
-  end
+    it "should run exec" do
+      Process.fork { Psykube::CLI.run "exec default -- echo 'hello world'" }.wait
+    end
 
-  it "should port forward" do
-    process = Process.fork { Psykube::CLI.run "port-forward default 9292:80" }
-    sleep 5
-    HTTP::Client.get("http://localhost:9292").body.lines.first.strip.should eq "hello psykube"
-    process.kill
-    process.wait
-  end
+    it "should port forward" do
+      process = Process.fork { Psykube::CLI.run "port-forward default 9292:80" }
+      sleep 5
+      HTTP::Client.get("http://localhost:9292").body.lines.first.strip.should eq "hello psykube"
+      process.kill
+      process.wait
+    end
 
-  it "should show logs" do
-    process = Process.fork { Psykube::CLI.run "logs default" }
-    sleep 5
-    process.kill
-    process.wait
-  end
+    it "should show logs" do
+      process = Process.fork { Psykube::CLI.run "logs default" }
+      sleep 5
+      process.kill
+      process.wait
+    end
 
-  psykube "copy-namespace psykube-test psykube-test-copy --force"
+    psykube "copy-namespace psykube-test psykube-test-copy --force"
 
-  # Cleanup
-  psykube "delete default -y"
+    # Cleanup
+    psykube "delete default -y"
 
-  it "deletes the namespace" do
-    kubectl "delete namespace psykube-test-copy"
+    it "deletes the namespace" do
+      kubectl "delete namespace psykube-test-copy"
+    end
   end
 end
