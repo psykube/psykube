@@ -2,7 +2,8 @@ require "admiral"
 require "./concerns/*"
 
 class Psykube::Commands::CopyNamespace < Admiral::Command
-  DEFAULT_RESOURCES = "cm,ds,secrets,deploy,jobs,pvc,limits,rc,svc,statefulsets"
+  DEFAULT_RESOURCES = "cm,secrets,deploy,pvc,svc"
+  # DEFAULT_RESOURCES = "cm,ds,secrets,deploy,jobs,pvc,limits,rc,svc,statefulsets"
 
   include Kubectl
   include PsykubeFileFlag
