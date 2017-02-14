@@ -6,15 +6,17 @@ class Psykube::Generator
     include Concerns::Volumes
 
     protected def result
-      manifest_claims.map do |mount_path, volume|
-        generate_persistent_volume_claim(mount_path, volume).as(Kubernetes::PersistentVolumeClaim).tap do |claim|
+      result = manifest_claims.map do |mount_path, volume|
+        if claim = generate_persistent_volume_claim(mount_path, volume)
           claim.metadata.namespace = namespace
         end
-      end unless manifest_claims.empty?
+        claim
+      end.compact
+      result unless result.empty?
     end
 
     private def manifest_claims
-      manifest_volumes.select { |k, v| volume_is_claim? v }
+      manifest_volumes.select { |k, v| volume_is_claim? v }.compact
     end
 
     private def volume_is_claim?(volume : Manifest::Volume)

@@ -14,7 +14,7 @@ class Psykube::Generator
     protected def result
       Kubernetes::Deployment.new(manifest.name).tap do |deployment|
         deployment.metadata.namespace = namespace
-        deployment.spec = Kubernetes::Deployment::Spec.new.tap do |spec|
+        if spec = deployment.spec
           spec.template.spec.volumes = generate_volumes
           spec.template.spec.containers << generate_container
           spec.strategy = generate_strategy
