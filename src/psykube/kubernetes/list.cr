@@ -14,11 +14,13 @@ require "./limit_range"
 require "./namespace"
 require "./network_policy"
 require "./node"
-require "./persistent_volume"
 require "./persistent_volume_claim"
-require "./pod"
+require "./persistent_volume"
 require "./pod_security_policy"
 require "./pod_template"
+require "./pod"
+require "./replica_set"
+require "./replication_controller"
 require "./secret"
 require "./service"
 
@@ -38,11 +40,13 @@ class Psykube::Kubernetes::List
                         Namespace |
                         NetworkPolicy |
                         Node |
-                        PersistentVolume |
                         PersistentVolumeClaim |
-                        Pod |
+                        PersistentVolume |
                         PodSecurityPolicy |
                         PodTemplate |
+                        Pod |
+                        ReplicaSet |
+                        ReplicationController |
                         Secret |
                         Service
 
