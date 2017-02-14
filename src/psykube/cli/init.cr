@@ -2,7 +2,7 @@ require "admiral"
 require "./concerns/*"
 
 def current_docker_user
-  `#{Psykube::Commands::Docker::BIN} info`.lines.find(&.=~ /^Username/).try(&.split(":")[1]?).to_s.strip
+  `#{Psykube::Commands::Docker.bin} info`.lines.find(&.=~ /^Username/).try(&.split(":")[1]?).to_s.strip
 end
 
 class Psykube::Commands::Init < Admiral::Command
@@ -43,7 +43,7 @@ class Psykube::Commands::Init < Admiral::Command
         manifest.config_map = nil
         manifest.ingress = nil
         manifest.clusters = {
-          "default" => Manifest::Cluster.new(context: `#{Kubectl::BIN} config current-context`.strip),
+          "default" => Manifest::Cluster.new(context: `#{Kubectl.bin} config current-context`.strip),
         }
         manifest.to_yaml(file)
       end

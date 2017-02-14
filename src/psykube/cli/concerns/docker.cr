@@ -1,11 +1,13 @@
 module Psykube::Commands::Docker
+  def self.bin
+    @@bin ||= ENV["DOCKER_BIN"]? || `which docker`.strip
+  end
+
   private macro included
     define_flag build_args : Set(String),
       description: "The build args to add to docker build",
       default: Set(String).new
   end
-
-  BIN = ENV["DOCKER_BIN"]? || `which docker`.strip
 
   def build_args
     flags.build_args.to_a +
@@ -34,10 +36,10 @@ module Psykube::Commands::Docker
   end
 
   def docker_run(args : Array(String))
-    File.exists?(BIN) || panic("docker not found")
-    puts ([BIN] + args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
-    Process.run(BIN, args, output: @output_io, error: @error_io).tap do |process|
-      panic "Process: `#{BIN} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
+    File.exists?(Docker.bin) || panic("docker not found")
+    puts ([Docker.bin] + args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
+    Process.run(Docker.bin, args, output: @output_io, error: @error_io).tap do |process|
+      panic "Process: `#{Docker.bin} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
     end
   end
 end

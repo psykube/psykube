@@ -11,7 +11,7 @@ class Admiral::Command
 end
 
 def kubectl(args : String)
-  bin = Psykube::Commands::Kubectl::BIN
+  bin = Psykube::Commands::Kubectl.bin
   File.exists?(bin) || raise("kubectl not found")
   Process.run(bin, args.split(" "))
 end

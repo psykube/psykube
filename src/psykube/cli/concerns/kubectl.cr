@@ -2,7 +2,10 @@ require "tempfile"
 
 module Psykube::Commands::Kubectl
   alias Flags = Hash(String, String | Bool)
-  BIN = ENV["KUBECTL_BIN"]? || `which kubectl`.strip
+
+  def self.bin
+    @@bin ||= ENV["KUBECTL_BIN"]? || `which kubectl`.strip
+  end
 
   def kubectl_json(resource : String? = nil,
                    name : String? = nil,
@@ -35,7 +38,7 @@ module Psykube::Commands::Kubectl
 
   {% for m in %w(run exec new) %}
   def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest : Kubernetes::Resource? = nil, namespace : String? = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
-    File.exists?(BIN) || self.panic("kubectl not found")
+    File.exists?(Kubectl.bin) || self.panic("kubectl not found")
     flags = Flags.new.merge(flags)
     {% for io in %w(input output error) %}
     {{io.id}}_io = {{io.id}} == true ? @{{io.id}}_io : {{io.id}}{% end %}
@@ -64,9 +67,9 @@ module Psykube::Commands::Kubectl
       end
     end
 
-    puts ([BIN] + command_args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
-    Process.{{m.id}}(command: BIN, args: command_args, input: input_io, output: output_io, error: error_io){% if m == "run" %}.tap do |process|
-      self.panic "Process: `#{BIN} #{command_args.join(" ")}` exited unexpectedly".colorize(:red) if panic && !process.success?
+    puts ([Kubectl.bin] + command_args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
+    Process.{{m.id}}(command: Kubectl.bin, args: command_args, input: input_io, output: output_io, error: error_io){% if m == "run" %}.tap do |process|
+      self.panic "Process: `#{Kubectl.bin} #{command_args.join(" ")}` exited unexpectedly".colorize(:red) if panic && !process.success?
     end{% end %}
   end
   {% end %}
