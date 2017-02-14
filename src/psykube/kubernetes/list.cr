@@ -27,6 +27,7 @@ require "./service_account"
 require "./service"
 require "./stateful_set"
 require "./storage_class"
+require "./third_party_resource"
 
 class Psykube::Kubernetes::List
   include Resource
@@ -56,7 +57,8 @@ class Psykube::Kubernetes::List
                         ServiceAccount |
                         Service |
                         StatefulSet |
-                        StorageClass
+                        StorageClass |
+                        ThirdPartyResource
 
   delegate :select, :[], :[]?, :find, :unshift, to: @items
 
