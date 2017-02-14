@@ -18,7 +18,7 @@ class Psykube::Commands::CopyNamespace < Admiral::Command
     long: resources,
     default: DEFAULT_RESOURCES
   define_flag force : Bool,
-    description: "Copy the namspace even the destination already exists."
+    description: "Copy the namespace even the destination already exists."
 
   define_argument from, description: "The namespace to copy resources from", required: true
   define_argument to, description: "The namespace to copy resources to", required: true
