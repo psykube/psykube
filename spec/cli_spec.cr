@@ -63,6 +63,7 @@ Dir.cd("spec") do
 
     it "deletes the namespace" do
       kubectl "delete namespace psykube-test-copy"
+      kubectl "delete namespace psykube-test"
     end
   end
 end
