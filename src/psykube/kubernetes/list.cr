@@ -26,6 +26,7 @@ require "./secret"
 require "./service_account"
 require "./service"
 require "./stateful_set"
+require "./storage_class"
 
 class Psykube::Kubernetes::List
   include Resource
@@ -54,7 +55,8 @@ class Psykube::Kubernetes::List
                         Secret |
                         ServiceAccount |
                         Service |
-                        StatefulSet
+                        StatefulSet |
+                        StorageClass
 
   delegate :select, :[], :[]?, :find, :unshift, to: @items
 
