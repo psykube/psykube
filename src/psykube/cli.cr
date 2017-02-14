@@ -10,6 +10,7 @@ class Psykube::CLI < Admiral::Command
 
   register_sub_command apply, Commands::Apply, description: "Apply the kubernetes manifests."
   register_sub_command "copy-namespace", Commands::CopyNamespace, description: "Copy one namespace to another."
+  register_sub_command "copy-resource", Commands::CopyResource, description: "Copy a resource."
   register_sub_command generate, Commands::Generate, description: "Generate the kubernetes manifests."
   register_sub_command delete, Commands::Delete, description: "Delete the kubernetes manifests."
   register_sub_command exec, Commands::Exec, description: "Exec a command in a running container."

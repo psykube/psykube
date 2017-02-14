@@ -17,6 +17,10 @@ module Psykube::Kubernetes::Resource
       @metadata.name
     end
 
+    def name=(name : String)
+      @metadata.name = name
+    end
+
     ::Psykube::Kubernetes.mapping({{properties}})
   end
 

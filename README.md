@@ -28,6 +28,9 @@ Applies the generated kubernetes manifests for the specified cluster.
 ## `copy-namespace <from> <to>`
 Copies a kubernetes namespace and (most) of its resources to a new namespace.
 
+## `copy-resource <resource_type> <resource_name> <new_resource_name>`
+Copies a resource.
+
 ## `delete <cluster>`
 Deletes all associated kubernetes manifests for the current app.
 
