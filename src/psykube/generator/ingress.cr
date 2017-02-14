@@ -4,11 +4,13 @@ class Psykube::Generator
   class Ingress < Generator
     protected def result
       Kubernetes::Ingress.new(manifest.name).tap do |ingress|
-        ingress.metadata.annotations = cluster_ingress_annotations unless cluster_ingress_annotations.empty?
-        ingress.spec.rules = [] of Kubernetes::Ingress::Spec::Rule
-        ingress.spec.tls = generate_tls
-        ingress.spec.rules = generate_rules
         ingress.metadata.namespace = namespace
+        ingress.metadata.annotations = cluster_ingress_annotations unless cluster_ingress_annotations.empty?
+        ingress.spec = Kubernetes::Ingress::Spec.new.tap do |spec|
+          spec.rules = [] of Kubernetes::Ingress::Spec::Rule
+          spec.tls = generate_tls
+          spec.rules = generate_rules
+        end
       end if manifest.service && cluster_manifest.ingress
     end
 

@@ -1,4 +1,6 @@
 require "../../concerns/mapping"
+require "../../../shared/security_context"
+require "../../../shared/resource_requirements"
 
 class Psykube::Kubernetes::Pod::Spec::Container
   Kubernetes.mapping({
@@ -9,7 +11,7 @@ class Psykube::Kubernetes::Pod::Spec::Container
     working_dir:              String?,
     ports:                    Array(Port)?,
     env:                      Array(Env)?,
-    resources:                Resources?,
+    resources:                Shared::ResourceRequirements?,
     volume_mounts:            Array(VolumeMount)?,
     liveness_probe:           Probe?,
     readiness_probe:          Probe?,
@@ -26,4 +28,3 @@ class Psykube::Kubernetes::Pod::Spec::Container
 end
 
 require "./container/*"
-require "../../../shared/security_context"

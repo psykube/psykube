@@ -13,11 +13,13 @@ class Psykube::Generator
 
     protected def result
       Kubernetes::Deployment.new(manifest.name).tap do |deployment|
-        deployment.spec.template.spec.volumes = generate_volumes
-        deployment.spec.template.spec.containers << generate_container
-        deployment.spec.strategy = generate_strategy
-        deployment.spec.progress_deadline_seconds = manifest.deploy_timeout
         deployment.metadata.namespace = namespace
+        deployment.spec = Kubernetes::Deployment::Spec.new.tap do |spec|
+          spec.template.spec.volumes = generate_volumes
+          spec.template.spec.containers << generate_container
+          spec.strategy = generate_strategy
+          spec.progress_deadline_seconds = manifest.deploy_timeout
+        end
       end
     end
 
@@ -52,7 +54,7 @@ class Psykube::Generator
     private def generate_volume(mount_path : String, size : String)
       volume_name = name_from_mount_path(mount_path)
       Volume.new(volume_name).tap do |volume|
-        volume.persistent_volume_claim = Volume::PersistentVolumeClaim.new(volume_name)
+        volume.persistent_volume_claim = Volume::Source::PersistentVolumeClaim.new(volume_name)
       end
     end
 

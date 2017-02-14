@@ -2,10 +2,10 @@ require "./shared/metadata"
 require "./concerns/resource"
 
 class Psykube::Kubernetes::HorizontalPodAutoscaler
-  include Psykube::Kubernetes::Resource
+  include Resource
   definition("autoscaling/v1", "HorizontalPodAutoscaler", {
-    spec:   {type: Spec, nilable: true},
-    status: {type: Status, nilable: true, clean: true, setter: false},
+    spec:   Spec?,
+    status: {type: Status, nilable: true, clean: true},
   })
 
   def initialize(api_version : String, kind : String, name : String, min : UInt8, max : UInt8)

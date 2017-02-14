@@ -1,11 +1,10 @@
 require "./concerns/resource"
-require "./shared/metadata"
 
 class Psykube::Kubernetes::PersistentVolumeClaim
-  include Psykube::Kubernetes::Resource
+  include Resource
   definition("v1", "PersistentVolumeClaim", {
-    spec:   {type: Spec, default: Spec.new("10Gi")},
-    status: {type: Status, nilable: true, clean: true, setter: false},
+    spec:   Spec?,
+    status: {type: Status, nilable: true, clean: true},
   })
 
   def initialize(name : String, size : String, access_modes : Array(String) = ["ReadWriteOnce"])

@@ -1,11 +1,10 @@
 require "./concerns/resource"
-require "./shared/metadata"
 
 class Psykube::Kubernetes::Namespace
-  include Psykube::Kubernetes::Resource
+  include Resource
   definition("v1", "Namespace", {
     spec:   Spec?,
-    status: {type: Status, nilable: true, clean: true, setter: false},
+    status: {type: Status, nilable: true, clean: true},
   })
 end
 

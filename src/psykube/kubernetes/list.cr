@@ -1,26 +1,50 @@
-require "./namespace"
-require "./service"
-require "./config_map"
-require "./ingress"
-require "./deployment"
-require "./secret"
-require "./pod"
-require "./persistent_volume_claim"
-require "./horizontal_pod_autoscaler"
-require "./concerns/resource"
 require "./concerns/resource"
 
+require "./cluster"
+require "./component_status"
+require "./config_map"
+require "./daemon_set"
+require "./deployment"
+require "./endpoint"
+require "./event"
+require "./horizontal_pod_autoscaler"
+require "./ingress"
+require "./job"
+require "./limit_range"
+require "./namespace"
+require "./network_policy"
+require "./node"
+require "./persistent_volume"
+require "./persistent_volume_claim"
+require "./pod"
+require "./pod_security_policy"
+require "./pod_template"
+require "./secret"
+require "./service"
+
 class Psykube::Kubernetes::List
-  include Psykube::Kubernetes::Resource
-  alias ListableTypes = Namespace |
+  include Resource
+  alias ListableTypes = Cluster |
+                        ComponentStatus |
                         ConfigMap |
-                        Service |
-                        Ingress |
+                        DaemonSet |
                         Deployment |
-                        Secret |
+                        Endpoint |
+                        Event |
+                        HorizontalPodAutoscaler |
+                        Ingress |
+                        Job |
+                        LimitRange |
+                        Namespace |
+                        NetworkPolicy |
+                        Node |
+                        PersistentVolume |
                         PersistentVolumeClaim |
                         Pod |
-                        HorizontalPodAutoscaler
+                        PodSecurityPolicy |
+                        PodTemplate |
+                        Secret |
+                        Service
 
   delegate :select, :[], :[]?, :find, :unshift, to: @items
 

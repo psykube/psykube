@@ -1,10 +1,11 @@
 require "../../concerns/mapping"
+require "../../pod_template/template"
 
 class Psykube::Kubernetes::Deployment::Spec
   Kubernetes.mapping(
     replicas: Int32?,
     selector: Shared::Selector,
-    template: Template,
+    template: PodTemplate::Template,
     strategy: Strategy?,
     min_ready_seconds: UInt32?,
     progress_deadline_seconds: UInt32?,
@@ -15,7 +16,7 @@ class Psykube::Kubernetes::Deployment::Spec
 
   def initialize(name : String)
     @selector = Shared::Selector.new(name)
-    @template = Template.new(name)
+    @template = PodTemplate::Template.new(name)
   end
 end
 

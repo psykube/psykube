@@ -74,7 +74,7 @@ module Psykube::Commands::Kubectl
   def kubectl_get_pods(phase : String? = "Running")
     arguments = @arguments
     flags = Flags.new
-    flags["--selector"] = deployment_generator.result.spec.selector.match_labels.try(&.map(&.join("=")).join(",")).to_s
+    flags["--selector"] = deployment_generator.result.spec.try(&.selector.match_labels.try(&.map(&.join("=")).join(","))).to_s
     json = kubectl_json(resource: "pods", flags: flags, export: false)
     pods = Kubernetes::List.from_json(json).items.select do |pod|
       if pod.is_a?(Kubernetes::Pod)

@@ -5,35 +5,35 @@ require "../../kubernetes/pod/spec/volume"
 class Psykube::Manifest::Volume::Spec
   alias KubeVolume = Kubernetes::Pod::Spec::Volume
   Kubernetes.mapping({
-    host_path:               {type: KubeVolume::HostPath, nilable: true, key: "hostPath"},
-    empty_dir:               {type: KubeVolume::EmptyDir, nilable: true, key: "emptyDir"},
-    gce_persistent_disk:     {type: KubeVolume::GcePersistentDisk, nilable: true, key: "gcePersistentDisk"},
-    aws_elastic_block_store: {type: KubeVolume::AwsElasticBlockStore, nilable: true, key: "awsElasticBlockStore"},
-    git_repo:                {type: KubeVolume::GitRepo, nilable: true, key: "gitRepo"},
-    secret:                  {type: KubeVolume::Secret, nilable: true},
-    nfs:                     {type: KubeVolume::Nfs, nilable: true},
-    iscsi:                   {type: KubeVolume::Iscsi, nilable: true},
-    glusterfs:               {type: KubeVolume::Glusterfs, nilable: true},
-    persistent_volume_claim: {type: KubeVolume::PersistentVolumeClaim, nilable: true, key: "persistentVolumeClaim"},
-    rbd:                     {type: KubeVolume::Rbd, nilable: true},
-    flex_volume:             {type: KubeVolume::FlexVolume, nilable: true, key: "flexVolume"},
-    cinder:                  {type: KubeVolume::Cinder, nilable: true},
-    cephfs:                  {type: KubeVolume::Cephfs, nilable: true},
-    flocker:                 {type: KubeVolume::Flocker, nilable: true},
-    downward_api:            {type: KubeVolume::DownwardAPI, nilable: true, key: "downwardAPI"},
-    fc:                      {type: KubeVolume::Fc, nilable: true},
-    azure_file:              {type: KubeVolume::AzureFile, nilable: true, key: "azureFile"},
-    config_map:              {type: KubeVolume::ConfigMap, nilable: true, key: "configMap"},
-    vsphere_volume:          {type: KubeVolume::VsphereVolume, nilable: true, key: "vsphereVolume"},
-    quobyte:                 {type: KubeVolume::Quobyte, nilable: true},
-    azure_disk:              {type: KubeVolume::AzureDisk, nilable: true, key: "azureDisk"},
+    host_path:               {type: KubeVolume::Source::HostPath, nilable: true, key: "hostPath"},
+    empty_dir:               {type: KubeVolume::Source::EmptyDir, nilable: true, key: "emptyDir"},
+    gce_persistent_disk:     {type: KubeVolume::Source::GcePersistentDisk, nilable: true, key: "gcePersistentDisk"},
+    aws_elastic_block_store: {type: KubeVolume::Source::AwsElasticBlockStore, nilable: true, key: "awsElasticBlockStore"},
+    git_repo:                {type: KubeVolume::Source::GitRepo, nilable: true, key: "gitRepo"},
+    secret:                  {type: KubeVolume::Source::Secret, nilable: true},
+    nfs:                     {type: KubeVolume::Source::Nfs, nilable: true},
+    iscsi:                   {type: KubeVolume::Source::Iscsi, nilable: true},
+    glusterfs:               {type: KubeVolume::Source::Glusterfs, nilable: true},
+    persistent_volume_claim: {type: KubeVolume::Source::PersistentVolumeClaim, nilable: true, key: "persistentVolumeClaim"},
+    rbd:                     {type: KubeVolume::Source::Rbd, nilable: true},
+    flex_volume:             {type: KubeVolume::Source::FlexVolume, nilable: true, key: "flexVolume"},
+    cinder:                  {type: KubeVolume::Source::Cinder, nilable: true},
+    cephfs:                  {type: KubeVolume::Source::Cephfs, nilable: true},
+    flocker:                 {type: KubeVolume::Source::Flocker, nilable: true},
+    downward_api:            {type: KubeVolume::Source::DownwardAPI, nilable: true, key: "downwardAPI"},
+    fc:                      {type: KubeVolume::Source::Fc, nilable: true},
+    azure_file:              {type: KubeVolume::Source::AzureFile, nilable: true, key: "azureFile"},
+    config_map:              {type: KubeVolume::Source::ConfigMap, nilable: true, key: "configMap"},
+    vsphere_volume:          {type: KubeVolume::Source::VsphereVolume, nilable: true, key: "vsphereVolume"},
+    quobyte:                 {type: KubeVolume::Source::Quobyte, nilable: true},
+    azure_disk:              {type: KubeVolume::Source::AzureDisk, nilable: true, key: "azureDisk"},
   })
 
   def initialize(name : String, volume_claim : Nil)
   end
 
   def initialize(name : String, volume_claim : Claim)
-    @persistent_volume_claim = KubeVolume::PersistentVolumeClaim.new(name, volume_claim.read_only)
+    @persistent_volume_claim = KubeVolume::Source::PersistentVolumeClaim.new(name, volume_claim.read_only)
   end
 
   def to_deployment_volume(name : String)
