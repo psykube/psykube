@@ -9,4 +9,9 @@ class Psykube::Kubernetes::ReplicaSet::Spec
     selector:          Shared::Selector?,
     template:          PodTemplate::Template?,
   })
+
+  def initialize(name : String)
+    @selector = Shared::Selector.new(name)
+    @template = PodTemplate::Template.new(name)
+  end
 end
