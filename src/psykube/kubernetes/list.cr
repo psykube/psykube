@@ -21,6 +21,7 @@ require "./pod_template"
 require "./pod"
 require "./replica_set"
 require "./replication_controller"
+require "./resource_quota"
 require "./secret"
 require "./service"
 
@@ -47,6 +48,7 @@ class Psykube::Kubernetes::List
                         Pod |
                         ReplicaSet |
                         ReplicationController |
+                        ResourceQuota |
                         Secret |
                         Service
 
