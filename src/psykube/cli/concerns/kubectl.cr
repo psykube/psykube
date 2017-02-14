@@ -116,7 +116,7 @@ module Psykube::Commands::Kubectl
       # Clean the list
       list.clean!
       list.items.each do |item|
-        kubectl_run(command: "apply", manifest: item, flags: {"--force" => true})
+        kubectl_run(command: "apply", manifest: item, flags: {"--force" => true}, namespace: to)
       end
     end
   end
