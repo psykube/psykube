@@ -25,6 +25,7 @@ require "./resource_quota"
 require "./secret"
 require "./service_account"
 require "./service"
+require "./stateful_set"
 
 class Psykube::Kubernetes::List
   include Resource
@@ -52,7 +53,8 @@ class Psykube::Kubernetes::List
                         ResourceQuota |
                         Secret |
                         ServiceAccount |
-                        Service
+                        Service |
+                        StatefulSet
 
   delegate :select, :[], :[]?, :find, :unshift, to: @items
 
