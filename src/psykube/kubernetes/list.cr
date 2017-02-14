@@ -23,6 +23,7 @@ require "./replica_set"
 require "./replication_controller"
 require "./resource_quota"
 require "./secret"
+require "./service_account"
 require "./service"
 
 class Psykube::Kubernetes::List
@@ -50,6 +51,7 @@ class Psykube::Kubernetes::List
                         ReplicationController |
                         ResourceQuota |
                         Secret |
+                        ServiceAccount |
                         Service
 
   delegate :select, :[], :[]?, :find, :unshift, to: @items
