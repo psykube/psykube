@@ -9,8 +9,8 @@ class Psykube::Kubernetes::Service
   })
 
   def initialize(name : String)
-    initialize
-    metadata.name = name
+    previous_def(name)
+    (metadata.labels ||= {} of String => String)["service"] = name
     spec = Spec.new
     spec.selector["app"] = name
     @spec = spec
@@ -18,11 +18,11 @@ class Psykube::Kubernetes::Service
 
   def initialize(name : String, ports : Hash(String, UInt16))
     initialize(name)
-    spec = Spec.new
-    ports.each do |name, port|
-      spec.ports.push(Spec::Port.new(name, port))
+    if spec = self.spec
+      ports.each do |name, port|
+        spec.ports.push(Spec::Port.new(name, port))
+      end
     end
-    @spec = spec
   end
 
   def initialize(name : String, ports : Nil)
