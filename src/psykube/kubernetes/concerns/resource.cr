@@ -11,6 +11,7 @@ module Psykube::Kubernetes::Resource
     def initialize(name : String)
       initialize
       @metadata = Shared::Metadata.new(name)
+      (@metadata.labels ||= {} of String => String)["psykube"] = "true"
     end
 
     def name
