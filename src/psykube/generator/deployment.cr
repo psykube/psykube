@@ -15,6 +15,7 @@ class Psykube::Generator
       Kubernetes::Deployment.new(manifest.name).tap do |deployment|
         deployment.metadata.namespace = namespace
         if spec = deployment.spec
+          spec.template.spec.restart_policy = manifest.restart_policy
           spec.template.spec.volumes = generate_volumes
           spec.template.spec.containers << generate_container
           spec.strategy = generate_strategy

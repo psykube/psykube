@@ -14,6 +14,7 @@ class Psykube::Manifest
     namespace:       String?,
     image:           String?,
     deploy_timeout:  {type: UInt32, nilable: true, getter: false},
+    restart_policy:  String?,
     max_unavailable: {type: UInt32, nilable: true, getter: false},
     max_surge:       {type: UInt32, nilable: true, getter: false},
     command:         Array(String) | String | Nil,
