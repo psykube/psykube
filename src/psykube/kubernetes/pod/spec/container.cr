@@ -19,6 +19,8 @@ class Psykube::Kubernetes::Pod::Spec::Container
     termination_message_path: String?,
     image_pull_policy:        String?,
     security_context:         Shared::SecurityContext?,
+    stdin:                    Bool?,
+    tty:                      Bool?,
   })
 
   def initialize(name, image : String)
