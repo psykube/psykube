@@ -124,7 +124,7 @@ class Psykube::Generator
     elsif port_name == "default" && !manifest.ports.key?("default")
       manifest.ports.values.first
     else
-      manifest.ports[port_name]
+      manifest.ports[port_name]? || raise "Invalid port #{port_name}"
     end
   end
 

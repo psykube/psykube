@@ -80,7 +80,7 @@ class Psykube::Generator
     private def generate_container_liveness_probe(healthcheck : Bool)
       Container::Probe.new.tap do |probe|
         probe.http_get = Container::Action::HttpGet.new(lookup_port "default")
-      end
+      end if manifest.service?
     end
 
     private def generate_container_liveness_probe(healthcheck : Manifest::Healthcheck)
@@ -213,7 +213,7 @@ class Psykube::Generator
     end
 
     private def env_with_ports
-      return manifest_env unless manifest.ports
+      return manifest_env unless manifest.service?
       port_env = {"PORT" => lookup_port("default").to_s}
       manifest.ports.each_with_object(manifest_env.dup) do |(name, port), env|
         env["#{name.underscore.upcase}_PORT"] = port.to_s

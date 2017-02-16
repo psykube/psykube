@@ -11,7 +11,7 @@ class Psykube::Generator
           spec.tls = generate_tls
           spec.rules = generate_rules
         end
-      end if manifest.service && cluster_manifest.ingress
+      end if manifest.service? && cluster_manifest.ingress
     end
 
     private def cluster_manifest_ingress

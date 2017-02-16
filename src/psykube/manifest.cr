@@ -63,7 +63,7 @@ class Psykube::Manifest
     @env || {} of String => Env | String
   end
 
-  def service
+  def service?
     @ports && @service
   end
 
