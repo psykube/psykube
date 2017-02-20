@@ -22,7 +22,7 @@ class Psykube::Kubernetes::Pod::Spec::Volume
     cinder:                  Source::Cinder?,
     cephfs:                  Source::Cephfs?,
     flocker:                 Source::Flocker?,
-    downward_api:            Source::DownwardAPI?,
+    downward_api:            {type: Source::DownwardAPI, nilable: true, key: "downwardAPI"},
     fc:                      Source::Fc?,
     azure_file:              Source::AzureFile?,
     config_map:              Source::ConfigMap?,
