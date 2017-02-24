@@ -29,15 +29,28 @@ class Psykube::Manifest::Volume::Spec
     azure_disk:              {type: KubeVolume::Source::AzureDisk, nilable: true, key: "azureDisk"},
   })
 
-  def initialize(name : String, volume_claim : Nil)
+  def set_persistent_volume_claim(claim : Claim?, volume_name : String)
+    persistent_volume_claim = KubeVolume::Source::PersistentVolumeClaim.new(volume_name, claim.read_only) if claim
   end
 
-  def initialize(name : String, volume_claim : Claim)
-    @persistent_volume_claim = KubeVolume::Source::PersistentVolumeClaim.new(name, volume_claim.read_only)
+  def set_secret(items : String | Array(String) | KubeVolume::Source::Secret::KeyToPath, name : String)
+    @secret = KubeVolume::Source::Secret.new(name, items)
   end
 
-  def to_deployment_volume(name : String)
-    KubeVolume.new(name).tap do |kube_vol|
+  def set_secret(secret : KubeVolume::Source::Secret?, name : String)
+    self.secret = secret
+  end
+
+  def set_config_map(items : String | Array(String) | KubeVolume::Source::ConfigMap::KeyToPath, name : String)
+    @config_map = KubeVolume::Source::ConfigMap.new(name, items)
+  end
+
+  def set_config_map(config_map : KubeVolume::Source::ConfigMap?, name : String)
+    self.config_map = config_map
+  end
+
+  def to_deployment_volume(volume_name : String)
+    KubeVolume.new(volume_name).tap do |kube_vol|
       kube_vol.host_path = self.host_path
       kube_vol.empty_dir = self.empty_dir
       kube_vol.gce_persistent_disk = self.gce_persistent_disk

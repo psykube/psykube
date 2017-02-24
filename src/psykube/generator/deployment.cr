@@ -61,7 +61,7 @@ class Psykube::Generator
 
     private def generate_volume(mount_path : String, volume : Manifest::Volume)
       volume_name = name_from_mount_path(mount_path)
-      volume.to_deployment_volume(volume_name)
+      volume.to_deployment_volume(name: manifest.name, volume_name: volume_name)
     end
 
     # Ports
