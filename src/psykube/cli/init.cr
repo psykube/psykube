@@ -18,7 +18,7 @@ class Psykube::Commands::Init < Admiral::Command
 
   def overwrite?
     return true if flags.overwrite
-    puts "#{flags.file} already exists, do you want to overwrite? (y/n) "
+    print "#{flags.file} already exists, do you want to overwrite? (y/n) "
     gets("\n").to_s.strip == "y"
   end
 
