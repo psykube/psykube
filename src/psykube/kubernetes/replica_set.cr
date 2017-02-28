@@ -7,6 +7,11 @@ class Psykube::Kubernetes::ReplicaSet
     spec:   Spec?,
     status: {type: Status, nilable: true, clean: true},
   })
+
+  def initialize(name : String)
+    previous_def
+    @spec = Spec.new(name)
+  end
 end
 
 require "./replica_set/*"

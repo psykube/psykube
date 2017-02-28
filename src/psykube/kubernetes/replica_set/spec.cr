@@ -7,7 +7,7 @@ class Psykube::Kubernetes::ReplicaSet::Spec
     min_ready_seconds: Int32?,
     replicas:          Int32?,
     selector:          Shared::Selector?,
-    template:          PodTemplate::Template?,
+    template:          PodTemplate::Template,
   })
 
   def initialize(name : String)

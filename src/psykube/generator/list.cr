@@ -18,8 +18,8 @@ class Psykube::Generator
           list << ReplicationController.result(self)
         when "Job"
           list << Job.result(self)
-          # when "ReplicaSet"
-          #   list << ReplicaSet.result(self)
+        when "ReplicaSet"
+          list << ReplicaSet.result(self)
           # when "StatefulSet"
           #   list << StatefulSet.result(self)
         when "Pod"
