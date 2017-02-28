@@ -27,6 +27,7 @@ class Psykube::Commands::Apply < Admiral::Command
     kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy) if flags.copy_namespace
     docker_build_and_push(generator.image) if !image && flags.push
     result = generator.result
+    puts "Applying Kubernetes Manifests...".colorize(:cyan)
     result.items.map do |item|
       kubectl_new("apply", manifest: item, flags: {"--record" => true})
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))

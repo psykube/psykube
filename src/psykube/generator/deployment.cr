@@ -16,6 +16,7 @@ class Psykube::Generator
           spec.template.spec.restart_policy = manifest.restart_policy
           spec.template.spec.volumes = generate_volumes
           spec.template.spec.containers << generate_container
+          spec.revision_history_limit = manifest.revision_history_limit
           spec.strategy = generate_strategy
           spec.progress_deadline_seconds = manifest.deploy_timeout
         end

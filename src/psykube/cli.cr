@@ -19,6 +19,8 @@ class Psykube::CLI < Admiral::Command
   register_sub_command status, Commands::Status, description: "List the status of the kubernetes resources."
   register_sub_command logs, Commands::Logs, description: "Follow the logs of running pods."
   register_sub_command init, Commands::Init, description: "Generate a .psykube.yml in the current directory."
+  register_sub_command history, Commands::History, description: "View the deployment history."
+  register_sub_command rollback, Commands::Rollback, description: "Rollback a deployment."
 
   def run
     puts help
