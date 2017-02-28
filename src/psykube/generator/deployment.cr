@@ -79,6 +79,7 @@ class Psykube::Generator
     end
 
     private def generate_container_liveness_probe(healthcheck : Bool)
+      return unless healthcheck == true
       Container::Probe.new.tap do |probe|
         probe.http_get = Container::Action::HttpGet.new(lookup_port "default")
       end if manifest.service?
