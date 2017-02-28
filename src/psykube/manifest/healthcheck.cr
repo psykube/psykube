@@ -7,8 +7,4 @@ class Psykube::Manifest::Healthcheck
   })
 end
 
-def initialize
-  @readiness = true
-end
-
 require "./healthcheck/*"

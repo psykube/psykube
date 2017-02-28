@@ -27,6 +27,7 @@ class Psykube::Manifest
     ports:           {type: Hash(String, UInt16), nilable: true, getter: false},
     clusters:        {type: Hash(String, Cluster), nilable: true, getter: false},
     healthcheck:     {type: Bool | Healthcheck, default: false},
+    readycheck:      {type: Bool | Readycheck, default: false},
     volumes:         {type: VolumeMap, nilable: true},
     autoscale:       {type: Autoscale, nilable: true},
     build_args:      {type: Hash(String, String), nilable: true, getter: false},

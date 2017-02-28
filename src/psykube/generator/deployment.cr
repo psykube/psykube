@@ -38,7 +38,7 @@ class Psykube::Generator
         container.env = generate_container_env
         container.volume_mounts = generate_container_volume_mounts(manifest.volumes)
         container.liveness_probe = generate_container_liveness_probe(manifest.healthcheck)
-        container.readiness_probe = generate_container_readiness_probe(manifest.healthcheck)
+        container.readiness_probe = generate_container_readiness_probe(manifest.readycheck || manifest.healthcheck)
         container.ports = generate_container_ports(manifest.ports)
         container.command = generate_container_command(manifest.command)
         container.args = generate_container_args(manifest.args)
@@ -85,10 +85,10 @@ class Psykube::Generator
       end if manifest.service?
     end
 
-    private def generate_container_liveness_probe(healthcheck : Manifest::Healthcheck)
+    private def generate_container_liveness_probe(healthcheck : Manifest::Healthcheck | Manifest::Readycheck)
       Container::Probe.new.tap do |probe|
-        raise InvalidHealthcheck.new("Cannot perform http healthcheck without specifying ports.") if !manifest.ports && healthcheck.http
-        raise InvalidHealthcheck.new("Cannot perform tcp healthcheck without specifying ports.") if !manifest.ports && healthcheck.tcp
+        raise InvalidHealthcheck.new("Cannot perform http check without specifying ports.") if manifest.ports.empty? && healthcheck.http
+        raise InvalidHealthcheck.new("Cannot perform tcp check without specifying ports.") if manifest.ports.empty? && healthcheck.tcp
         probe.http_get = generate_container_probe_http_get(healthcheck.http)
         probe.exec = generate_container_probe_exec(healthcheck.exec)
         probe.tcp_socket = generate_container_probe_tcp_socket(healthcheck.tcp)
@@ -106,6 +106,10 @@ class Psykube::Generator
       if healthcheck.readiness
         generate_container_liveness_probe(healthcheck)
       end
+    end
+
+    private def generate_container_readiness_probe(readycheck : Manifest::Readycheck)
+      generate_container_liveness_probe(readycheck)
     end
 
     private def generate_container_probe_http_get(http : Nil)
