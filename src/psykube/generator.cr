@@ -1,3 +1,4 @@
+require "openssl"
 require "file_utils"
 require "crustache"
 require "./manifest"
@@ -10,14 +11,19 @@ class Psykube::Generator
   alias TemplateData = Hash(String, String)
 
   @manifest : Manifest?
+  @raw_metadata : Hash(String, String)?
+  @metadata : Hash(String, String)?
+  @git_data : Hash(String, String)?
   @template_yaml : Crustache::Syntax::Template?
+  @digest : String?
 
   getter yaml : String = ""
   getter cluster_name : String = "default"
   getter context : String?
   getter namespace : String = "default"
-  getter tag : String = "gitsha-#{`git rev-parse HEAD`.strip}"
+  getter tag : String
   getter image : String
+  getter dir : String
 
   def self.yaml(filename : String, cluster_name : String, image : String = "", template_data : TemplateData = TemplateData.new)
     new(filename, cluster_name, image, template_data).to_yaml
@@ -32,6 +38,7 @@ class Psykube::Generator
   end
 
   def initialize(generator : Generator)
+    @dir = generator.dir
     @manifest = generator.manifest
     @cluster_name = generator.cluster_name
     @context = generator.context
@@ -41,8 +48,14 @@ class Psykube::Generator
   end
 
   def initialize(filename : String, cluster_name : String? = nil, context : String? = nil, namespace : String? = nil, image : String? = nil, tag : String? = nil)
+    if File.directory? filename
+      @dir = filename
+      filename = File.join(filename, ".psykube.yml")
+    else
+      @dir = File.dirname filename
+    end
     @yaml = File.read(filename)
-    @tag = tag if tag
+    @tag = tag || digest
     @cluster_name = cluster_name if cluster_name
     @context = context || raw_cluster_manifest.context || raw_manifest.context
     namespace ||= raw_cluster_manifest.namespace || raw_manifest.namespace
@@ -51,15 +64,44 @@ class Psykube::Generator
     @image = image || manifest.image || default_image || raise("Image is not specified.")
   end
 
+  def digest
+    @digest ||= get_digest
+  end
+
+  def git_data
+    @git_data ||= Dir.cd(dir) do
+      sha = `git rev-parse HEAD`.strip
+      branch = `git rev-parse --abbrev-ref HEAD`.strip
+      tag = `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
+      {"sha" => sha, "branch" => branch}.tap do |data|
+        data["tag"] = tag unless tag.empty?
+      end
+    end
+  end
+
+  def raw_metadata
+    @raw_metadata ||= {
+      "cluster_name" => cluster_name,
+      "digest"       => digest,
+    }
+  end
+
+  def metadata
+    @metadata ||= raw_metadata.merge({"namespace" => namespace})
+  end
+
   def raw_manifest
     @raw_manifest ||= Manifest.from_yaml(Crustache.render template_yaml, {
-      "env" => env_hash,
+      "metadata" => raw_metadata,
+      "git"      => git_data,
+      "env"      => env_hash,
     })
   end
 
   def manifest
     @manifest ||= Manifest.from_yaml(Crustache.render template_yaml, {
-      "metadata" => {"namespace" => namespace, "cluster_name" => cluster_name},
+      "metadata" => metadata,
+      "git"      => git_data,
       "env"      => env_hash,
     })
   end
@@ -130,5 +172,28 @@ class Psykube::Generator
 
   private def manifest_env
     manifest.env || {} of String => String | Manifest::Env
+  end
+
+  private def remove_ignored(files : Array(String), manifest : String = ".dockerignore")
+    ignorefile = File.join(dir, manifest)
+    if File.exists? ignorefile
+      File.read(ignorefile).lines.map(&.strip).each do |ignore|
+        Dir.glob(File.join(dir, ignore)).each do |path|
+          File.directory?(path) ? files.reject! { |file| file.starts_with? path } : files.delete(path)
+        end
+      end
+    end
+  end
+
+  private def get_digest(kind : String = "sha256")
+    files = Dir.glob(File.join dir, "**/*").reject { |file| File.directory?(file) }.sort
+    remove_ignored(files)
+    remove_ignored(files, ".gitignore")
+    hexdigest = files.each_with_object(OpenSSL::Digest.new(kind)) do |file, digest|
+      File.open(file) do |f|
+        digest.update(f)
+      end
+    end.hexdigest
+    "#{kind}-#{hexdigest}"
   end
 end
