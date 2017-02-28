@@ -8,6 +8,7 @@ class Psykube::Manifest
   alias VolumeMap = Hash(String, Volume | String)
   mapping({
     name:            String,
+    type:            {type: String, default: "Deployment"},
     registry_host:   String?,
     registry_user:   String?,
     context:         String?,
@@ -33,7 +34,7 @@ class Psykube::Manifest
     build_args:      {type: Hash(String, String), nilable: true, getter: false},
   })
 
-  def initialize(@name : String)
+  def initialize(@name : String, @type : String = "Deployment")
   end
 
   def healthcheck

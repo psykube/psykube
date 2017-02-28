@@ -7,6 +7,11 @@ class Psykube::Kubernetes::Pod
     spec:   Spec?,
     status: {type: Status, nilable: true, clean: true},
   })
+
+  def initialize(name : String)
+    previous_def
+    @spec = Spec.new
+  end
 end
 
 require "./pod/*"
