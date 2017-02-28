@@ -9,6 +9,14 @@ class Psykube::Manifest::Ingress
     hosts:       {type: HostnameList | HostHash, nilable: true, getter: false},
   })
 
+  def initialize(hosts : Array(String), @tls : Bool? = nil)
+    if hosts.size == 1
+      @host = hosts.first
+    elsif hosts.size > 1
+      @hosts = hosts
+    end
+  end
+
   def hosts?
     !@hosts.nil?
   end

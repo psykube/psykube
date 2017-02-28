@@ -6,12 +6,20 @@ class Psykube::Generator
       Kubernetes::Ingress.new(manifest.name).tap do |ingress|
         ingress.metadata.namespace = namespace
         ingress.metadata.annotations = cluster_ingress_annotations unless cluster_ingress_annotations.empty?
+        if cluster_tls == true
+          annotations = (ingress.metadata.annotations ||= {} of String => String)
+          annotations["kubernetes.io/tls-acme"] = "true"
+        end
         ingress.spec = Kubernetes::Ingress::Spec.new.tap do |spec|
           spec.rules = [] of Kubernetes::Ingress::Spec::Rule
           spec.tls = generate_tls
           spec.rules = generate_rules
         end
-      end if manifest.service? && cluster_manifest.ingress
+      end if manifest.service? && ingress?
+    end
+
+    private def ingress?
+      !!(manifest.ingress || cluster_manifest.ingress)
     end
 
     private def cluster_manifest_ingress
@@ -54,7 +62,9 @@ class Psykube::Generator
     end
 
     private def generate_host_tls(host : String, tls : Bool)
-      Kubernetes::Ingress::Spec::Tls.new(host)
+      if tls
+        Kubernetes::Ingress::Spec::Tls.new(host)
+      end
     end
 
     private def generate_rules
