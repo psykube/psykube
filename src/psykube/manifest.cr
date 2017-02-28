@@ -26,12 +26,23 @@ class Psykube::Manifest
     secrets:         {type: Hash(String, String), nilable: true, getter: false},
     ports:           {type: Hash(String, UInt16), nilable: true, getter: false},
     clusters:        {type: Hash(String, Cluster), nilable: true, getter: false},
-    healthcheck:     {type: Bool | Healthcheck, default: false},
-    readycheck:      {type: Bool | Readycheck, default: false},
+    healthcheck:     {type: Bool | Healthcheck, nilable: true, default: false, getter: false},
+    readycheck:      {type: Bool | Readycheck, nilable: true, default: false, getter: false},
     volumes:         {type: VolumeMap, nilable: true},
     autoscale:       {type: Autoscale, nilable: true},
     build_args:      {type: Hash(String, String), nilable: true, getter: false},
   })
+
+  def initialize(@name : String)
+  end
+
+  def healthcheck
+    @healthcheck || false
+  end
+
+  def readycheck
+    @readycheck || false
+  end
 
   def service
     return unless service?

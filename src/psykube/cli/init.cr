@@ -26,8 +26,7 @@ class Psykube::Commands::Init < Admiral::Command
     if !File.exists?(flags.file) || overwrite?
       puts "Writing #{flags.file}...".colorize(:cyan)
       File.open(flags.file, "w+") do |file|
-        manifest = Psykube::Manifest.from_yaml({{ `cat "reference/.psykube.yml"`.stringify }})
-        manifest.name = flags.name
+        manifest = Psykube::Manifest.new flags.name
         if ingress = manifest.ingress
           ingress.annotations = nil
           ingress.hosts = nil
@@ -35,7 +34,6 @@ class Psykube::Commands::Init < Admiral::Command
         manifest.image = flags.image
         manifest.registry_host = flags.registry_host
         manifest.registry_user = flags.registry_user
-        manifest.healthcheck = true
         manifest.volumes = nil
         manifest.clusters = nil
         manifest.env = nil
