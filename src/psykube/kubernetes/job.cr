@@ -16,6 +16,11 @@ class Psykube::Kubernetes::Job
     end
     super
   end
+
+  def initialize(name : String)
+    previous_def
+    @spec = Spec.new(name)
+  end
 end
 
 require "./job/*"
