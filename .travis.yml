@@ -1,5 +1,5 @@
 sudo: required
-language: bash
+language: crystal
 services:
   - docker
 env:
@@ -16,9 +16,7 @@ before_script:
   - gcloud config set compute/zone us-east1-c
   - gcloud container clusters get-credentials staging
   - gcloud docker --authorize-only
-install:
-  - "./bin/install-crystal"
-  - shards install
+install: shards install
 script:
   - crystal spec --verbose
 before_deploy:
