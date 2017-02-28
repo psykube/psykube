@@ -3,7 +3,7 @@ require "../../pod_template/template"
 
 class Psykube::Kubernetes::ReplicationController::Spec
   Kubernetes.mapping(
-    replicas: Int32?,
+    replicas: UInt32?,
     selector: Shared::Selector,
     template: PodTemplate::Template,
     min_ready_seconds: UInt32?,

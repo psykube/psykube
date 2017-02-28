@@ -3,16 +3,15 @@ require "../kubernetes/pod"
 require "./concerns/*"
 
 class Psykube::Generator
-  class ReplicaSet < Generator
+  class DaemonSet < Generator
     class InvalidHealthcheck < Exception; end
 
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::ReplicaSet.new(manifest.name).tap do |rs|
+      Kubernetes::DaemonSet.new(manifest.name).tap do |rs|
         rs.metadata.namespace = namespace
         if spec = rs.spec
-          spec.replicas = manifest.replicas
           spec.template.spec.restart_policy = manifest.restart_policy
           spec.template.spec.volumes = generate_volumes
           spec.template.spec.containers << generate_container

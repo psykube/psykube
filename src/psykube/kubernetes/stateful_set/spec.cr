@@ -4,7 +4,7 @@ require "../pod_template/template"
 
 class Psykube::Kubernetes::StatefulSet::Spec
   Kubernetes.mapping({
-    replicas:               Int32?,
+    replicas:               UInt32?,
     selector:               Shared::Selector,
     service_name:           String,
     template:               PodTemplate::Template,

@@ -3,7 +3,7 @@ require "../../pod_template/template"
 
 class Psykube::Kubernetes::Deployment::Spec
   Kubernetes.mapping(
-    replicas: Int32?,
+    replicas: UInt32?,
     selector: Shared::Selector,
     template: PodTemplate::Template,
     strategy: Strategy?,

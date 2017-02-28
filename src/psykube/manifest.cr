@@ -9,6 +9,9 @@ class Psykube::Manifest
   mapping({
     name:            String,
     type:            {type: String, default: "Deployment"},
+    replicas:        UInt32?,
+    completions:     UInt32?,
+    parallelism:     UInt32?,
     registry_host:   String?,
     registry_user:   String?,
     context:         String?,

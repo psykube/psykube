@@ -8,6 +8,11 @@ class Psykube::Kubernetes::StatefulSet
     spec:   Spec?,
     status: {type: Status, nilable: true, clean: true},
   })
+
+  def initialize(name : String, service_name : String)
+    initialize(name)
+    @spec = Spec.new(name, service_name)
+  end
 end
 
 require "./stateful_set/*"

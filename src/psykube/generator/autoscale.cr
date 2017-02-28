@@ -5,8 +5,8 @@ class Psykube::Generator
     protected def result
       if autoscale?
         Kubernetes::HorizontalPodAutoscaler.new(
-          "extensions/v1beta1",
-          "Deployment",
+          api || "",
+          manifest.type,
           manifest.name,
           cluster_autoscale.min,
           cluster_autoscale.max
@@ -16,7 +16,17 @@ class Psykube::Generator
       end
     end
 
+    private def api
+      case manifest.type
+      when "Deployment", "ReplicaSet"
+        "extensions/v1beta1"
+      when "ReplicationController"
+        "v1"
+      end
+    end
+
     private def autoscale?
+      return false unless api
       !!(cluster_manifest.autoscale || manifest.autoscale)
     end
 

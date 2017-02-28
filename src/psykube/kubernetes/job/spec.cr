@@ -4,10 +4,10 @@ require "../../pod_template/template"
 
 class Psykube::Kubernetes::Job::Spec
   Kubernetes.mapping(
-    activeDeadlineSeconds: Int64?,
-    completions: Int64?,
+    activeDeadlineSeconds: UInt32?,
+    completions: UInt32?,
     manualSelector: Bool?,
-    parallelism: Int64?,
+    parallelism: UInt32?,
     selector: Shared::Selector,
     template: PodTemplate::Template
   )
