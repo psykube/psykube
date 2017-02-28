@@ -26,7 +26,7 @@ class Psykube::Generator
     private def generate_volumes
       manifest_volumes.map do |mount_path, spec|
         generate_volume(mount_path, spec)
-      end
+      end unless manifest_volumes.empty?
     end
 
     private def generate_volume(mount_path : String, size : String)
