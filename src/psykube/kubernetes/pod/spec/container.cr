@@ -5,8 +5,8 @@ require "../../../shared/resource_requirements"
 class Psykube::Kubernetes::Pod::Spec::Container
   Kubernetes.mapping({
     name:                     String,
-    image:                    String,
-    command:                  String | Array(String) | Nil,
+    image:                    String?,
+    command:                  Array(String)?,
     args:                     Array(String)?,
     working_dir:              String?,
     ports:                    Array(Port)?,
@@ -20,6 +20,7 @@ class Psykube::Kubernetes::Pod::Spec::Container
     image_pull_policy:        String?,
     security_context:         Shared::SecurityContext?,
     stdin:                    Bool?,
+    stdin_once:               Bool?,
     tty:                      Bool?,
   })
 

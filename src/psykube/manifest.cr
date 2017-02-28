@@ -21,7 +21,7 @@ class Psykube::Manifest
     args:            Array(String)?,
     env:             {type: Hash(String, Env | String), nilable: true, getter: false},
     ingress:         Ingress?,
-    service:         {type: Bool, default: true, getter: false},
+    service:         {type: String | Service, default: "ClusterIP", nilable: true, getter: false},
     config_map:      {type: Hash(String, String), nilable: true, getter: false},
     secrets:         {type: Hash(String, String), nilable: true, getter: false},
     ports:           {type: Hash(String, UInt16), nilable: true, getter: false},
@@ -31,6 +31,18 @@ class Psykube::Manifest
     autoscale:       {type: Autoscale, nilable: true},
     build_args:      {type: Hash(String, String), nilable: true, getter: false},
   })
+
+  def service
+    return unless service?
+    @service = case (service = @service)
+               when "true"
+                 Service.new "ClusterIP"
+               when String
+                 Service.new service
+               when Service
+                 service
+               end
+  end
 
   def deploy_timeout
     @deploy_timeout || 300_u32
@@ -65,7 +77,8 @@ class Psykube::Manifest
   end
 
   def service?
-    @ports && @service
+    return unless @service
+    !!@ports.try(&.first?)
   end
 
   def clusters
