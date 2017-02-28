@@ -1,4 +1,4 @@
-class Psykube::Manifest::Ingress::Host::Tls
+class Psykube::Manifest::Ingress::Tls
   Manifest.mapping({
     secret_name: String,
   })

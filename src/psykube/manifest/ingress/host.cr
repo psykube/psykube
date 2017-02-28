@@ -1,3 +1,5 @@
+require "./tls"
+
 class Psykube::Manifest::Ingress::Host
   alias PathList = Array(String)
   alias PathMap = Hash(String, Path)

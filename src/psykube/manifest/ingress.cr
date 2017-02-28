@@ -4,7 +4,7 @@ class Psykube::Manifest::Ingress
 
   Manifest.mapping({
     annotations: Hash(String, String) | Nil,
-    tls:         Bool?,
+    tls:         Tls | Bool | Nil,
     host:        String?,
     hosts:       {type: HostnameList | HostHash, nilable: true, getter: false},
   })

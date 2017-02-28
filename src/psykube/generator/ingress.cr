@@ -46,7 +46,7 @@ class Psykube::Generator
       tls_list unless tls_list.empty?
     end
 
-    private def generate_host_tls(host : String, tls : Manifest::Ingress::Host::Tls)
+    private def generate_host_tls(host : String, tls : Manifest::Ingress::Tls)
       Kubernetes::Ingress::Spec::Tls.new(host, tls.secret_name)
     end
 
