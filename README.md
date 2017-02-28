@@ -55,6 +55,12 @@ Builds and pushes the docker image to the registry.
 ## `status <cluster>`
 Lists the status of the pods running for the current app and for the specified cluster.
 
+## `history <cluster>`
+Get deployment history.
+
+## `rollback <cluster>`
+Rollback to a previous deployment.
+
 ## `version`
 Prints the psykube version.
 
