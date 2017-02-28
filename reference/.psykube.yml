@@ -9,6 +9,11 @@ name: test-app # required
 registry_user: commercial-tribe  # required
 registry_host: gcr.io
 
+# = Docker image ==
+# if you don't choose to build your docker image you may specify one here.
+# This allows Psykube to be used in a Config only scenario.
+image: tutum/hello-world
+
 # = Config Maps ==
 # Config maps to generate for this application. This section allows for global
 # config maps, they will be combined with the cluster config maps specified
@@ -99,6 +104,23 @@ ports:
 # = Service ==
 # Specify whether or not this application is exposed as a service.
 service: true  # default: true
+
+# You can also specify a type of service
+service: LoadBalancer
+
+# You can even get more granular with services
+service:
+  type: LoadBalancer
+  annotations:
+    whoami: psykube
+  session_affinity: ClientIP
+  load_balancer_source_ranges: [ 123.234.112.10/32 ]
+  load_balancer_ip: 123.234.112.9
+  external_ips:
+    - 123.234.112.4
+    - 123.234.112.5
+    - 123.234.112.6
+  cluster_ip: 10.4.2.1
 
 # = Ingress ==
 # Ingress allows you to setup external routes to your application by utilizing the
