@@ -185,7 +185,7 @@ ingress:
 Generates a .psykube.yml in the current directory.
 
 #### Usage:
-  `psykube init [flags...] [arg...]`
+`psykube init [flags...] [arg...]`
 
 #### Flags:
 | long              | short | default                              | description
@@ -204,14 +204,15 @@ Generates a .psykube.yml in the current directory.
 | `--tls`           | `-t`  | `false`                              | Enable tls for ingress.
 
 ### `psykube generate`
+Generate the kubernetes manifests.
 
 #### Usage:
-  `psykube generate [flags...] <cluster> [arg...]`
+`psykube generate [flags...] <cluster> [arg...]`
 
 #### Arguments
 | name              | description
 | ----------------- | ------------
-| cluster_name      | the name of the cluster to generate the manifests for.
+| `cluster_name`    | the name of the cluster to generate the manifests for.
 
 #### Flags:
 | long              | short | default                              | description
@@ -222,14 +223,15 @@ Generates a .psykube.yml in the current directory.
 | `--image`         | `-i`  |                                      | Overrides the docker image.
 
 ### `psykube apply`
+Apply the kubernetes manifests.
 
 #### Usage:
-  `psykube apply [flags...] <cluster> [arg...]`
+`psykube apply [flags...] <cluster> [arg...]`
 
 #### Arguments
 | name              | description
 | ----------------- | ------------
-| cluster_name      | the name of the cluster to generate the manifests for.
+| `cluster_name`    | the name of the cluster to generate the manifests for.
 
 #### Flags:
 | long              | short | default                              | description
@@ -246,6 +248,7 @@ Generates a .psykube.yml in the current directory.
 | `--resources`     | `-r`  | `cm,ds,secrets,deploy,pvc,limits,rc,svc,statefulsets` | The resource types to copy for copy-namespace.     
 
 ### `psykube push`
+Build and push the docker image.
 
 #### Usage:
   `psykube push [flags...] [arg...]`
