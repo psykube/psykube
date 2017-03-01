@@ -1,7 +1,7 @@
 
 
 <h1>Psykube&nbsp;&nbsp;<img height="50px" src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/psykube-duck.png"/>&nbsp;&nbsp;a faster way to deploy to Kubernetes!&nbsp;&nbsp;<a href="https://travis-ci.org/CommercialTribe/psykube"><img src="https://travis-ci.org/CommercialTribe/psykube.svg?branch=master" /></a></h1>
-| [What is Psykube?](#what-is-psykube)
+[What is Psykube?](#what-is-psykube)
 | [Installation](#installation)
 | [The Psykube YAML](#the-psykube-yaml)
 | [Cluster Assumptions](#cluster-assumptions)
