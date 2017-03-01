@@ -1,13 +1,14 @@
 <h1>Psykube&nbsp;&nbsp;<img height="50px" src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/psykube-duck.png"/>&nbsp;&nbsp;a faster way to deploy to Kubernetes!</h1>
 [![Build Status](https://travis-ci.org/CommercialTribe/psykube.svg?branch=master)](https://travis-ci.org/CommercialTribe/psykube)
 
-[What is Psykube?](#what-is-psykube) |
+> [What is Psykube?](#what-is-psykube) |
 [Installation](#installation) |
 [The Psykube YAML](#the-psykube-yaml) |
 [Cluster Assumptions](#cluster-assumptions) |
 [Getting Started](#getting-started) |
-[Commands](#commands) |
-[Contributing](./CONTRIBUTING.md)
+[Commands](#commands)
+
+---
 
 # What is Psykube?
 Kubernetes is a powerful system, but it comes with its own learning curve. To deploy a single application you have to come familiar with a set of concepts. For example a single hello world application may be comprised of a `Deployment`, `Service`, and `Ingress` manifest file. Psykube aims to make that simpler by unifying your applications configuration into a single file.
@@ -189,9 +190,9 @@ Generates a .psykube.yml in the current directory.
 #### Flags:
 | long              | short | default                              | description
 | ----------------- | ----- | ------------------------------------ | --------------------------------------
+| `--help`          |       |                                      | Displays help for the current command.
 | `--env`           | `-e`  |                                      | Set an environment variable.
 | `--file`          | `-f`  | `./.psykube.yml`                     | The location of the psykube manfest yml file.
-| `--help`          |       |                                      | Displays help for the current command.
 | `--host`          | `-h`  |                                      | Set a host for ingress.
 | `--image`         | `-i`  |                                      | Set the image, this takes precedence over `--registry-host` and `--registry-user`.
 | `--name`          | `-N`  | current directory name               | Set the name of the application used for deployment.
@@ -201,3 +202,58 @@ Generates a .psykube.yml in the current directory.
 | `--registry-host` | `-R`  |                                      | The hostname for the registry. (use if not hosting on docker hub)
 | `--registry-user` | `-U`  | current docker user                  | The username for the registry.
 | `--tls`           | `-t`  | `false`                              | Enable tls for ingress.
+
+### `psykube generate`
+
+#### Usage:
+  `psykube generate [flags...] <cluster> [arg...]`
+
+#### Arguments
+| name              | description
+| ----------------- | ------------
+| cluster_name      | the name of the cluster to generate the manifests for.
+
+#### Flags:
+| long              | short | default                              | description
+| ----------------- | ----- | ------------------------------------ | --------------------------------------
+| `--help`          |       |                                      | Displays help for the current command.
+| `--file`          | `-f`  | `./.psykube.yml`                     | The location of the psykube manfest yml file.
+| `--namespace`     | `-n`  |                                      | The namespace to use when invoking kubectl.
+| `--image`         | `-i`  |                                      | Overrides the docker image.
+
+### `psykube apply`
+
+#### Usage:
+  `psykube apply [flags...] <cluster> [arg...]`
+
+#### Arguments
+| name              | description
+| ----------------- | ------------
+| cluster_name      | the name of the cluster to generate the manifests for.
+
+#### Flags:
+| long              | short | default                              | description
+| ----------------- | ----- | ------------------------------------ | --------------------------------------
+| `--help`          |       |                                      | Displays help for the current command.
+| `--file`          | `-f`  | `./.psykube.yml`                     | The location of the psykube manfest yml file.
+| `--namespace`     | `-n`  |                                      | The namespace to use when invoking kubectl.
+| `--image`         | `-i`  |                                      | Overrides the docker image.
+| `--build-args`    |       |                                      | The build args to add to docker build.
+| `--context`       | `-c`  | The current context set for kubectl  | The context to use when invoking kubectl.
+| `--copy-namespace`|       |                                      | Copy the specified namespace if the target namespace does not exist.
+| `--force-copy`    |       | `false`                              | Copy the namespace even the destination already exists.
+| `--push`          |       | `true`                               | Build and push the docker image.
+| `--resources`     | `-r`  | `cm,ds,secrets,deploy,pvc,limits,rc,svc,statefulsets` | The resource types to copy for copy-namespace.     
+
+### `psykube push`
+
+#### Usage:
+  `psykube push [flags...] [arg...]`
+
+#### Flags:
+| long              | short | default                              | description
+| ----------------- | ----- | ------------------------------------ | --------------------------------------
+| `--help`          |       |                                      | Displays help for the current command.
+| `--file`          | `-f`  | `./.psykube.yml`                     | The location of the psykube manfest yml file.
+| `--build-args`    |       |                                      | The build args to add to docker build.
+| `--tag`           | `-t`  |                                      | Additional tags to push.
