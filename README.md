@@ -157,7 +157,7 @@ Apply the kubernetes manifests.
 | `--copy-namespace`|       |                                      | Copy the specified namespace if the target namespace does not exist.
 | `--force-copy`    |       | `false`                              | Copy the namespace even the destination already exists.
 | `--push`          |       | `true`                               | Build and push the docker image.
-| `--resources`     | `-r`  | `cm, ds, secrets, deploy, pvc, limits, rc, svc, statefulsets` | The resource types to copy for copy-namespace.     
+| `--resources`     | `-r`  |                                      | The resource types to copy for copy-namespace.     
 
 ### `psykube push`
 Build and push the docker image.
