@@ -1,10 +1,16 @@
-<h1><img height="30px" src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/psykube-duck.png"/>&nbsp;&nbsp;Psykube : A faster way to deploy to Kubernetes!</h1>
+<h1>&nbsp;&nbsp;Psykube&nbsp;&nbsp;<img height="50px" src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/psykube-duck.png"/>&nbsp;&nbsp;a faster way to deploy to Kubernetes!</h1>
 [![Build Status](https://travis-ci.org/CommercialTribe/psykube.svg?branch=master)](https://travis-ci.org/CommercialTribe/psykube)
+
+[What is Psykube?](#what-is-psykube) | 
+[Installation](#Installation) |
+[Getting Started](#getting-started) |
+[Commands](#commands) |
+[Contributing](./CONTRIBUTING.md)
 
 # What is Psykube?
 Kubernetes is a powerful system, but it comes with its own learning curve. To deploy a single application you have to come familiar with a set of concepts. For example a single hello world application may be comprised of a `Deployment`, `Service`, and `Ingress` manifest file. Psykube aims to make that simpler by unifying your applications configuration into a single file. 
 
-For the above example you may expect something like this:
+For the above example you may expect something like this in the `.psykube.yml` file and compare to what you would need to write in raw kubernets manifests to do the same thing:
 
 ###### psykube.yml
 ```yaml
@@ -17,7 +23,7 @@ ports:
   host: hello-world.example.com
 ```
 
-###### Kubernetes Equivelent
+###### kubernetes manifests
 ```yaml
 ---
 apiVersion: extensions/v1beta1
@@ -102,62 +108,19 @@ spec:
           servicePort: 8080
 ```
 
-## Homebrew for OSX
+## Installation
+
+### Using Homebrew for OSX
 You can install `psykube` on OSX using homebrew by running:
 
 ```sh
 brew install commercialtribe/tools/psykube
 ```
 
-## Binaries
-You can also download the [pre-built binaries](https://github.com/CommercialTribe/psykube/releases).
+### Binaries
+You can also download the [pre-built binaries](https://github.com/CommercialTribe/psykube/releases/latest).
 
-# Usage
-`psykube [command] [arguments]`
-
-# Commands
-
-## `apply <cluster>`
-Applies the generated kubernetes manifests for the specified cluster.
-
-## `copy-namespace <from> <to>`
-Copies a kubernetes namespace and (most) of its resources to a new namespace.
-
-## `copy-resource <resource_type> <resource_name> <new_resource_name>`
-Copies a resource.
-
-## `delete <cluster>`
-Deletes all associated kubernetes manifests for the current app.
-
-## `exec <command>`
-Finds a running pod belonging to this app and executes a command within it.
-
-## `logs <command>`
-Lists the logs for the current application.
-
-## `generate <cluster>`
-Generates and outputs the kubernetes manifests for the specified cluster.
-
-## `help <command>`
-Lists help for any command.
-
-## `port-forward <local> <remote>`
-Finds a running pod belonging to this app and forwards the specified remote port to the specified local port.
-
-## `push`
-Builds and pushes the docker image to the registry.    
-
-## `status <cluster>`
-Lists the status of the pods running for the current app and for the specified cluster.
-
-## `history <cluster>`
-Get deployment history.
-
-## `rollback <cluster>`
-Rollback to a previous deployment.
-
-## `version`
-Prints the psykube version.
+## Getting Started
 
 ## The Psykube YAML
 
