@@ -166,17 +166,18 @@ Generates a .psykube.yml in the current directory.
   `psykube init [flags...] [arg...]`
 
 #### Flags:
-long              | short | default                              | description
-                --|--   --|--                                  --|--
-`--env`           | `-e`  |                                      | Set an environment variable.
-`--file`          | `-f`  | `./.psykube.yml`                     | The location of the psykube manfest yml file.
-`--help`          |       |                                      | Displays help for the current command.
-`--host`          | `-h`  |                                      | Set a host.
-`--image`         | `-i`  |                                      | Set the image, this takes precedence over `--registry-host` and `--registry-user`.
-`--name`          | `-N`   | current directory name               | Set the name of the application used for deployment.
-`--namespace`     | `-n`  |                                      | Set the namespace.
-`--overwrite`     | `-o`  | `false`                              | Overwrite the file if it exists.
-`--port`          | `-p`  |                                      | Set a port. (can be in the format of `--port 1234` or `--port http=1234`).
-`--registry-host` | `-R`  |                                      |
-`--registry-user` | `-U`  | current docker user                  |
-`--tls`           | `-t`  | `false`                              | Enable tls in the ingress container.
+
+| long              | short | default                              | description
+| ----------------- | ----- | ------------------------------------ | --------------------------------------
+| `--env`           | `-e`  |                                      | Set an environment variable.
+| `--file`          | `-f`  | `./.psykube.yml`                     | The location of the psykube manfest yml file.
+| `--help`          |       |                                      | Displays help for the current command.
+| `--host`          | `-h`  |                                      | Set a host.
+| `--image`         | `-i`  |                                      | Set the image, this takes precedence over `--registry-host` and `--registry-user`.
+| `--name`          | `-N`  | current directory name               | Set the name of the application used for deployment.
+| `--namespace`     | `-n`  |                                      | Set the namespace.
+| `--overwrite`     | `-o`  | `false`                              | Overwrite the file if it exists.
+| `--port`          | `-p`  |                                      | Set a port. (can be in the format of `--port 1234` or `--port http=1234`).
+| `--registry-host` | `-R`  |                                      | |
+| `--registry-user` | `-U`  | current docker user                  | |
+| `--tls`           | `-t`  | `false`                              | Enable tls in the ingress container.
