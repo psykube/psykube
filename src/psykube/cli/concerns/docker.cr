@@ -5,7 +5,7 @@ module Psykube::Commands::Docker
 
   private macro included
     define_flag build_args : Set(String),
-      description: "The build args to add to docker build",
+      description: "The build args to add to docker build.",
       default: Set(String).new
   end
 

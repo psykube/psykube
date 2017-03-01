@@ -8,7 +8,7 @@ class Psykube::Commands::Apply < Admiral::Command
 
   define_help description: "Apply the kubernetes manifests."
 
-  define_flag copy_namespace, description: "Copy from the specified namespace if this one does not exist."
+  define_flag copy_namespace, description: CopyNamespace::DESCRIPTION
   define_flag push : Bool, description: "Build and push the docker image.", default: true
   define_flag image, description: "Override the docker image."
   define_flag copy_resources : String,
@@ -17,7 +17,7 @@ class Psykube::Commands::Apply < Admiral::Command
     long: resources,
     default: CopyNamespace::DEFAULT_RESOURCES
   define_flag force_copy : Bool,
-    description: "Copy the namspace even the destination already exists."
+    description: "Copy the namespace even the destination already exists."
 
   private def image
     generator.manifest.image || flags.image

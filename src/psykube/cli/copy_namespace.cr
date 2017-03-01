@@ -3,12 +3,13 @@ require "./concerns/*"
 
 class Psykube::Commands::CopyNamespace < Admiral::Command
   DEFAULT_RESOURCES = "cm,ds,secrets,deploy,pvc,limits,rc,svc,statefulsets"
+  DESCRIPTION       = "Copy the specified namespace if the target namespace does not exist."
 
   include Kubectl
   include PsykubeFileFlag
   include KubectlContextFlag
 
-  define_help description: "Copy one namespace to another."
+  define_help description: DESCRIPTION
 
   define_flag cluster, "The cluster configuration to use.", default: "default"
   define_flag resources : String,
