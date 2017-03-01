@@ -5,14 +5,14 @@ class Psykube::Commands::PortForward < Admiral::Command
   include KubectlAll
   include Kubectl
 
-  define_help
+  define_help description: "Forward one or more local ports to a running pod for the application."
 
   private def help_usage
     <<-HELP
     Usage:
       #{program_name} [...flags] <cluster> [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]
 
-    Forward one or more local ports to a running pod for the application.
+    #{HELP["description"]}
 
     Examples:
       # Listen on ports 5000 and 6000 locally, forwarding data to/from ports 5000 and 6000 in the pod
