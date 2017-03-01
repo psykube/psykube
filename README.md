@@ -1,5 +1,3 @@
-
-
 <h1>Psykube&nbsp;&nbsp;<img height="50px" src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/psykube-duck.png"/>&nbsp;&nbsp;a faster way to deploy to Kubernetes!&nbsp;&nbsp;<a href="https://travis-ci.org/CommercialTribe/psykube"><img src="https://travis-ci.org/CommercialTribe/psykube.svg?branch=master" /></a></h1>
 [What is Psykube?](#what-is-psykube)
 | [Installation](#installation)
@@ -8,13 +6,12 @@
 | [Getting Started](#getting-started)
 | [Commands](#commands)
 
-
 ---
 
 # What is Psykube?
 Kubernetes is a powerful system, but it comes with its own learning curve. To deploy a single application you have to come familiar with a set of concepts. For example a single hello world application may be comprised of a `Deployment`, `Service`, and `Ingress` manifest file. Psykube aims to make that simpler by unifying your applications configuration into a single file.
 
-For the above example you may expect something like this in the `.psykube.yml` file and compare to what you would need to write in raw kubernets manifests to do the same thing:
+For the above example you may expect something like this in the `.psykube.yml` file.
 
 ###### psykube.yml
 
@@ -26,92 +23,6 @@ ports:
   ingress:
   tls: true
   host: hello-world.example.com
-```
-
-###### kubernetes manifests
-
-```yaml
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-name: hello-world
-namespace: default
-labels:
-  psykube: 'true'
-annotations:
-  psykube.io/whodunit: jwaldrip
-  psykube.io/cause: psykube generate default
-  psykube.io/last-applied-at: '2017-03-01T15:54:28+0000'  
-spec:
-  selector:
-    matchLabels:
-      app: hello-world
-  template:
-    metadata:
-      labels:
-        app: hello-world
-    spec:
-      containers:
-      - name: hello-world
-        image: johndoe/hello-world:sha256-5ddfe4537dea1b49b7157f982620331fc770852cea7161c0350dfd9cc30a1024
-        ports:
-        - name: http
-          containerPort: 8080
-        env:
-        - name: HTTP_PORT
-          value: '8080'
-        - name: PORT
-          value: '8080'
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
-  progressDeadlineSeconds: 300
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: hello-world
-  namespace: default
-  labels:
-    psykube: 'true'
-    service: hello-world
-spec:
-  ports:
-  - name: http
-    protocol: TCP
-    port: 8080
-  selector:
-    app: hello-world
-  type: ClusterIP
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: hello-world
-  namespace: default
-  labels:
-    psykube: 'true'
-  annotations:
-    psykube.io/whodunit: jwaldrip
-    psykube.io/cause: psykube generate default
-    psykube.io/last-applied-at: '2017-03-01T15:54:28+0000'
-    kubernetes.io/tls-acme: 'true'
-spec:
-  tls:
-  - hosts:
-    - hello-world.example.com
-    secretName: cert-1f94807c01b19a7a468c795e21a55cd55db51bde
-  rules:
-  - host: hello-world.example.com
-    http:
-      paths:
-      - path: "/"
-        backend:
-          serviceName: hello-world
-          servicePort: 8080
 ```
 
 ## Installation
@@ -170,7 +81,7 @@ Psykube works best with a certain kubernetes setup.
 
 To get started with psykube you can run the [`psykube init`](#psykube-init) command. You can then edit the `.psykube.yml` file generated in the current directory. By default, all that is generated is the application itself. In order to expose it to the web you must set ports and ingress. You can also use `tls: true` to tell `kube-lego` to generate a certificate and enable https for your ingress.
 
-```
+```yaml
 name: hello-world
 registry_user: johndoe
 ports:
