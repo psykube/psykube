@@ -10,16 +10,16 @@ class Psykube::Commands::Init < Admiral::Command
 
   define_help description: "Generate a .psykube.yml in the current directory."
 
-  define_flag overwrite : Bool, "Overwrite the file if it exists", short: o
-  define_flag name, default: File.basename(Dir.current)
-  define_flag namespace
-  define_flag registry_host
-  define_flag registry_user : String, default: current_docker_user
-  define_flag ports : Array(String), long: "port", short: "p", default: [] of String
+  define_flag overwrite : Bool, "Overwrite the file if it exists", short: 'o'
+  define_flag name, "Set the name of the application.", short: 'N'
+  define_flag namespace, "Set the namespace to deploy into.", short: 'n'
+  define_flag registry_host, "The hostname for the registry.", short: 'H'
+  define_flag registry_user : String, "The username for the registry.", short: 'U'
+  define_flag ports : Array(String), "Set a port. (can be in the format of --port 1234 or --port http=1234).", long: "port", short: "p", default: [] of String
   define_flag env : Array(String), short: "e", default: [] of String
-  define_flag hosts : Array(String), long: "host", default: [] of String
-  define_flag tls : Bool
-  define_flag image
+  define_flag hosts : Array(String), "Set a host for ingress.", long: "host", default: [] of String
+  define_flag tls : Bool, "Enable tls for ingress.", short: 't'
+  define_flag image, "Set the image, this takes precedence over --registry-host and --registry-user.", short: 'i'
 
   def overwrite?
     return true if flags.overwrite
@@ -31,7 +31,7 @@ class Psykube::Commands::Init < Admiral::Command
     if !File.exists?(flags.file) || overwrite?
       puts "Writing #{flags.file}...".colorize(:cyan)
       File.open(flags.file, "w+") do |file|
-        manifest = Psykube::Manifest.new flags.name
+        manifest = Psykube::Manifest.new(flags.name || File.basename(Dir.current))
         if ingress = manifest.ingress
           ingress.annotations = nil
           ingress.hosts = nil
@@ -40,7 +40,7 @@ class Psykube::Commands::Init < Admiral::Command
           manifest.image = flags.image
         else
           manifest.registry_host = flags.registry_host
-          manifest.registry_user = flags.registry_user
+          manifest.registry_user = flags.registry_user || current_docker_user
         end
         manifest.namespace = flags.namespace
         manifest.ports = Hash(String, UInt16).new.tap do |hash|
