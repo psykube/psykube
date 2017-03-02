@@ -4,6 +4,10 @@ shards:
     github: jwaldrip/admiral.cr
     version: 1.1.1
 
+  crouter:
+    github: jreinert/crouter
+    commit: 982f0986f9ceb6203742df475066c7ed9da8584c
+
   crustache:
     github: MakeNowJust/crustache
     version: 2.3.0

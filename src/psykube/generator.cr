@@ -23,7 +23,7 @@ class Psykube::Generator
   getter namespace : String = "default"
   getter tag : String
   getter image : String
-  getter dir : String
+  getter dir : String = "."
 
   def self.yaml(filename : String, cluster_name : String, image : String = "", template_data : TemplateData = TemplateData.new)
     new(filename, cluster_name, image, template_data).to_yaml
@@ -47,14 +47,10 @@ class Psykube::Generator
     @tag = generator.tag
   end
 
-  def initialize(filename : String, cluster_name : String? = nil, context : String? = nil, namespace : String? = nil, image : String? = nil, tag : String? = nil)
-    if File.directory? filename
-      @dir = filename
-      filename = File.join(filename, ".psykube.yml")
-    else
-      @dir = File.dirname filename
+  def initialize(io : IO, cluster_name : String? = nil, context : String? = nil, namespace : String? = nil, image : String? = nil, tag : String? = nil)
+    @yaml = String.build do |string_io|
+      IO.copy(io, string_io)
     end
-    @yaml = File.read(filename)
     @tag = tag || digest
     @cluster_name = cluster_name if cluster_name
     @context = context || raw_cluster_manifest.context || raw_manifest.context
@@ -62,6 +58,18 @@ class Psykube::Generator
     @namespace = NamespaceCleaner.clean(namespace) if namespace
     validate_image!
     @image = image || manifest.image || default_image || raise("Image is not specified.")
+  end
+
+  def initialize(filename : String, *args, **props)
+    if File.directory? filename
+      @dir = filename
+      filename = File.join(filename, ".psykube.yml")
+    else
+      @dir = File.dirname filename
+    end
+    File.open(filename) do |io|
+      initialize(io, *args, **props)
+    end
   end
 
   def digest
@@ -124,12 +132,12 @@ class Psykube::Generator
     [manifest.registry_host, manifest.registry_user, manifest.name].compact.join('/') + ":" + @tag
   end
 
-  def to_yaml
-    result.to_yaml
+  def to_yaml(*args, **props)
+    result.to_yaml(*args, **props)
   end
 
-  def to_json
-    result.to_json
+  def to_json(*args, **props)
+    result.to_json(*args, **props)
   end
 
   protected def result

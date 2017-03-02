@@ -6,3 +6,4 @@
 /bin/psykube
 /.psykube.yml
 /spec/.psykube.yml
+/node_modules
