@@ -4,6 +4,8 @@ require "http/server"
 require "admiral"
 require "./concerns/*"
 
+{% system "npm install" %}
+
 class Psykube::Commands::Playground < Admiral::Command
   struct GenerateController
     private getter context : HTTP::Server::Context
