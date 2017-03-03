@@ -3,7 +3,7 @@ require "file_utils"
 require "crustache"
 require "./manifest"
 require "./generator/*"
-require "./namespace_cleaner"
+require "./name_cleaner"
 
 class Psykube::Generator
   class ValidationError < Exception; end
@@ -17,13 +17,13 @@ class Psykube::Generator
   @template_yaml : Crustache::Syntax::Template?
   @digest : String?
 
+  property cluster_name : String = "default"
   getter yaml : String = ""
-  getter cluster_name : String = "default"
   getter context : String?
   getter namespace : String = "default"
   getter tag : String
   getter image : String
-  getter dir : String
+  getter dir : String = "."
 
   def self.yaml(filename : String, cluster_name : String, image : String = "", template_data : TemplateData = TemplateData.new)
     new(filename, cluster_name, image, template_data).to_yaml
@@ -47,21 +47,29 @@ class Psykube::Generator
     @tag = generator.tag
   end
 
-  def initialize(filename : String, cluster_name : String? = nil, context : String? = nil, namespace : String? = nil, image : String? = nil, tag : String? = nil)
+  def initialize(io : IO, cluster_name : String? = nil, context : String? = nil, namespace : String? = nil, image : String? = nil, tag : String? = nil)
+    @yaml = String.build do |string_io|
+      IO.copy(io, string_io)
+    end
+    @tag = tag || digest
+    @cluster_name = cluster_name if cluster_name
+    @context = context || raw_cluster_manifest.context || raw_manifest.context
+    namespace ||= raw_cluster_manifest.namespace || raw_manifest.namespace
+    @namespace = NameCleaner.clean(namespace) if namespace
+    validate_image!
+    @image = image || manifest.image || default_image || raise("Image is not specified.")
+  end
+
+  def initialize(filename : String, *args, **props)
     if File.directory? filename
       @dir = filename
       filename = File.join(filename, ".psykube.yml")
     else
       @dir = File.dirname filename
     end
-    @yaml = File.read(filename)
-    @tag = tag || digest
-    @cluster_name = cluster_name if cluster_name
-    @context = context || raw_cluster_manifest.context || raw_manifest.context
-    namespace ||= raw_cluster_manifest.namespace || raw_manifest.namespace
-    @namespace = NamespaceCleaner.clean(namespace) if namespace
-    validate_image!
-    @image = image || manifest.image || default_image || raise("Image is not specified.")
+    File.open(filename) do |io|
+      initialize(io, *args, **props)
+    end
   end
 
   def digest
@@ -70,11 +78,10 @@ class Psykube::Generator
 
   def git_data
     @git_data ||= Dir.cd(dir) do
-      sha = `git rev-parse HEAD`.strip
-      branch = `git rev-parse --abbrev-ref HEAD`.strip
-      tag = `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
-      {"sha" => sha, "branch" => branch}.tap do |data|
-        data["tag"] = tag unless tag.empty?
+      {"sha" => git_sha, "branch" => git_branch}.tap do |data|
+        unless (tag = git_tag).to_s.empty?
+          data["tag"] = tag unless tag.empty?
+        end
       end
     end
   end
@@ -124,12 +131,12 @@ class Psykube::Generator
     [manifest.registry_host, manifest.registry_user, manifest.name].compact.join('/') + ":" + @tag
   end
 
-  def to_yaml
-    result.to_yaml
+  def to_yaml(*args, **props)
+    result.to_yaml(*args, **props)
   end
 
-  def to_json
-    result.to_json
+  def to_json(*args, **props)
+    result.to_json(*args, **props)
   end
 
   protected def result
@@ -195,5 +202,17 @@ class Psykube::Generator
       end
     end.hexdigest
     "#{kind}-#{hexdigest}"
+  end
+
+  private def git_branch
+    `git rev-parse --abbrev-ref HEAD`.strip
+  end
+
+  private def git_sha
+    `git rev-parse HEAD`.strip
+  end
+
+  private def git_tag
+    `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
   end
 end
