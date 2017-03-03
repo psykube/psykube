@@ -6,9 +6,7 @@
 | [Getting Started](#getting-started)
 | [Commands](#commands)
 
----
-
-<img src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/demo.gif"/>
+<img width="100%" src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/demo.gif"/>
 
 # What is Psykube?
 Kubernetes is a powerful system, but it comes with its own learning curve. To deploy a single application you have to come familiar with a set of concepts. For example a single hello world application may be comprised of a `Deployment`, `Service`, and `Ingress` manifest file. Psykube aims to make that simpler by unifying your applications configuration into a single file.
