@@ -1,4 +1,5 @@
 require "yaml"
+require "./name_cleaner"
 
 class Psykube::Manifest
   macro mapping(properties)
@@ -7,7 +8,7 @@ class Psykube::Manifest
 
   alias VolumeMap = Hash(String, Volume | String)
   mapping({
-    name:                   String,
+    name:                   {type: String, getter: false},
     type:                   {type: String, default: "Deployment"},
     replicas:               UInt32?,
     completions:            UInt32?,
@@ -91,6 +92,10 @@ class Psykube::Manifest
 
   def env
     @env || {} of String => Env | String
+  end
+
+  def name
+    NameCleaner.clean(@name)
   end
 
   def service?

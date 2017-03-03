@@ -19,7 +19,7 @@ class Psykube::Commands::CopyResource < Admiral::Command
 
   def run
     if source_namespace = flags.source_namespace
-      source_namespace = NamespaceCleaner.clean(source_namespace)
+      source_namespace = NameCleaner.clean(source_namespace)
     end
     json = kubectl_json(
       resource: arguments.resource_type,

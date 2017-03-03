@@ -1,4 +1,4 @@
-module Psykube::NamespaceCleaner
+module Psykube::NameCleaner
   def self.clean(namespace : String)
     namespace.sub(
       /^[^a-z0-9]+/i, ""

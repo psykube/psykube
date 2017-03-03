@@ -3,7 +3,7 @@ require "file_utils"
 require "crustache"
 require "./manifest"
 require "./generator/*"
-require "./namespace_cleaner"
+require "./name_cleaner"
 
 class Psykube::Generator
   class ValidationError < Exception; end
@@ -55,7 +55,7 @@ class Psykube::Generator
     @cluster_name = cluster_name if cluster_name
     @context = context || raw_cluster_manifest.context || raw_manifest.context
     namespace ||= raw_cluster_manifest.namespace || raw_manifest.namespace
-    @namespace = NamespaceCleaner.clean(namespace) if namespace
+    @namespace = NameCleaner.clean(namespace) if namespace
     validate_image!
     @image = image || manifest.image || default_image || raise("Image is not specified.")
   end
