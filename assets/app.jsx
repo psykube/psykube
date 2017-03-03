@@ -99,7 +99,7 @@ class App extends React.Component {
     return (
       <div>
         <form style={sourceStyle} onSubmit={this.submit}>
-          <textarea onChange={this.setSource} style={innerInputStyle} value={source} />
+          <textarea spellCheck={false} onChange={this.setSource} style={innerInputStyle} value={source} />
         </form>
         <div style={outerStyle}>
           <SyntaxHighlighter language="json" style={ocean} customStyle={innerStyle}>
