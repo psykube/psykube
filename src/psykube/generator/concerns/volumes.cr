@@ -1,4 +1,4 @@
-class Psykube::Generator
+abstract class Psykube::Generator
   module Concerns::Volumes
     private def name_from_mount_path(mount_path : String)
       [manifest.name, mount_path.gsub(/\//, "-")].join('-').downcase

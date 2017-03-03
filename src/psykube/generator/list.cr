@@ -1,6 +1,6 @@
 require "../kubernetes/list"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class List < Generator
     protected def result
       Kubernetes::List.new do |list|

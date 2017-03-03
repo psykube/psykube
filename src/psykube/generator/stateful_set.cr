@@ -2,16 +2,20 @@ require "../kubernetes/deployment"
 require "../kubernetes/pod"
 require "./concerns/*"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class StatefulSet < Generator
     class InvalidHealthcheck < Exception; end
 
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::StatefulSet.new(manifest.name, manifest.name).tap do |deployment|
-        deployment.metadata.namespace = namespace
-        if spec = deployment.spec
+      Kubernetes::StatefulSet.new(manifest.name, manifest.name).tap do |stateful_set|
+        assign_labels(stateful_set, manifest)
+        assign_labels(stateful_set, cluster_manifest)
+        assign_annotations(stateful_set, manifest)
+        assign_annotations(stateful_set, cluster_manifest)
+        stateful_set.metadata.namespace = namespace
+        if spec = stateful_set.spec
           spec.replicas = manifest.replicas
           spec.template.spec.restart_policy = manifest.restart_policy
           spec.template.spec.volumes = generate_volumes

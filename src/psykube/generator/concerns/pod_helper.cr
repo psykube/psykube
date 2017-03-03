@@ -1,6 +1,6 @@
 require "./volumes"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   module Concerns::PodHelper
     include Volumes
 

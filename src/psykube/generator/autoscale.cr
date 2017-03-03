@@ -1,6 +1,6 @@
 require "../kubernetes/horizontal_pod_autoscaler"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class Autoscale < Generator
     protected def result
       if autoscale?

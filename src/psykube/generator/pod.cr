@@ -2,12 +2,16 @@ require "../kubernetes/deployment"
 require "../kubernetes/pod"
 require "./concerns/*"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class Pod < Generator
     include Concerns::PodHelper
 
     protected def result
       Kubernetes::Pod.new(manifest.name).tap do |pod|
+        assign_labels(pod, manifest)
+        assign_labels(pod, cluster_manifest)
+        assign_annotations(pod, manifest)
+        assign_annotations(pod, cluster_manifest)
         pod.metadata.namespace = namespace
         if spec = pod.spec
           spec.restart_policy = manifest.restart_policy

@@ -1,6 +1,6 @@
 require "../kubernetes/config_map"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class ConfigMap < Generator
     protected def result
       unless combined_config_map.empty?
