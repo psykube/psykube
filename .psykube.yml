@@ -1,0 +1,16 @@
+name: psykube
+type: Deployment
+registry_user: jwaldrip
+
+command: "playground"
+
+args: [ "--bind=0.0.0.0" ]
+ports:
+  http: 8080
+ingress:
+  tls: true
+  host: psykube.commercialtribe.ninja
+
+clusters:
+  default:
+    context: gke_commercial-tribe_us-east1-c_staging
