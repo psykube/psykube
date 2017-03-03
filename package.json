@@ -1,6 +1,6 @@
 {
   "name": "psykube",
-  "version": "build",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "browserify assets/app.jsx -t [ babelify ] | uglifyjs 2> /dev/null"
