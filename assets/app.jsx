@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { ocean } from 'react-syntax-highlighter/dist/styles';
 import store from 'store';
+import deepSort from 'deep-sort-object';
 
 class App extends React.Component {
   constructor(...props){
@@ -15,13 +16,15 @@ class App extends React.Component {
   }
 
   setSource = e => {
-    const source = e.target.value
+    clearTimeout(this.submitTimeout);
+    this.submitTimeout = setTimeout(this.submit, 100);
+    const source = e.target.value;
     store.set('source', source);
     this.setState({ source })
   }
 
-  submit = e => {
-    if (e) { e.preventDefault() }
+  submit = () => {
+    clearTimeout(this.submitTimeout)
     this.setState({ fetching: true })
     fetch('/generate', {
       method: 'POST',
@@ -32,7 +35,11 @@ class App extends React.Component {
     }).then(
       r => r.text()
     ).then(
-      text => this.setState({ result: text, fetching: false })
+      text => new Promise(
+        r => r(JSON.stringify(deepSort(JSON.parse(text)), null, 2))
+      ).catch(() => text)
+    ).then(
+      result => this.setState({ result, fetching: false })
     );
   }
 
@@ -44,7 +51,6 @@ class App extends React.Component {
 
   render(){
     const margin = 10;
-    const buttonSize = 50;
     const outerStyle = {
       margin: 0,
       width: "50vw",
@@ -71,29 +77,11 @@ class App extends React.Component {
       ...outerStyle,
       backgroundColor: "#ccc"
     }
-    const buttonStyle = {
-      borderRadius: (buttonSize / 2),
-      cursor: "pointer",
-      backgroundColor: this.state.fetching ? "#ff6" : "#07f",
-      position: "absolute",
-      width: buttonSize,
-      height: buttonSize,
-      left: "50%",
-      top: "50%",
-      marginLeft: -(buttonSize / 2),
-      marginTop: -(buttonSize / 2),
-      zIndex: 99,
-      color: this.state.fetching ? "#000" : "#fff",
-      textAlign: "center",
-      lineHeight: `${buttonSize}px`,
-      fontSize: `${this.state.fetching ? 15 : buttonSize / 2}px`
-    }
     return (
       <div>
         <form style={sourceStyle} onSubmit={this.submit}>
           <textarea onChange={this.setSource} style={innerInputStyle} value={this.state.source} />
         </form>
-        <div onClick={this.submit} style={buttonStyle}>{this.state.fetching ? "..." : ">"}</div>
         <div style={outerStyle}>
           <SyntaxHighlighter language="json" style={ocean} customStyle={innerStyle}>
             {this.state.loading ? "Loading..." : this.state.result}

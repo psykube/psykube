@@ -3,7 +3,6 @@ require "crouter"
 require "http/server"
 require "admiral"
 require "./concerns/*"
-
 {% system "npm install" %}
 
 class Psykube::Commands::Playground < Admiral::Command
@@ -16,7 +15,7 @@ class Psykube::Commands::Playground < Admiral::Command
 
     def generate
       if (body = context.request.body)
-        Psykube::Generator::List.new(body).to_pretty_json(context.response)
+        Psykube::Generator::List.new(body).to_json(context.response)
       end
     rescue e : YAML::ParseException
       context.response.status_code = 422

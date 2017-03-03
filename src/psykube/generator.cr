@@ -78,11 +78,10 @@ class Psykube::Generator
 
   def git_data
     @git_data ||= Dir.cd(dir) do
-      sha = `git rev-parse HEAD`.strip
-      branch = `git rev-parse --abbrev-ref HEAD`.strip
-      tag = `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
-      {"sha" => sha, "branch" => branch}.tap do |data|
-        data["tag"] = tag unless tag.empty?
+      {"sha" => git_branch, "branch" => git_branch}.tap do |data|
+        unless (tag = git_tag).to_s.empty?
+          data["tag"] = tag unless tag.empty?
+        end
       end
     end
   end
@@ -203,5 +202,17 @@ class Psykube::Generator
       end
     end.hexdigest
     "#{kind}-#{hexdigest}"
+  end
+
+  private def git_branch
+    `git rev-parse --abbrev-ref HEAD`.strip
+  end
+
+  private def git_sha
+    `git rev-parse HEAD`.strip
+  end
+
+  private def git_tag
+    `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
   end
 end
