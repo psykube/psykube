@@ -26,16 +26,18 @@ class Psykube::Commands::Playground < Admiral::Command
   end
 
   class Router < Crouter::Router
+    DUCK = {{ `cat #{__DIR__}/../../../psykube-ico.png`.stringify }}
+
     post "/generate", "GenerateController#generate"
 
     get "/favicon.png" do
       context.response.content_type = "image/png"
-      context.response << {{ `cat #{__DIR__}/../../../psykube-ico.png`.stringify }}
+      context.response << DUCK
     end
 
     get "/duck.png" do
       context.response.content_type = "image/png"
-      context.response << {{ `cat #{__DIR__}/../../../psykube-ico.png`.stringify }}
+      context.response << DUCK
     end
 
     get "/app.js" do
