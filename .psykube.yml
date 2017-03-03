@@ -1,6 +1,7 @@
 name: psykube
 type: Deployment
-registry_user: jwaldrip
+registry_host: gcr.io
+registry_user: commercial-tribe
 
 command: "playground"
 
