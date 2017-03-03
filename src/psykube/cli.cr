@@ -22,4 +22,5 @@ class Psykube::CLI < Admiral::Command
   register_sub_command history, Commands::History
   register_sub_command rollback, Commands::Rollback
   register_sub_command scale, Commands::Scale
+  register_sub_command playground, Commands::Playground
 end

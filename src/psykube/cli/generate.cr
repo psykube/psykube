@@ -8,9 +8,12 @@ class Psykube::Commands::Generate < Admiral::Command
 
   define_help description: "Generate the kubernetes manifests."
   define_flag image, description: "Override the docker image."
+  define_flag pretty : Bool, description: "Prettyify the output", default: true
 
   def run
-    puts generator.to_json
+    if (io = @output_io).is_a?(IO::FileDescriptor)
+      flags.pretty ? generator.to_pretty_json(io) : generator.to_json(io)
+    end
   rescue e : Generator::ValidationError
     panic "Error: #{e.message}".colorize(:red)
   end
