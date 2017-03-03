@@ -15,9 +15,11 @@ class Psykube::Commands::Playground < Admiral::Command
 
     def generate
       if (body = context.request.body)
-        Psykube::Generator::List.new(body).to_json(context.response)
+        gen = Psykube::Generator::List.new(body)
+        gen.cluster_name = gen.manifest.clusters.keys.first? || "default"
+        gen.to_json(context.response)
       end
-    rescue e : YAML::ParseException
+    rescue e : YAML::ParseException | Crustache::ParseError
       context.response.status_code = 422
       context.response << e.message
     end
@@ -25,6 +27,16 @@ class Psykube::Commands::Playground < Admiral::Command
 
   class Router < Crouter::Router
     post "/generate", "GenerateController#generate"
+
+    get "/favicon.png" do
+      context.response.content_type = "image/png"
+      context.response << {{ `cat #{__DIR__}/../../../psykube-ico.png`.stringify }}
+    end
+
+    get "/duck.png" do
+      context.response.content_type = "image/png"
+      context.response << {{ `cat #{__DIR__}/../../../psykube-ico.png`.stringify }}
+    end
 
     get "/app.js" do
       context.response.content_type = "application/js"

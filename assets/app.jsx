@@ -2,14 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { ocean } from 'react-syntax-highlighter/dist/styles';
-import store from 'store';
 import deepSort from 'deep-sort-object';
 
 class App extends React.Component {
   constructor(...props){
     super(...props)
     this.state = {
-      source: store.get("source"),
+      source: "",
       result: "",
       fetching: false,
     };
@@ -19,8 +18,16 @@ class App extends React.Component {
     clearTimeout(this.submitTimeout);
     this.submitTimeout = setTimeout(this.submit, 100);
     const source = e.target.value;
-    store.set('source', source);
+    window.location.hash = source ? btoa(source) : '';
     this.setState({ source })
+  }
+
+  handleNewHash = () => {
+    try {
+      this.setState({ source: atob(window.location.hash.replace(/^#/, "")) }, this.submit)
+    } catch (e) {
+      window.location.hash = ''
+    }
   }
 
   submit = () => {
@@ -44,12 +51,19 @@ class App extends React.Component {
   }
 
   componentDidMount(){
+    window.addEventListener('hashchange', this.handleNewHash, false);
+    this.handleNewHash();
     if (this.state.source) {
       this.submit();
     }
   }
 
+  componentWillUnmount(){
+    window.removeEventListener('hashchange', this.handleNewHash, false);
+  }
+
   render(){
+    const { fetching, result, source } = this.state;
     const margin = 10;
     const outerStyle = {
       margin: 0,
@@ -67,11 +81,16 @@ class App extends React.Component {
       ...innerStyle,
       margin,
       padding: 0,
+      overflow: "visible",
       width: `calc(100% - ${margin * 2}px)`,
       height: `calc(100% - ${margin * 2}px)`,
       border: 0,
       resize: "none",
-      backgroundColor: "transparent"
+      backgroundColor: "transparent",
+      backgroundImage: fetching ? 'url("/duck.png")' : 'none',
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "right top",
+      transition: "background-image 1s"
     }
     const sourceStyle = {
       ...outerStyle,
@@ -80,11 +99,11 @@ class App extends React.Component {
     return (
       <div>
         <form style={sourceStyle} onSubmit={this.submit}>
-          <textarea onChange={this.setSource} style={innerInputStyle} value={this.state.source} />
+          <textarea onChange={this.setSource} style={innerInputStyle} value={source} />
         </form>
         <div style={outerStyle}>
           <SyntaxHighlighter language="json" style={ocean} customStyle={innerStyle}>
-            {this.state.loading ? "Loading..." : this.state.result}
+            {result}
           </SyntaxHighlighter>
         </div>
       </div>

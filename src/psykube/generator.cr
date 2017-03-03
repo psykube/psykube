@@ -17,8 +17,8 @@ class Psykube::Generator
   @template_yaml : Crustache::Syntax::Template?
   @digest : String?
 
+  property cluster_name : String = "default"
   getter yaml : String = ""
-  getter cluster_name : String = "default"
   getter context : String?
   getter namespace : String = "default"
   getter tag : String
@@ -78,7 +78,7 @@ class Psykube::Generator
 
   def git_data
     @git_data ||= Dir.cd(dir) do
-      {"sha" => git_branch, "branch" => git_branch}.tap do |data|
+      {"sha" => git_sha, "branch" => git_branch}.tap do |data|
         unless (tag = git_tag).to_s.empty?
           data["tag"] = tag unless tag.empty?
         end
