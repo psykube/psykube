@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "browserify assets/app.jsx -t [ babelify ] | uglifyjs 2> /dev/null"
+    "build": "browserify --extension=.jsx assets/app.jsx -t babelify | uglifyjs 2> /dev/null"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
