@@ -3,3 +3,4 @@
 !assets
 !shard.*
 !package.json
+!.babelrc
