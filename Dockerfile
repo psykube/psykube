@@ -27,5 +27,7 @@ RUN git commit -m "initial commit"
 RUN apt-get remove nodejs -y
 RUN apt-get purge
 RUN rm -rf /build
+RUN rm `which crystal`
+RUN rm `which shards`
 
 ENTRYPOINT [ "/usr/local/bin/psykube" ]
