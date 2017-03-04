@@ -7,6 +7,9 @@ env:
     - PSYKUBE_DEBUG=true
     - KUBECTL_BIN=/usr/lib/google-cloud-sdk/bin/kubectl
     - CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
+install:
+  - curl -sL https://deb.nodesource.com/setup_6.x | bash -
+  - apt-get install nodejs -y
 before_script:
   - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl --version 142.0.0
   - sudo chown -R $USER /home/travis/.config/gcloud
