@@ -40,3 +40,9 @@ deploy:
     on:
       repo: CommercialTribe/psykube
       tags: true
+  - provider: script
+    skip_cleanup: true
+    script: ./bin/psykube push -t $TRAVIS_TAG -t latest
+    on:
+      repo: CommercialTribe/psykube
+      tags: true
