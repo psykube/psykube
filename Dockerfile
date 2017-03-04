@@ -1,10 +1,10 @@
 FROM crystallang/crystal:0.21.0
 
 # Deps
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install curl -y
+RUN apt-get update
+RUN apt-get install curl -y
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-RUN DEBIAN_FRONTEND=noninteractive apt-get install nodejs -y
+RUN apt-get install nodejs -y
 ADD . /build
 WORKDIR /build
 ENV NPM_CONFIG_LOGLEVEL warn
@@ -27,5 +27,7 @@ RUN git commit -m "initial commit"
 RUN apt-get remove nodejs -y
 RUN apt-get purge
 RUN rm -rf /build
+RUN rm `which crystal`
+RUN rm `which shards`
 
 ENTRYPOINT [ "/usr/local/bin/psykube" ]

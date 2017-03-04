@@ -15,11 +15,11 @@ class Psykube::Commands::Playground < Admiral::Command
 
     def generate
       if (body = context.request.body)
-        gen = Psykube::Generator::List.new(body)
+        gen = Generator::List.new(body)
         gen.cluster_name = gen.manifest.clusters.keys.first? || "default"
         gen.to_json(context.response)
       end
-    rescue e : YAML::ParseException | Crustache::ParseError
+    rescue e : YAML::ParseException | Crustache::ParseError | Generator::ValidationError
       context.response.status_code = 422
       context.response << e.message
     end
