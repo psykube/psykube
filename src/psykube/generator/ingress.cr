@@ -1,15 +1,17 @@
 require "../kubernetes/ingress"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class Ingress < Generator
     protected def result
       Kubernetes::Ingress.new(manifest.name).tap do |ingress|
+        assign_labels(ingress, manifest)
+        assign_labels(ingress, cluster_manifest)
+        assign_annotations(ingress, {"kubernetes.io/tls-acme" => "true"}) if cluster_tls == true
+        assign_annotations(ingress, manifest_ingress)
+        assign_annotations(ingress, cluster_manifest_ingress)
+
         ingress.metadata.namespace = namespace
-        ingress.metadata.annotations = cluster_ingress_annotations unless cluster_ingress_annotations.empty?
-        if cluster_tls == true
-          annotations = (ingress.metadata.annotations ||= {} of String => String)
-          annotations["kubernetes.io/tls-acme"] = "true"
-        end
+
         ingress.spec = Kubernetes::Ingress::Spec.new.tap do |spec|
           spec.rules = [] of Kubernetes::Ingress::Spec::Rule
           spec.tls = generate_tls

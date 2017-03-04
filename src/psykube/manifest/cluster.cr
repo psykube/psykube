@@ -1,11 +1,13 @@
 class Psykube::Manifest::Cluster
   Manifest.mapping({
-    ingress:    Ingress?,
-    context:    String?,
-    namespace:  String?,
-    config_map: {type: Hash(String, String), nilable: true, getter: false},
-    secrets:    {type: Hash(String, String), nilable: true, getter: false},
-    autoscale:  Autoscale?,
+    labels:      Hash(String, String)?,
+    annotations: Hash(String, String)?,
+    ingress:     Ingress?,
+    context:     String?,
+    namespace:   String?,
+    config_map:  {type: Hash(String, String), nilable: true, getter: false},
+    secrets:     {type: Hash(String, String), nilable: true, getter: false},
+    autoscale:   Autoscale?,
   })
 
   def initialize(@context : String? = nil)
