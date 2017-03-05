@@ -5,8 +5,8 @@ import Result from './Result';
 
 const outerStyle = {
   margin: 0,
-  width: "50vw",
-  height: "100vh",
+  width: "50%",
+  height: "100%",
   float: "left",
   overflow: "scroll",
 }

@@ -5,8 +5,8 @@ import Generator from './components/Generator';
 
 const App = () =>
   <div>
-    <Header />
-    <Generator />
+    <Header style={{ height: 30 }} />
+    <Generator style={{ height: "calc(100vh - 50px)" }} />
   </div>
 
 ReactDOM.render(<App />, document.getElementById("root"));
