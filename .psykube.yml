@@ -3,9 +3,7 @@ type: Deployment
 registry_host: gcr.io
 registry_user: commercial-tribe
 
-command: "playground"
-
-args: [ "--bind=0.0.0.0" ]
+args: [ "playground", "--bind=0.0.0.0" ]
 ports:
   http: 8080
 ingress:
