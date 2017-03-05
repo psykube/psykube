@@ -2,7 +2,7 @@ require "../kubernetes/deployment"
 require "../kubernetes/pod"
 require "./concerns/*"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class ReplicaSet < Generator
     class InvalidHealthcheck < Exception; end
 
@@ -10,6 +10,10 @@ class Psykube::Generator
 
     protected def result
       Kubernetes::ReplicaSet.new(manifest.name).tap do |rs|
+        assign_labels(rs, manifest)
+        assign_labels(rs, cluster_manifest)
+        assign_annotations(rs, manifest)
+        assign_annotations(rs, cluster_manifest)
         rs.metadata.namespace = namespace
         if spec = rs.spec
           spec.replicas = manifest.replicas

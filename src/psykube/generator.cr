@@ -5,7 +5,7 @@ require "./manifest"
 require "./generator/*"
 require "./name_cleaner"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class ValidationError < Exception; end
 
   alias TemplateData = Hash(String, String)
@@ -139,9 +139,7 @@ class Psykube::Generator
     result.to_json(*args, **props)
   end
 
-  protected def result
-    {} of String => String
-  end
+  abstract def result
 
   private def template_yaml
     @template_yaml ||= Crustache.parse yaml.gsub(/<<(.+)>>/, "{{\\1}}")
@@ -217,6 +215,26 @@ class Psykube::Generator
       end
     end.hexdigest
     "#{kind}-#{hexdigest}"
+  end
+
+  private def assign_annotations(target, hash : Hash(String, String)?)
+    if (annotations = target.metadata.annotations ||= {} of String => String)
+      annotations.merge! hash if hash
+    end
+  end
+
+  private def assign_annotations(target, source)
+    assign_annotations target, source.annotations
+  end
+
+  private def assign_labels(target, hash : Hash(String, String)?)
+    if (labels = target.metadata.labels ||= {} of String => String)
+      labels.merge! hash if hash
+    end
+  end
+
+  private def assign_labels(target, source)
+    assign_labels target, source.labels
   end
 
   private def git_branch

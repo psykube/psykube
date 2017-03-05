@@ -2,7 +2,7 @@ require "../kubernetes/deployment"
 require "../kubernetes/pod"
 require "./concerns/*"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class Job < Generator
     class InvalidHealthcheck < Exception; end
 
@@ -10,6 +10,10 @@ class Psykube::Generator
 
     protected def result
       Kubernetes::Job.new(manifest.name).tap do |job|
+        assign_labels(job, manifest)
+        assign_labels(job, cluster_manifest)
+        assign_annotations(job, manifest)
+        assign_annotations(job, cluster_manifest)
         job.metadata.namespace = namespace
         if spec = job.spec
           spec.parallelism = manifest.parallelism

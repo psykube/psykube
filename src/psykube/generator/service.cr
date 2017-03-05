@@ -1,12 +1,14 @@
 require "../kubernetes/service"
 
-class Psykube::Generator
+abstract class Psykube::Generator
   class Service < Generator
     protected def result
       if (service = manifest.service)
         Kubernetes::Service.new(manifest.name, manifest.ports).tap do |svc|
+          assign_labels(svc, manifest)
+          assign_labels(svc, cluster_manifest)
+          assign_annotations(svc, service)
           svc.metadata.namespace = namespace
-          svc.metadata.annotations = service.annotations
           if (spec = svc.spec)
             spec.type = service.type
             spec.cluster_ip = service.cluster_ip

@@ -10,6 +10,8 @@ class Psykube::Manifest
   mapping({
     name:                   {type: String, getter: false},
     type:                   {type: String, default: "Deployment"},
+    annotations:            Hash(String, String)?,
+    labels:                 Hash(String, String)?,
     replicas:               UInt32?,
     completions:            UInt32?,
     parallelism:            UInt32?,
