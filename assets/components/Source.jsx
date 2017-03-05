@@ -3,12 +3,11 @@ import React, { PropTypes } from 'react';
 Source.propTypes = {
   style: PropTypes.object,
   margin: PropTypes.number,
-  fetching: PropTypes.bool,
   source: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired
 }
 
-export default function Source({ style = {}, margin = 10, fetching = false, source = "", onChange = () => {} }){
+export default function Source({ style = {}, margin = 10, source = "", onChange = () => {} }){
   const innerStyle = {
     margin,
     fontFamily: "monospace",
@@ -20,9 +19,6 @@ export default function Source({ style = {}, margin = 10, fetching = false, sour
     border: 0,
     resize: "none",
     backgroundColor: "transparent",
-    backgroundImage: fetching ? 'url("/duck.png")' : 'none',
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right top",
     transition: "background-image 1s"
   }
   return(

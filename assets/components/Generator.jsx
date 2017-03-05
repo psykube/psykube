@@ -4,6 +4,7 @@ import Source from './Source';
 import Result from './Result';
 
 const outerStyle = {
+  position: "relative",
   margin: 0,
   width: "50%",
   height: "100%",
@@ -21,57 +22,63 @@ export default class Generator extends React.Component {
     };
   }
 
-  setSource = e => {
+  handleSourceChange = e => {
+    this.setSource(e.target.value);
+  }
+
+  setSource = source => {
     clearTimeout(this.submitTimeout);
-    this.submitTimeout = setTimeout(this.submit, 100);
-    const source = e.target.value;
-    window.location.hash = source ? btoa(source) : '';
+    this.submitTimeout = setTimeout(this.submit, 500);
     this.setState({ source })
   }
 
   handleNewHash = () => {
     try {
-      this.setState({ source: atob(window.location.hash.replace(/^#/, "")) }, this.submit)
+      this.setSource(atob(window.location.hash.replace(/^#/, "")))
     } catch (e) {
       window.location.hash = ''
     }
   }
 
   submit = () => {
+    const { source } = this.state;
     clearTimeout(this.submitTimeout)
     this.setState({ fetching: true })
-    fetch('/generate', {
+    this.activeFetch = fetch('/generate', {
       method: 'POST',
       body: this.state.source,
       headers: new Headers({
         'Content-Type': 'application/yaml'
       })
-    }).then(
+    })
+    const f = this.activeFetch;
+    f.then(
+      () => this.activeFetch
+    ).then(
       r => r.text()
     ).then(
       text => new Promise(
         r => r(JSON.stringify(deepSort(JSON.parse(text)), null, 2))
-      ).catch(() => text)
+      ).catch(() => {
+        throw new Error(text);
+      })
     ).then(
-      result => this.setState({ result, fetching: false })
+      result => {
+        this.setState({ result, error: "", fetching: false })
+        window.location.hash = source ? btoa(source) : '';
+      }
+    ).catch(
+      ({ message: error }) => this.setState({ error, fetching: false })
     );
   }
 
   componentDidMount(){
-    window.addEventListener('hashchange', this.handleNewHash, false);
     this.handleNewHash();
-    if (this.state.source) {
-      this.submit();
-    }
-  }
-
-  componentWillUnmount(){
-    window.removeEventListener('hashchange', this.handleNewHash, false);
   }
 
   render = () =>
     <div {...this.props}>
-      <Source style={{ ...outerStyle, backgroundColor: "#ddd" }} fetching={this.state.fetching} source={this.state.source} onChange={this.setSource} />
-      <Result style={outerStyle} fetching={this.state.fetching} result={this.state.result} />
+      <Source style={{ ...outerStyle, backgroundColor: "#ddd" }} source={this.state.source} onChange={this.handleSourceChange} />
+      <Result style={outerStyle} fetching={this.state.fetching} result={this.state.result} error={this.state.error} />
     </div>
 }
