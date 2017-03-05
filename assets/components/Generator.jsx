@@ -51,12 +51,10 @@ export default class Generator extends React.Component {
       headers: new Headers({
         'Content-Type': 'application/yaml'
       })
-    })
+    }).then(r => r.text())
     const f = this.activeFetch;
     f.then(
       () => this.activeFetch
-    ).then(
-      r => r.text()
     ).then(
       text => new Promise(
         r => r(JSON.stringify(deepSort(JSON.parse(text)), null, 2))
