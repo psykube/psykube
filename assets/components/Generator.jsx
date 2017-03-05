@@ -1,5 +1,6 @@
 import React from 'react';
 import deepSort from 'deep-sort-object';
+import store from "store"
 import Source from './Source';
 import Result from './Result';
 
@@ -65,6 +66,7 @@ export default class Generator extends React.Component {
     ).then(
       result => {
         this.setState({ result, error: "", fetching: false })
+        store.set("source", source);
         window.location.hash = source ? btoa(source) : '';
       }
     ).catch(
@@ -73,7 +75,7 @@ export default class Generator extends React.Component {
   }
 
   componentDidMount(){
-    this.handleNewHash();
+    window.location.hash ? this.handleNewHash() : this.setSource(store.get("source"));
   }
 
   render = () =>
