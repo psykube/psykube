@@ -4,7 +4,7 @@ module Psykube::Commands::PsykubeFileFlag
   private macro included
     # Flags
     define_flag file,
-      description: "The location of the psykube manfest yml file.",
+      description: "The location of the psykube manifest yml file.",
       short: f,
       default: "./.psykube.yml"
   end

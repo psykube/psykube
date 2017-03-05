@@ -18,7 +18,7 @@ class Psykube::Commands::Init < Admiral::Command
   define_flag ports : Array(String), "Set a port. (can be in the format of --port 1234 or --port http=1234).", long: "port", short: "p", default: [] of String
   define_flag env : Array(String), short: "e", default: [] of String
   define_flag hosts : Array(String), "Set a host for ingress.", long: "host", default: [] of String
-  define_flag tls : Bool, "Enable tls for ingress.", short: 't'
+  define_flag tls : Bool, "Enable TLS for ingress.", short: 't'
   define_flag image, "Set the image, this takes precedence over --registry-host and --registry-user.", short: 'i'
 
   def overwrite?
