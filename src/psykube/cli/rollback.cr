@@ -15,6 +15,6 @@ class Psykube::Commands::Rollback < Admiral::Command
     end
     puts "Rolling back #{flags.revision == 0 ? "to last deployment" : "to revision `#{flags.revision}`"}.".colorize(:yellow)
     kubectl_run("rollout", ["undo", "deployment/#{generator.manifest.name}"], flags: {"--to-revision" => flags.revision.to_s})
-    kubectl_exec("rollout", ["status", "deployment/#{deployment_generator.manifest.name}"])
+    kubectl_run("rollout", ["status", "deployment/#{deployment_generator.manifest.name}"])
   end
 end

@@ -21,7 +21,7 @@ class Psykube::Commands::Delete < Admiral::Command
   def run
     if confirm?
       puts "Deleting Kubernetes Manifests...".colorize(:yellow)
-      kubectl_exec(command: "delete", manifest: generator.result)
+      kubectl_run(command: "delete", manifest: generator.result)
     end
   rescue e : Generator::ValidationError
     panic "Error: #{e.message}".colorize(:red)
