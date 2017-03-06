@@ -25,7 +25,7 @@ end
 
 Dir.cd("spec") do
   describe String do
-    psykube "init --overwrite --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe"
+    psykube "init --overwrite --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80"
     psykube "generate default"
     psykube "apply default"
     psykube "status default"
