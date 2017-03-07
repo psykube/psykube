@@ -61,7 +61,7 @@ abstract class Psykube::Generator
   end
 
   def initialize(filename : String, *args, **props)
-    if File.directory? filename
+    if File.directory? File.expand_path filename
       @dir = filename
       filename = File.join(filename, ".psykube.yml")
     else
