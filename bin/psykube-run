@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
+export PSYKUBE_DEBUG=true
 exec crystal run `dirname $0`/../src/psykube.cr -- $@
