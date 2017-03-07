@@ -26,7 +26,7 @@ module Psykube::Commands::Docker
     end
     image = tag.includes?(":") ? tag : generator.image(tag)
     args << "--tag=#{image}"
-    args << File.dirname(flags.file)
+    args << generator.dir
     docker_run args
   end
 
@@ -37,7 +37,7 @@ module Psykube::Commands::Docker
 
   def docker_run(args : Array(String))
     File.exists?(Docker.bin) || panic("docker not found")
-    puts ([Docker.bin] + args).join(" ") if ENV["PSYKUBE_DEBUG"]? == "true"
+    puts (["DEBUG:", Docker.bin] + args).join(" ").colorize(:dark_gray) if ENV["PSYKUBE_DEBUG"]? == "true"
     Process.run(Docker.bin, args, output: @output_io, error: @error_io).tap do |process|
       panic "Process: `#{Docker.bin} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
     end

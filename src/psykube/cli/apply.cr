@@ -18,6 +18,8 @@ class Psykube::Commands::Apply < Admiral::Command
     default: CopyNamespace::DEFAULT_RESOURCES
   define_flag force_copy : Bool,
     description: "Copy the namespace even the destination already exists."
+  define_flag force : Bool,
+    description: "Force the recreation of the kubernetes resources."
 
   private def image
     generator.manifest.image || flags.image
@@ -29,9 +31,12 @@ class Psykube::Commands::Apply < Admiral::Command
     result = generator.result
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
     result.items.map do |item|
-      kubectl_new("apply", manifest: item, flags: {"--record" => true})
+      force = flags.force
+      kubectl_new("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
-    kubectl_run("rollout", ["status", "deployment/#{deployment_generator.manifest.name}"])
+    if deployment_generator.manifest.type == "Deployment"
+      kubectl_run("rollout", ["status", "deployment/#{deployment_generator.manifest.name}"])
+    end
   rescue e : Generator::ValidationError
     panic "Error: #{e.message}".colorize(:red)
   end

@@ -5,6 +5,8 @@ abstract class Psykube::Generator
     protected def result
       unless combined_config_map.empty?
         Kubernetes::ConfigMap.new(manifest.name, combined_config_map).tap do |config_map|
+          assign_labels(config_map, manifest)
+          assign_labels(config_map, cluster_manifest)
           config_map.metadata.namespace = namespace
         end
       end
