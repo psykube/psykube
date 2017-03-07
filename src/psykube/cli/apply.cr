@@ -29,7 +29,8 @@ class Psykube::Commands::Apply < Admiral::Command
     result = generator.result
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
     result.items.map do |item|
-      kubectl_new("apply", manifest: item, flags: {"--record" => true})
+      force = !item.is_a?(Kubernetes::Deployment)
+      kubectl_new("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
     if deployment_generator.manifest.type == "Deployment"
       kubectl_run("rollout", ["status", "deployment/#{deployment_generator.manifest.name}"])
