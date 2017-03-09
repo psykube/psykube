@@ -238,14 +238,20 @@ abstract class Psykube::Generator
   end
 
   private def git_branch
-    `git rev-parse --abbrev-ref HEAD`.strip
+    ENV["TRAVIS_BRANCH"]? ||
+      ENV["CIRCLE_BRANCH"]? ||
+      `git rev-parse --abbrev-ref HEAD`.strip
   end
 
   private def git_sha
-    `git rev-parse HEAD`.strip
+    ENV["TRAVIS_COMMIT"]? ||
+      ENV["CIRCLE_SHA1"]? ||
+      `git rev-parse HEAD`.strip
   end
 
   private def git_tag
-    `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
+    ENV["TRAVIS_TAG"]? ||
+      ENV["CIRCLE_TAG"]? ||
+      `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
   end
 end
