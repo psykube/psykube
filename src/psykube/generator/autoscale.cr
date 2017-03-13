@@ -7,7 +7,7 @@ abstract class Psykube::Generator
         Kubernetes::HorizontalPodAutoscaler.new(
           api || "",
           manifest.type,
-          manifest.name,
+          name,
           cluster_autoscale.min,
           cluster_autoscale.max
         ).tap do |autoscale|

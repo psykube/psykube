@@ -17,7 +17,7 @@ abstract class Psykube::Generator
   @template_yaml : Crustache::Syntax::Template?
   @digest : String?
 
-  property cluster_name : String = "default"
+  getter cluster_name : String
   getter yaml : String = ""
   getter context : String?
   getter namespace : String = "default"
@@ -48,15 +48,15 @@ abstract class Psykube::Generator
   end
 
   def initialize(io : IO, cluster_name : String? = nil, context : String? = nil, namespace : String? = nil, image : String? = nil, tag : String? = nil)
-    @yaml = String.build do |string_io|
-      IO.copy(io, string_io)
-    end
-    @tag = tag || digest
-    @cluster_name = cluster_name if cluster_name
+    @yaml = String.build { |string_io| IO.copy(io, string_io) }
+    @cluster_name = cluster_name || raw_manifest.clusters.keys.first? || "default"
     @context = context || raw_cluster_manifest.context || raw_manifest.context
     namespace ||= raw_cluster_manifest.namespace || raw_manifest.namespace
     @namespace = NameCleaner.clean(namespace) if namespace
     validate_image!
+    @tag = tag || cluster_manifest.image_tag || manifest.image_tag || digest
+    puts cluster_name
+    puts cluster_manifest.to_yaml
     @image = image || manifest.image || default_image || raise("Image is not specified.")
   end
 
@@ -113,10 +113,6 @@ abstract class Psykube::Generator
     })
   end
 
-  private def env_hash
-    ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] }.reject { |k, v| v.empty? }
-  end
-
   def validate_image! : Nil
     if manifest.image && (manifest.registry_user || manifest.registry_host)
       raise "Cannot specify both `image` and `registry` infromation in the same manifest!"
@@ -127,8 +123,8 @@ abstract class Psykube::Generator
     image.sub(/:.+$/, ":" + tag)
   end
 
-  private def default_image
-    [manifest.registry_host, manifest.registry_user, manifest.name].compact.join('/') + ":" + @tag
+  def name
+    [cluster_manifest.prefix, manifest.name, cluster_manifest.suffix].compact.join
   end
 
   def to_yaml(*args, **props)
@@ -140,6 +136,14 @@ abstract class Psykube::Generator
   end
 
   abstract def result
+
+  private def env_hash
+    ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] }.reject { |k, v| v.empty? }
+  end
+
+  private def default_image
+    [manifest.registry_host, manifest.registry_user, name].compact.join('/') + ":" + @tag
+  end
 
   private def template_yaml
     @template_yaml ||= Crustache.parse yaml.gsub(/<<(.+)>>/, "{{\\1}}")

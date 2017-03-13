@@ -9,7 +9,7 @@ abstract class Psykube::Generator
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::StatefulSet.new(manifest.name, manifest.name).tap do |stateful_set|
+      Kubernetes::StatefulSet.new(name, name).tap do |stateful_set|
         assign_labels(stateful_set, manifest)
         assign_labels(stateful_set, cluster_manifest)
         assign_annotations(stateful_set, manifest)

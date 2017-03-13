@@ -7,7 +7,7 @@ abstract class Psykube::Generator
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::Pod.new(manifest.name).tap do |pod|
+      Kubernetes::Pod.new(name).tap do |pod|
         assign_labels(pod, manifest)
         assign_labels(pod, cluster_manifest)
         assign_annotations(pod, manifest)

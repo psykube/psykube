@@ -21,7 +21,7 @@ class Psykube::Commands::Scale < Admiral::Command
     puts "Scaling to #{arguments.size} replicas...".colorize(:cyan)
     kubectl_run(
       "scale",
-      ["#{generator.manifest.type.downcase}/#{generator.manifest.name}"],
+      ["#{generator.manifest.type.downcase}/#{generator.name}"],
       flags: {"--replicas" => arguments.size.to_s}
     )
   end

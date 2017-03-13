@@ -1,7 +1,10 @@
 class Psykube::Manifest::Cluster
   Manifest.mapping({
+    image_tag:   String?,
     labels:      Hash(String, String)?,
     annotations: Hash(String, String)?,
+    prefix:      String?,
+    suffix:      String?,
     ingress:     Ingress?,
     context:     String?,
     namespace:   String?,
