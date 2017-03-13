@@ -9,7 +9,7 @@ abstract class Psykube::Generator
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::Job.new(manifest.name).tap do |job|
+      Kubernetes::Job.new(name).tap do |job|
         assign_labels(job, manifest)
         assign_labels(job, cluster_manifest)
         assign_annotations(job, manifest)

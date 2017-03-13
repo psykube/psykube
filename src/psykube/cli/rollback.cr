@@ -14,7 +14,7 @@ class Psykube::Commands::Rollback < Admiral::Command
       panic "ERROR: #{flags.file} specified type `#{generator.manifest.type}`, rollouts can only be managed for `Deployment`.".colorize(:red)
     end
     puts "Rolling back #{flags.revision == 0 ? "to last deployment" : "to revision `#{flags.revision}`"}.".colorize(:yellow)
-    kubectl_run("rollout", ["undo", "deployment/#{generator.manifest.name}"], flags: {"--to-revision" => flags.revision.to_s})
-    kubectl_run("rollout", ["status", "deployment/#{deployment_generator.manifest.name}"])
+    kubectl_run("rollout", ["undo", "deployment/#{generator.name}"], flags: {"--to-revision" => flags.revision.to_s})
+    kubectl_run("rollout", ["status", "deployment/#{deployment_generator.name}"])
   end
 end

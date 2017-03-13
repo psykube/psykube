@@ -4,7 +4,7 @@ abstract class Psykube::Generator
   class Secret < Generator
     protected def result
       unless combined_secrets.empty?
-        Kubernetes::Secret.new(manifest.name, encoded_secrets).tap do |secret|
+        Kubernetes::Secret.new(name, encoded_secrets).tap do |secret|
           assign_labels(secret, manifest)
           assign_labels(secret, cluster_manifest)
           secret.metadata.namespace = namespace

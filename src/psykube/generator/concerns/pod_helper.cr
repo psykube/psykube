@@ -11,7 +11,7 @@ abstract class Psykube::Generator
 
     # Containers
     private def generate_container
-      Container.new(manifest.name, image).tap do |container|
+      Container.new(name, image).tap do |container|
         container.env = generate_container_env
         container.volume_mounts = generate_container_volume_mounts(manifest.volumes)
         container.liveness_probe = generate_container_liveness_probe(manifest.healthcheck)
@@ -38,7 +38,7 @@ abstract class Psykube::Generator
 
     private def generate_volume(mount_path : String, volume : Manifest::Volume)
       volume_name = name_from_mount_path(mount_path)
-      volume.to_deployment_volume(name: manifest.name, volume_name: volume_name)
+      volume.to_deployment_volume(name: name, volume_name: volume_name)
     end
 
     # Ports
@@ -156,7 +156,7 @@ abstract class Psykube::Generator
 
     private def expand_env_config_map(key : String)
       raise ValidationError.new "ConfigMap `#{key}` not defined in cluster: `#{cluster_name}`." unless cluster_config_map.has_key? key
-      Container::Env::ValueFrom::KeyRef.new(manifest.name, key)
+      Container::Env::ValueFrom::KeyRef.new(name, key)
     end
 
     private def expand_env_config_map(key_ref : Manifest::Env::KeyRef)
@@ -165,7 +165,7 @@ abstract class Psykube::Generator
 
     private def expand_env_secret(key : String)
       raise ValidationError.new "Secret `#{key}` not defined in cluster: `#{cluster_name}`." unless cluster_secrets.has_key? key
-      Container::Env::ValueFrom::KeyRef.new(manifest.name, key)
+      Container::Env::ValueFrom::KeyRef.new(name, key)
     end
 
     private def expand_env_secret(key_ref : Manifest::Env::KeyRef)

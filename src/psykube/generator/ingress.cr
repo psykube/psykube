@@ -3,7 +3,7 @@ require "../kubernetes/ingress"
 abstract class Psykube::Generator
   class Ingress < Generator
     protected def result
-      Kubernetes::Ingress.new(manifest.name).tap do |ingress|
+      Kubernetes::Ingress.new(name).tap do |ingress|
         assign_labels(ingress, manifest)
         assign_labels(ingress, cluster_manifest)
         assign_annotations(ingress, {"kubernetes.io/tls-acme" => "true"}) if cluster_tls == true
@@ -81,7 +81,7 @@ abstract class Psykube::Generator
       rules = [] of Kubernetes::Ingress::Spec::Rule
       kube_paths = paths.map do |path, path_spec|
         Kubernetes::Ingress::Spec::Rule::Http::Path.new(
-          path, manifest.name, lookup_port(path_spec.port)
+          path, name, lookup_port(path_spec.port)
         )
       end
       rules << Kubernetes::Ingress::Spec::Rule.new(host, kube_paths)

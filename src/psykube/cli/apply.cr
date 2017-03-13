@@ -35,7 +35,7 @@ class Psykube::Commands::Apply < Admiral::Command
       kubectl_new("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
     if deployment_generator.manifest.type == "Deployment"
-      kubectl_run("rollout", ["status", "deployment/#{deployment_generator.manifest.name}"])
+      kubectl_run("rollout", ["status", "deployment/#{deployment_generator.name}"])
     end
   rescue e : Generator::ValidationError
     panic "Error: #{e.message}".colorize(:red)

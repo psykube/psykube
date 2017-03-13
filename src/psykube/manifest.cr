@@ -20,6 +20,7 @@ class Psykube::Manifest
     context:                String?,
     namespace:              String?,
     image:                  String?,
+    image_tag:              String?,
     revision_history_limit: UInt32?,
     deploy_timeout:         {type: UInt32, nilable: true, getter: false},
     restart_policy:         String?,

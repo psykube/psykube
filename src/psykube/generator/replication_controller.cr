@@ -9,7 +9,7 @@ abstract class Psykube::Generator
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::ReplicationController.new(manifest.name).tap do |rc|
+      Kubernetes::ReplicationController.new(name).tap do |rc|
         assign_labels(rc, manifest)
         assign_labels(rc, cluster_manifest)
         assign_annotations(rc, manifest)
