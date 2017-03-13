@@ -165,7 +165,7 @@ Psykube's main purpose is to abstract away much of the complexity involved in de
 
 ## Commands
 
-### `psykube-init`
+### `psykube init`
 Generates a .psykube.yml in the current directory.
 
 #### Usage:
