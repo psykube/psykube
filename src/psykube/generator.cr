@@ -200,7 +200,7 @@ abstract class Psykube::Generator
   private def remove_ignored(files : Array(String), manifest : String = ".dockerignore")
     ignorefile = File.join(dir, manifest)
     if File.exists? ignorefile
-      ignorefile_contents = File.read(ignorefile).lines
+      ignorefile_contents = File.read(ignorefile).lines.reject(&.empty?).reject(&.starts_with? '#')
       removal_rules = ignorefile_contents.reject(&.starts_with? '!')
       exception_rules = ignorefile_contents.select(&.starts_with? '!')
       ignored = expand_ignores(removal_rules, true) - expand_ignores(exception_rules, true, '!')
