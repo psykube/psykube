@@ -6,10 +6,13 @@ registry_user: commercial-tribe
 args: [ "playground", "--bind=0.0.0.0" ]
 ports:
   http: 8080
-ingress:
-  tls: true
-  host: psykube.commercialtribe.ninja
 
 clusters:
   default:
+    context: gke_commercial-tribe_us-east1-c_staging
+    ingress:
+      tls: true
+      host: psykube.commercialtribe.ninja
+  test:
+    suffix: -test
     context: gke_commercial-tribe_us-east1-c_staging
