@@ -55,8 +55,6 @@ abstract class Psykube::Generator
     @namespace = NameCleaner.clean(namespace) if namespace
     validate_image!
     @tag = tag || cluster_manifest.image_tag || manifest.image_tag || digest
-    puts cluster_name
-    puts cluster_manifest.to_yaml
     @image = image || manifest.image || default_image || raise("Image is not specified.")
   end
 
@@ -213,7 +211,6 @@ abstract class Psykube::Generator
   private def get_digest(kind : String = "sha256")
     files = Dir.glob(File.join dir, "**/*").reject { |file| File.directory?(file) }.sort
     remove_ignored(files)
-    puts files.to_pretty_json
     hexdigest = files.each_with_object(OpenSSL::Digest.new(kind)) do |file, digest|
       File.open(file) do |f|
         digest.update(f)
