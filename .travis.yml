@@ -22,30 +22,27 @@ before_script:
 install: shards install
 script:
   - crystal spec --verbose
+before_deploy:
   - shards build --release
   - tar -czC ./bin psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
-  - ./bin/psykube generate default
-# before_deploy:
-#   - shards build --release
-#   - tar -czC ./bin psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
-# deploy:
-#   - provider: releases
-#     skip_cleanup: true
-#     api_key:
-#       secure: lxW4Yi1u760t88HseNYRfLb7tIOuqCQZfjVC29ivAZa2i9Utb4yqrc+Q3bgXdcp55DzeiVcwpsUcYf5kgJCwzcrR2+DglYc7r2BBTvPhLABXkRBWA4CVILyblm7UWQAYjAB7VxzWV/IraiYhaPz+0WQsWPY1nQbIycsmHWjuKDe8awl8khA8VfoKj+H33dHwJkVfvKT97t+s6beXYKJ+Er/Y48rhaya2x8ebUiTlLpwYUDN8wrJHGDAuYEQrH5xNeS6PNHnOWLw6u/RYjtLeXjcXBw0b7SzhadrqwBwD4BxYWtnre/trPeVg2QkqNbZi2HF6uftCWKZM5b6I6wbJ5lRxisTdNdZujfmdW6UXw4oeHcR0YGv0g5imN0K0HVvBDSyelmfm1nfRvu0Tnm3KTsWXqXoVjO4ZaWdg4LOVgMH9arArK5sAsmzPvZpcOkRjKb4do8m4Y54XxQeU2/5VewX3BX0+BMXLAwlh3BQIDiNQtMdw+j/wuegvMgREhVmAthDVAVstkiW/PhP6c+TtkmgOQ00d812brt2qNYauGgHYdemkrtR/JL//9pZya65fKkpNnK0JpDCsfKiJc24w/XCruXMarbHXfYKz3mVarqYVQKB79VgtG7ff8ziMWI8IuJ8qlRqTBzfiAjHlZUru5p1nf92aZ8YYssU7y61fcZQ=
-#     file: "./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz"
-#     on:
-#       repo: CommercialTribe/psykube
-#       tags: true
-#   - provider: script
-#     skip_cleanup: true
-#     script: ./bin/psykube apply default
-#     on:
-#       repo: CommercialTribe/psykube
-#       tags: true
-#   - provider: script
-#     skip_cleanup: true
-#     script: ./bin/psykube push -t $TRAVIS_TAG -t latest
-#     on:
-#       repo: CommercialTribe/psykube
-#       tags: true
+deploy:
+  - provider: releases
+    skip_cleanup: true
+    api_key:
+      secure: lxW4Yi1u760t88HseNYRfLb7tIOuqCQZfjVC29ivAZa2i9Utb4yqrc+Q3bgXdcp55DzeiVcwpsUcYf5kgJCwzcrR2+DglYc7r2BBTvPhLABXkRBWA4CVILyblm7UWQAYjAB7VxzWV/IraiYhaPz+0WQsWPY1nQbIycsmHWjuKDe8awl8khA8VfoKj+H33dHwJkVfvKT97t+s6beXYKJ+Er/Y48rhaya2x8ebUiTlLpwYUDN8wrJHGDAuYEQrH5xNeS6PNHnOWLw6u/RYjtLeXjcXBw0b7SzhadrqwBwD4BxYWtnre/trPeVg2QkqNbZi2HF6uftCWKZM5b6I6wbJ5lRxisTdNdZujfmdW6UXw4oeHcR0YGv0g5imN0K0HVvBDSyelmfm1nfRvu0Tnm3KTsWXqXoVjO4ZaWdg4LOVgMH9arArK5sAsmzPvZpcOkRjKb4do8m4Y54XxQeU2/5VewX3BX0+BMXLAwlh3BQIDiNQtMdw+j/wuegvMgREhVmAthDVAVstkiW/PhP6c+TtkmgOQ00d812brt2qNYauGgHYdemkrtR/JL//9pZya65fKkpNnK0JpDCsfKiJc24w/XCruXMarbHXfYKz3mVarqYVQKB79VgtG7ff8ziMWI8IuJ8qlRqTBzfiAjHlZUru5p1nf92aZ8YYssU7y61fcZQ=
+    file: "./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz"
+    on:
+      repo: CommercialTribe/psykube
+      tags: true
+  - provider: script
+    skip_cleanup: true
+    script: ./bin/psykube apply default
+    on:
+      repo: CommercialTribe/psykube
+      tags: true
+  - provider: script
+    skip_cleanup: true
+    script: ./bin/psykube push -t $TRAVIS_TAG -t latest
+    on:
+      repo: CommercialTribe/psykube
+      tags: true
