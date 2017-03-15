@@ -37,12 +37,6 @@ deploy:
       tags: true
   - provider: script
     skip_cleanup: true
-    script: ./bin/psykube apply test
-    on:
-      repo: CommercialTribe/psykube
-      branch: test-deploy
-  - provider: script
-    skip_cleanup: true
     script: ./bin/psykube apply default
     on:
       repo: CommercialTribe/psykube
