@@ -1,6 +1,9 @@
 require "spec"
-require "../src/psykube/cli"
 require "http/client"
+require "secure_random"
+require "../src/psykube/cli"
+
+NAMESPACE = "psykube-test-#{SecureRandom.uuid}"
 
 class Exited < Exception; end
 
@@ -17,25 +20,26 @@ def kubectl(args : String)
 end
 
 macro psykube(command, timeout = 30)
-  it "should run `psykube {{command.id}}` and not fail" do
+  command = {{command}}
+  it "should run `psykube #{command}` and not fail" do
     puts ""
-    Psykube::CLI.run({{ command.id.stringify }})
+    Psykube::CLI.run({{ command }})
   end
 end
 
 Dir.cd("spec") do
-  describe String do
-    psykube "init --overwrite --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80"
+  describe Psykube::CLI do
+    it "should set up the environment" do
+      kubectl "delete namespace #{NAMESPACE}"
+      kubectl "create namespace #{NAMESPACE}"
+      kubectl "--namespace=#{NAMESPACE} run hello-world --image=tutumcloud/hello-world --port=80 --expose"
+    end
+
+    psykube "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe-staging --port http=80"
     psykube "generate default"
     psykube "apply default"
     psykube "status default"
     psykube "push"
-
-    it "should set up the environment" do
-      kubectl "delete namespace"
-      kubectl "create namespace psykube-test"
-      kubectl "--namespace=psykube-test run hello-world --image=tutumcloud/hello-world --port=80 --expose"
-    end
 
     it "should run exec" do
       Process.fork { Psykube::CLI.run "exec default -- echo 'hello world'" }.wait
@@ -56,14 +60,14 @@ Dir.cd("spec") do
       process.wait
     end
 
-    psykube "copy-namespace psykube-test psykube-test-copy --force"
+    psykube "copy-namespace #{NAMESPACE} #{NAMESPACE}-copy --force"
 
     # Cleanup
     psykube "delete default -y"
 
     it "deletes the namespace" do
-      kubectl "delete namespace psykube-test-copy"
-      kubectl "delete namespace psykube-test"
+      kubectl "delete namespace #{NAMESPACE}-copy"
+      kubectl "delete namespace #{NAMESPACE}"
     end
   end
 end

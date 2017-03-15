@@ -197,36 +197,8 @@ abstract class Psykube::Generator
     manifest.env || {} of String => String | Manifest::Env
   end
 
-  private def expand_ignores(rules : Array(String), append_dir : Bool = false, prefix : Char | String? = nil) : Array(String)
-    rules.flat_map { |rule| expand_ignore(rule, append_dir, prefix).as(Array(String)) }
-  end
-
-  private def expand_ignore(rule, append_dir : Bool = false, prefix : Char | String? = nil) : Array(String)
-    rule = rule.lchop(prefix) if prefix
-    rule = File.join(dir, rule) if append_dir
-    if File.directory? rule
-      expand_ignores Dir.glob("#{rule}/**/*").reject { |p| File.directory? p }
-    elsif {'*', '?', '{', '}'}.any? { |char| rule.includes? char }
-      expand_ignores Dir.glob(rule)
-    else
-      [rule]
-    end
-  end
-
-  private def remove_ignored(files : Array(String), manifest : String = ".dockerignore")
-    ignorefile = File.join(dir, manifest)
-    if File.exists? ignorefile
-      ignorefile_contents = File.read(ignorefile).lines.reject(&.empty?).reject(&.starts_with? '#')
-      removal_rules = ignorefile_contents.reject(&.starts_with? '!')
-      exception_rules = ignorefile_contents.select(&.starts_with? '!')
-      ignored = expand_ignores(removal_rules, true) - expand_ignores(exception_rules, true, '!')
-      ignored.each { |f| files.delete f }
-    end
-  end
-
   private def get_digest(kind : String = "sha256")
-    files = Dir.glob(File.join dir, "**/*").reject { |file| File.directory?(file) }.sort
-    remove_ignored(files)
+    files = Concerns::IgnoreParser.new(".dockerignore", dir).filter.reject { |f| File.directory? f }
     hexdigest = files.each_with_object(OpenSSL::Digest.new(kind)) do |file, digest|
       File.open(file) do |f|
         digest.update(f)
