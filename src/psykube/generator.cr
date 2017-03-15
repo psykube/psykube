@@ -112,7 +112,7 @@ abstract class Psykube::Generator
   end
 
   def validate_image! : Nil
-    if manifest.image && (manifest.registry_user || manifest.registry_host)
+    if manifest.image && registry_user
       raise "Cannot specify both `image` and `registry` infromation in the same manifest!"
     end
   end
@@ -121,8 +121,24 @@ abstract class Psykube::Generator
     image.sub(/:.+$/, ":" + tag)
   end
 
+  def registry_host
+    cluster_manifest.registry_host || manifest.registry_host
+  end
+
+  def registry_user
+    cluster_manifest.registry_user || manifest.registry_user
+  end
+
   def name
-    [cluster_manifest.prefix, manifest.name, cluster_manifest.suffix].compact.join
+    [prefix, manifest.name, suffix].compact.join
+  end
+
+  def prefix
+    cluster_manifest.prefix || manifest.prefix
+  end
+
+  def suffix
+    cluster_manifest.suffix || manifest.suffix
   end
 
   def to_yaml(*args, **props)
@@ -140,7 +156,7 @@ abstract class Psykube::Generator
   end
 
   private def default_image
-    [manifest.registry_host, manifest.registry_user, name].compact.join('/') + ":" + @tag
+    [registry_host, registry_user, name].compact.join('/') + ":" + @tag
   end
 
   private def template_yaml
