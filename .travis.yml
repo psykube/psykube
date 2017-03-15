@@ -14,7 +14,7 @@ before_script:
   - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl --version 142.0.0
   - sudo chown -R $USER /home/travis/.config/gcloud
   - echo $GCLOUD_ENCODED_CREDS | base64 -d > /tmp/gcloud.json
-  - gcloud auth activate-service-account $(jq -r ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
+  - gcloud auth activate-service-account --key-file=/tmp/gcloud.json
   - gcloud config set project commercial-tribe
   - gcloud config set compute/zone us-east1-c
   - gcloud container clusters get-credentials staging
