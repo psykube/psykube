@@ -12,4 +12,4 @@ ingress:
 
 clusters:
   default:
-    context: gke_commercial-tribe_us-east1-c_staging
+    context: gke_commercial-tribe-staging_us-central1-a_staging
