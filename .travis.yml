@@ -10,11 +10,14 @@ install:
   - curl -sL https://deb.nodesource.com/setup_6.x | bash -
   - apt-get install nodejs -y
 before_script:
-  - export PATH=/usr/lib/google-cloud-sdk/bin:$PATH
-  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl --version 142.0.0
-  - sudo chown -R $USER /home/travis/.config/gcloud
+  # Authorize with gcloud
   - echo $GCLOUD_ENCODED_CREDS | base64 -d > /tmp/gcloud.json
   - gcloud auth activate-service-account $(jq -r ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
+
+  # Install and configure kubectl
+  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl --version 142.0.0
+  - export PATH=/usr/lib/google-cloud-sdk/bin:$PATH
+  - sudo chown -R $USER /home/travis/.config/gcloud
   - gcloud container clusters get-credentials staging --project=commercial-tribe-staging --zone=us-central1-a
   - gcloud docker --authorize-only
 install: shards install
