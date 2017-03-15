@@ -1,7 +1,7 @@
 name: psykube
 type: Deployment
 registry_host: gcr.io
-registry_user: commercial-tribe
+registry_user: commercial-tribe-staging
 
 args: [ "playground", "--bind=0.0.0.0" ]
 ports:
