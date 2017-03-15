@@ -5,19 +5,16 @@ services:
 env:
   global:
     - PSYKUBE_DEBUG=true
-    - KUBECTL_BIN=/usr/lib/google-cloud-sdk/bin/kubectl
-    - CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
 install:
   - curl -sL https://deb.nodesource.com/setup_6.x | bash -
   - apt-get install nodejs -y
 before_script:
-  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl --version 142.0.0
+  - export PATH=/usr/lib/google-cloud-sdk/bin:$PATH
+  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl
   - sudo chown -R $USER /home/travis/.config/gcloud
   - echo $GCLOUD_ENCODED_CREDS | base64 -d > /tmp/gcloud.json
   - gcloud auth activate-service-account $(jq -r ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
-  - gcloud config set project commercial-tribe
-  - gcloud config set compute/zone us-east1-c
-  - gcloud container clusters get-credentials staging
+  - gcloud container clusters get-credentials staging --project=commercial-tribe-staging --zone=us-central1-a
   - gcloud docker --authorize-only
 install: shards install
 script:
