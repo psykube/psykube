@@ -22,7 +22,7 @@ end
 macro psykube(command, timeout = 30)
   it "should run `psykube {{command.id}}` and not fail" do
     puts ""
-    Psykube::CLI.run({{ command.id.stringify }})
+    Psykube::CLI.run({{ command }})
   end
 end
 
