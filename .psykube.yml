@@ -1,5 +1,6 @@
 name: psykube
 type: Deployment
+context: gke_commercial-tribe-staging_us-central1-a_staging
 registry_host: gcr.io
 registry_user: commercial-tribe-staging
 
@@ -9,7 +10,3 @@ ports:
 ingress:
   tls: true
   host: psykube.commercialtribe.ninja
-
-clusters:
-  default:
-    context: gke_commercial-tribe-staging_us-central1-a_staging
