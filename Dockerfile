@@ -1,13 +1,13 @@
 FROM crystallang/crystal:0.21.0
 
 # Deps
+ENV NPM_CONFIG_LOGLEVEL warn
 RUN apt-get update
 RUN apt-get install curl -y
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
 RUN apt-get install nodejs -y
 ADD . /build
 WORKDIR /build
-ENV NPM_CONFIG_LOGLEVEL warn
 
 # Build
 RUN shards build --release
