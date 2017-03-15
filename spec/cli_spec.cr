@@ -28,18 +28,18 @@ macro psykube(command, timeout = 30)
 end
 
 Dir.cd("spec") do
-  describe String do
-    psykube "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe-staging --port http=80"
-    psykube "generate default"
-    psykube "apply default"
-    psykube "status default"
-    psykube "push"
-
+  describe Psykube::CLI do
     it "should set up the environment" do
       kubectl "delete namespace #{NAMESPACE}"
       kubectl "create namespace #{NAMESPACE}"
       kubectl "--namespace=#{NAMESPACE} run hello-world --image=tutumcloud/hello-world --port=80 --expose"
     end
+
+    psykube "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe-staging --port http=80"
+    psykube "generate default"
+    psykube "apply default"
+    psykube "status default"
+    psykube "push"
 
     it "should run exec" do
       Process.fork { Psykube::CLI.run "exec default -- echo 'hello world'" }.wait
