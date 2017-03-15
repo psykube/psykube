@@ -20,7 +20,8 @@ def kubectl(args : String)
 end
 
 macro psykube(command, timeout = 30)
-  it "should run `psykube {{command.id}}` and not fail" do
+  command = {{command}}
+  it "should run `psykube #{command}` and not fail" do
     puts ""
     Psykube::CLI.run({{ command }})
   end
