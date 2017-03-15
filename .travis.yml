@@ -5,6 +5,7 @@ services:
 env:
   global:
     - PSYKUBE_DEBUG=true
+    - CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
 install:
   - curl -sL https://deb.nodesource.com/setup_6.x | bash -
   - apt-get install nodejs -y
