@@ -31,13 +31,13 @@ class Psykube::Generator
       end
     end
 
-    def initialize(filename : String, context : String? = nil)
+    def initialize(filename : String, @context : String? = nil)
       if context
         filename = File.join(context, filename)
       else
         context ||= File.dirname filename
       end
-
+      return unless File.exists?(filename)
       File.open(filename) do |io|
         initialize(io, context)
       end
