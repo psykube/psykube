@@ -10,7 +10,7 @@ install:
   - apt-get install nodejs -y
 before_script:
   - export PATH=/usr/lib/google-cloud-sdk/bin:$PATH
-  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl
+  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl --version 142.0.0
   - sudo chown -R $USER /home/travis/.config/gcloud
   - echo $GCLOUD_ENCODED_CREDS | base64 -d > /tmp/gcloud.json
   - gcloud auth activate-service-account $(jq -r ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
