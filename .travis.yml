@@ -26,6 +26,7 @@ script:
 before_deploy:
   - shards build --release
   - tar -czC ./bin psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 deploy:
   - provider: releases
     skip_cleanup: true
