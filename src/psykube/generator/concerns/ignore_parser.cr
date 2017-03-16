@@ -19,7 +19,7 @@ class Psykube::Generator
     def prepare_partial_regex(pattern : String)
       patterns = pattern.split('/')
       String.build do |s|
-        s << "^#{context}/" && patterns.shift if patterns[0] == ""
+        s << "^#{context}/" && patterns.shift if patterns[0]? == ""
         patterns.map_with_index do |item, index|
           s << '('
           s << "[\/]?(" if index > 0
@@ -49,8 +49,8 @@ class Psykube::Generator
       exceptions = [] of String
       io.each_line
         .map(&.strip)
-        .reject { |l| l[0] == '#' || l.empty? }
-        .each { |l| l[0] == '!' ? exceptions << l[1..-1] : ignores << l }
+        .reject { |l| l[0]? == '#' || l.empty? }
+        .each { |l| l[0]? == '!' && l[1]? ? exceptions << l[1..-1] : ignores << l }
 
       {% for list, i in %w(ignores exceptions) %}
       {{ list.id }} = prepare_regexes({{ list.id }})
