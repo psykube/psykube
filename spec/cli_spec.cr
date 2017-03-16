@@ -35,7 +35,7 @@ Dir.cd("spec") do
       kubectl "--namespace=#{NAMESPACE} run hello-world --image=tutumcloud/hello-world --port=80 --expose"
     end
 
-    psykube "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe-staging --port http=80"
+    psykube "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80"
     psykube "generate default"
     psykube "apply default"
     psykube "status default"
