@@ -2,7 +2,7 @@ name: psykube
 type: Deployment
 context: gke_commercial-tribe-staging_us-central1-a_staging
 registry_host: gcr.io
-registry_user: commercial-tribe-staging
+registry_user: commercial-tribe
 
 args: [ "playground", "--bind=0.0.0.0" ]
 ports:
