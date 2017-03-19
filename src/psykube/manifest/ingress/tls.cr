@@ -1,5 +1,8 @@
 class Psykube::Manifest::Ingress::Tls
   Manifest.mapping({
-    secret_name: String,
+    auto:        Bool | Auto | Nil,
+    secret_name: String?,
   })
 end
+
+require "./tls/*"

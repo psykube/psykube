@@ -7,12 +7,12 @@ class Psykube::Kubernetes::Ingress::Spec::Tls
     secret_name: String
   )
 
-  def initialize(host : String)
-    initialize(host, nil)
+  def initialize(host : String, prefix : String = "", suffix : String = "")
+    secret_name = "cert-" + prefix + Digest::SHA1.hexdigest(host.downcase) + suffix
+    initialize(host, secret_name)
   end
 
-  def initialize(host : String, secret_name : String?)
-    secret_name ||= "cert-" + Digest::SHA1.hexdigest(host.downcase)
+  def initialize(host : String, secret_name : String)
     initialize([host], secret_name)
   end
 

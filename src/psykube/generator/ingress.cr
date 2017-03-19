@@ -49,7 +49,7 @@ abstract class Psykube::Generator
     private def generate_tls
       tls_list = [] of Kubernetes::Ingress::Spec::Tls
       cluster_hosts.each do |host, spec|
-        if tls = spec.tls || cluster_tls
+        if (tls = spec.tls || cluster_tls)
           tls_list << generate_host_tls(host, tls).as(Kubernetes::Ingress::Spec::Tls)
         end
       end
@@ -57,16 +57,25 @@ abstract class Psykube::Generator
     end
 
     private def generate_host_tls(host : String, tls : Manifest::Ingress::Tls)
-      Kubernetes::Ingress::Spec::Tls.new(host, tls.secret_name)
-    end
-
-    private def generate_host_tls(host : String, tls : Nil)
-    end
-
-    private def generate_host_tls(host : String, tls : Bool)
-      if tls
-        Kubernetes::Ingress::Spec::Tls.new(host)
+      raise "Cannot assign automatic TLS with a static secret name." if tls.auto && tls.secret_name
+      if (auto = tls.auto)
+        return generate_host_tls_auto host, auto
       end
+      if (secret_name = tls.secret_name)
+        Kubernetes::Ingress::Spec::Tls.new(host, secret_name)
+      end
+    end
+
+    private def generate_host_tls(host : String, auto : Bool)
+      generate_host_tls(host, auto) if auto
+    end
+
+    private def generate_host_tls_auto(host : String, auto : Manifest::Ingress::Tls::Auto)
+      Kubernetes::Ingress::Spec::Tls.new(host: host, prefix: auto.prefix.to_s, suffix: auto.suffix.to_s)
+    end
+
+    private def generate_host_tls_auto(host : String, auto : Bool)
+      Kubernetes::Ingress::Spec::Tls.new(host)
     end
 
     private def generate_rules
