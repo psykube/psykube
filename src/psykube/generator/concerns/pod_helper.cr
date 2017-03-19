@@ -52,23 +52,30 @@ abstract class Psykube::Generator
     end
 
     # Healthchecks
-    private def generate_container_liveness_probe(healthcheck : Nil)
+    private def generate_container_liveness_probe(null : Nil)
     end
 
-    private def generate_container_liveness_probe(healthcheck : Bool)
-      return unless healthcheck == true
+    # TODO: Deprecate!
+    private def generate_container_liveness_probe(enabled : Bool)
+      return unless enabled && manifest.ports?
       Container::Probe.new.tap do |probe|
         probe.http_get = Container::Action::HttpGet.new(lookup_port "default")
-      end if manifest.service?
+      end
     end
 
     private def generate_container_liveness_probe(healthcheck : Manifest::Healthcheck | Manifest::Readycheck)
+      return unless healthcheck.http || healthcheck.tcp || healthcheck.exec
       Container::Probe.new.tap do |probe|
-        raise InvalidHealthcheck.new("Cannot perform http check without specifying ports.") if manifest.ports.empty? && healthcheck.http
-        raise InvalidHealthcheck.new("Cannot perform tcp check without specifying ports.") if manifest.ports.empty? && healthcheck.tcp
+        raise InvalidHealthcheck.new("Cannot perform http check without specifying ports.") if !manifest.ports? && healthcheck.http
+        raise InvalidHealthcheck.new("Cannot perform tcp check without specifying ports.") if !manifest.ports? && healthcheck.tcp
         probe.http_get = generate_container_probe_http_get(healthcheck.http)
         probe.exec = generate_container_probe_exec(healthcheck.exec)
         probe.tcp_socket = generate_container_probe_tcp_socket(healthcheck.tcp)
+        probe.initial_delay_seconds = healthcheck.initial_delay_seconds
+        probe.timeout_seconds = healthcheck.timeout_seconds
+        probe.period_seconds = healthcheck.period_seconds
+        probe.success_threshold = healthcheck.success_threshold
+        probe.failure_threshold = healthcheck.failure_threshold
       end
     end
 
@@ -92,13 +99,22 @@ abstract class Psykube::Generator
     private def generate_container_probe_http_get(http : Nil)
     end
 
-    private def generate_container_probe_tcp_socket(tcp : Nil)
+    private def generate_container_probe_http_get(enabled : Bool)
+      return unless manifest.ports?
+      Container::Action::HttpGet.new(lookup_port "default") if enabled
     end
 
-    private def generate_container_probe_exec(exec : Nil)
+    private def generate_container_probe_http_get(path : String)
+      return unless manifest.ports?
+      return generate_container_probe_http_get enabled: true if path == "true"
+      return generate_container_probe_http_get enabled: false if path == "false"
+      Container::Action::HttpGet.new(lookup_port "default") do |http|
+        http.path = path
+      end
     end
 
     private def generate_container_probe_http_get(http_check : Manifest::Healthcheck::Http)
+      return unless manifest.ports?
       Container::Action::HttpGet.new(lookup_port http_check.port) do |http|
         http.path = http_check.path
         http.host = http_check.host
@@ -108,8 +124,34 @@ abstract class Psykube::Generator
       end
     end
 
+    private def generate_container_probe_tcp_socket(tcp : Nil)
+    end
+
+    private def generate_container_probe_tcp_socket(enabled : Bool)
+      return unless manifest.ports?
+      Container::Action::TcpSocket.new(lookup_port "default") if enabled
+    end
+
+    private def generate_container_probe_tcp_socket(port_name : String)
+      return unless manifest.ports?
+      return generate_container_probe_tcp_socket enabled: true if port_name == "true"
+      return generate_container_probe_tcp_socket enabled: false if port_name == "false"
+      Container::Action::TcpSocket.new(lookup_port port_name)
+    end
+
+    private def generate_container_probe_tcp_socket(port : UInt16)
+      Container::Action::TcpSocket.new(port)
+    end
+
     private def generate_container_probe_tcp_socket(tcp : Manifest::Healthcheck::Tcp)
       Container::Action::TcpSocket.new(lookup_port tcp.port)
+    end
+
+    private def generate_container_probe_exec(exec : Nil)
+    end
+
+    private def generate_container_probe_exec(command : String | Array(String))
+      Container::Action::Exec.new(command)
     end
 
     private def generate_container_probe_exec(exec : Manifest::Healthcheck::Exec)

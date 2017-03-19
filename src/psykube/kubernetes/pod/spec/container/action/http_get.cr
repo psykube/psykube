@@ -9,8 +9,7 @@ class Psykube::Kubernetes::Pod::Spec::Container::Action::HttpGet
     http_headers: Array(HttpHeader)?,
   })
 
-  def initialize(@port : UInt16)
-    @path = "/"
+  def initialize(@port : UInt16, @path : String = "/")
   end
 
   def initialize(@port : UInt16, &block : HttpGet -> _)

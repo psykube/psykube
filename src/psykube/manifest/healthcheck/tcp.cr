@@ -1,5 +1,5 @@
 class Psykube::Manifest::Healthcheck::Tcp
   Manifest.mapping({
-    port: String | UInt16,
+    port: {type: String | UInt16, default: "default"},
   })
 end
