@@ -8,7 +8,7 @@ class Psykube::Kubernetes::HorizontalPodAutoscaler
     status: {type: Status, nilable: true, clean: true},
   })
 
-  def initialize(api_version : String, kind : String, name : String, min : UInt8, max : UInt8)
+  def initialize(api_version : String, kind : String, name : String, min : Int32?, max : Int32)
     initialize(name)
     @spec = Spec.new(api_version, kind, name, min, max)
   end

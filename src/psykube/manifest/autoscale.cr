@@ -1,14 +1,21 @@
 class Psykube::Manifest::Autoscale
   Manifest.mapping({
-    min: {type: UInt8},
-    max: {type: UInt8},
+    min:                   Int32?,
+    max:                   Int32,
+    target_cpu_percentage: Int32?,
   })
 
   def initialize
-    @min = 1.to_u8
-    @max = 1.to_u8
+    @max = 1
   end
 
-  def initialize(@min : UInt8, @max : UInt8)
+  def merge(other : Psykube::Manifest::Autoscale)
+    other.dup.tap do |new|
+      new.min ||= min
+      new.target_cpu_percentage ||= target_cpu_percentage
+    end
+  end
+
+  def initialize(@min : Int32?, @max : Int32)
   end
 end

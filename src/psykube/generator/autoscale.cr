@@ -3,20 +3,23 @@ require "../kubernetes/horizontal_pod_autoscaler"
 abstract class Psykube::Generator
   class Autoscale < Generator
     protected def result
-      if autoscale?
-        Kubernetes::HorizontalPodAutoscaler.new(
-          api || "",
-          manifest.type,
-          name,
-          cluster_autoscale.min,
-          cluster_autoscale.max
-        ).tap do |autoscale|
-          autoscale.metadata.namespace = namespace
+      return unless (cluster_autoscale = self.cluster_autoscale)
+      return unless (api = self.api)
+      Kubernetes::HorizontalPodAutoscaler.new(
+        api,
+        manifest.type,
+        name,
+        cluster_autoscale.min,
+        cluster_autoscale.max
+      ).tap do |autoscale|
+        autoscale.metadata.namespace = namespace
+        if (spec = autoscale.spec)
+          spec.target_cpu_utilization_percentage = cluster_autoscale.target_cpu_percentage
         end
       end
     end
 
-    private def api
+    protected def api
       case manifest.type
       when "Deployment", "ReplicaSet"
         "extensions/v1beta1"
@@ -25,13 +28,16 @@ abstract class Psykube::Generator
       end
     end
 
-    private def autoscale?
-      return false unless api
-      !!(cluster_manifest.autoscale || manifest.autoscale)
-    end
-
-    private def cluster_autoscale
-      cluster_manifest.autoscale || manifest.autoscale || Manifest::Autoscale.new
+    protected def cluster_autoscale
+      mas = manifest.autoscale
+      cas = cluster_manifest.autoscale
+      if mas && cas
+        mas.merge cas
+      elsif cas
+        cas
+      elsif mas
+        mas
+      end
     end
   end
 end
