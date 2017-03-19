@@ -10,6 +10,8 @@ abstract class Psykube::Generator
 
   alias TemplateData = Hash(String, String)
 
+  delegate lookup_port, to: manifest
+
   @manifest : Manifest?
   @raw_metadata : Hash(String, String)?
   @metadata : Hash(String, String)?
@@ -177,20 +179,6 @@ abstract class Psykube::Generator
 
   private def cluster_secrets
     manifest.secrets.merge cluster_manifest.secrets
-  end
-
-  private def lookup_port(port : UInt16)
-    port
-  end
-
-  private def lookup_port(port_name : String)
-    if port_name.to_u16?
-      port_name.to_u16
-    elsif port_name == "default" && !manifest.ports.key?("default")
-      manifest.ports.values.first
-    else
-      manifest.ports[port_name]? || raise "Invalid port #{port_name}"
-    end
   end
 
   private def manifest_env

@@ -129,7 +129,7 @@ abstract class Psykube::Generator
 
     # Environment
     private def generate_container_env
-      env_with_ports.map do |key, value|
+      manifest.env.map do |key, value|
         expand_env(key, value)
       end
     end
@@ -193,14 +193,6 @@ abstract class Psykube::Generator
         container_name: field_ref.container,
         divisor: field_ref.divisor
       )
-    end
-
-    private def env_with_ports
-      return manifest_env unless manifest.service?
-      port_env = {"PORT" => lookup_port("default").to_s}
-      manifest.ports.each_with_object(manifest_env.dup) do |(name, port), env|
-        env["#{name.underscore.upcase.gsub("-", "_")}_PORT"] = port.to_s
-      end.merge(port_env)
     end
 
     private def generate_container_command(string : String)

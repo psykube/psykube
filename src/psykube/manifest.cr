@@ -55,10 +55,14 @@ class Psykube::Manifest
     @readycheck || false
   end
 
+  def ports?
+    !ports.empty?
+  end
+
   def service
-    return unless service?
+    return unless ports?
     @service = case (service = @service)
-               when "true"
+               when "true", true
                  Service.new "ClusterIP"
                when String
                  Service.new service
@@ -96,7 +100,26 @@ class Psykube::Manifest
   end
 
   def env
-    @env || {} of String => Env | String
+    env = @env || {} of String => Env | String
+    return env unless ports?
+    env["PORT"] = lookup_port("default").to_s
+    ports.each_with_object(env) do |(name, port), env|
+      env["#{name.underscore.upcase.gsub("-", "_")}_PORT"] = port.to_s
+    end
+  end
+
+  def lookup_port(port : UInt16)
+    port
+  end
+
+  def lookup_port(port_name : String)
+    if port_name.to_u16?
+      port_name.to_u16
+    elsif port_name == "default" && !ports.key?("default")
+      ports.values.first
+    else
+      ports[port_name]? || raise "Invalid port #{port_name}"
+    end
   end
 
   def name
@@ -104,8 +127,7 @@ class Psykube::Manifest
   end
 
   def service?
-    return unless @service
-    !!@ports.try(&.first?)
+    !!service
   end
 
   def clusters
