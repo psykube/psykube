@@ -46,7 +46,7 @@ class Psykube::Commands::Init < Admiral::Command
           manifest.registry_host = flags.registry_host
           manifest.registry_user = flags.registry_user || current_docker_user
         end
-        manifest.resources = Manifest::Resources.new(
+        manifest.resources = Manifest::Resources.from_flags(
           flags.cpu_request,
           flags.memory_request,
           flags.cpu_limit,
