@@ -20,6 +20,10 @@ class Psykube::Commands::Init < Admiral::Command
   define_flag hosts : Array(String), "Set a host for ingress.", long: "host", default: [] of String
   define_flag tls : Bool, "Enable TLS for ingress.", short: 't'
   define_flag image, "Set the image, this takes precedence over --registry-host and --registry-user.", short: 'i'
+  define_flag cpu_request, "Set the requested cpu resources."
+  define_flag memory_request, "Set the requested memory resources."
+  define_flag cpu_limit, "Set the cpu limit."
+  define_flag memory_limit, "Set the memory limit."
 
   def overwrite?
     return true if flags.overwrite
@@ -42,6 +46,12 @@ class Psykube::Commands::Init < Admiral::Command
           manifest.registry_host = flags.registry_host
           manifest.registry_user = flags.registry_user || current_docker_user
         end
+        manifest.resources = Manifest::Resources.new(
+          flags.cpu_request,
+          flags.memory_request,
+          flags.cpu_limit,
+          flags.memory_limit
+        )
         manifest.namespace = flags.namespace
         manifest.ports = Hash(String, UInt16).new.tap do |hash|
           flags.ports.each_with_index do |spec, index|
