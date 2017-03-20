@@ -6,7 +6,7 @@ abstract class Psykube::Generator
       Kubernetes::Ingress.new(name).tap do |ingress|
         assign_labels(ingress, manifest)
         assign_labels(ingress, cluster_manifest)
-        assign_annotations(ingress, {"kubernetes.io/tls-acme" => "true"}) if cluster_tls == true
+        assign_annotations(ingress, {"kubernetes.io/tls-acme" => "true"}) if acme?
         assign_annotations(ingress, manifest_ingress)
         assign_annotations(ingress, cluster_manifest_ingress)
 
@@ -39,7 +39,16 @@ abstract class Psykube::Generator
     end
 
     private def cluster_tls
-      [cluster_manifest_ingress.tls, manifest_ingress.tls].reject(&.nil?)[0]?
+      cluster_manifest_ingress.tls || manifest_ingress.tls
+    end
+
+    private def acme?
+      return true if cluster_tls == true
+      if cluster_tls.is_a? Manifest::Ingress::Tls
+        return true if cluster_tls.as(Manifest::Ingress::Tls).auto
+      else
+        false
+      end
     end
 
     private def cluster_hosts
