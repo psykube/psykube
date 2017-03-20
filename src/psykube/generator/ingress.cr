@@ -49,9 +49,9 @@ abstract class Psykube::Generator
     private def generate_tls
       tls_list = [] of Kubernetes::Ingress::Spec::Tls
       cluster_hosts.each do |host, spec|
-        if (tls = spec.tls || cluster_tls)
-          tls_list << generate_host_tls(host, tls).as(Kubernetes::Ingress::Spec::Tls)
-        end
+        tls = spec.tls || cluster_tls
+        tls_record = generate_host_tls(host, tls) if tls
+        tls_list << tls_record if tls_record
       end
       tls_list unless tls_list.empty?
     end
