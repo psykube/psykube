@@ -12,6 +12,7 @@ abstract class Psykube::Generator
     # Containers
     private def generate_container
       Container.new(name, image).tap do |container|
+        container.resources = generate_container_resources
         container.env = generate_container_env
         container.volume_mounts = generate_container_volume_mounts(manifest.volumes)
         container.liveness_probe = generate_container_liveness_probe(manifest.healthcheck)
@@ -39,6 +40,19 @@ abstract class Psykube::Generator
     private def generate_volume(mount_path : String, volume : Manifest::Volume)
       volume_name = name_from_mount_path(mount_path)
       volume.to_deployment_volume(name: name, volume_name: volume_name)
+    end
+
+    # Resources
+    private def generate_container_resources
+      if (resources = manifest.resources)
+        limits = resources.limits
+        requests = resources.requests
+        return unless limits || requests
+        Kubernetes::Shared::ResourceRequirements.new.tap do |req|
+          req.limits = {"cpu" => limits.cpu, "memory" => limits.memory} if limits
+          req.requests = {"cpu" => requests.cpu, "memory" => requests.memory} if requests
+        end
+      end
     end
 
     # Ports

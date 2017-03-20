@@ -24,6 +24,7 @@ class Psykube::Manifest
     image:                  String?,
     image_tag:              String?,
     revision_history_limit: UInt32?,
+    resources:              Resources?,
     deploy_timeout:         {type: UInt32, nilable: true, getter: false},
     restart_policy:         String?,
     max_unavailable:        {type: UInt32, nilable: true, getter: false},

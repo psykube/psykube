@@ -67,7 +67,7 @@ abstract class Psykube::Generator
     end
 
     private def generate_host_tls(host : String, auto : Bool)
-      generate_host_tls(host, auto) if auto
+      generate_host_tls_auto(host, auto) if auto
     end
 
     private def generate_host_tls_auto(host : String, auto : Manifest::Ingress::Tls::Auto)
