@@ -41,6 +41,9 @@ brew install commercialtribe/tools/psykube
 ### Binaries
 You can also download the [pre-built binaries](https://github.com/CommercialTribe/psykube/releases/latest).
 
+### Versions
+The Major, Minor, and Patch components of the version match the kubectl version used by Pyskube. The fourth component tracks the Psykube specific release. Click [here](https://github.com/jpbarela/psykube/releases) for a list of versions.
+
 ## The Psykube YAML
 
 A .psykube.yml is required in the root for each app. This can be overridden with
@@ -75,7 +78,7 @@ More examples can be found in the example dir.
 
 Psykube works best with a certain kubernetes setup.
 
-1. A cluster running that latest kubernetes. _(**NOTE:** psykube versions line up with kubernetes versions)_
+1. A cluster running that latest kubernetes. 
 1. [An ingress controller](https://kubernetes.io/docs/user-guide/ingress/#ingress-controllers).
 1. [kube-lego](https://github.com/jetstack/kube-lego) controller installed for automatic TLS.
 
