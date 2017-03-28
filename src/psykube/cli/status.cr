@@ -39,5 +39,7 @@ class Psykube::Commands::Status < Admiral::Command
       end
       print "\n"
     end
+  rescue e : Psykube::Manifest::ParseException
+    panic e.message
   end
 end

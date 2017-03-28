@@ -16,5 +16,7 @@ class Psykube::Commands::Generate < Admiral::Command
     end
   rescue e : Generator::ValidationError
     panic "Error: #{e.message}".colorize(:red)
+  rescue e : Psykube::Manifest::ParseException
+    panic e.message
   end
 end

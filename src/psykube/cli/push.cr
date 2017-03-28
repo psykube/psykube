@@ -18,5 +18,7 @@ class Psykube::Commands::Push < Admiral::Command
   def run
     return docker_build_and_push(generator.image) if flags.tags.empty?
     flags.tags.each { |tag| docker_build_and_push tag }
+  rescue e : Psykube::Manifest::ParseException
+    panic e.message
   end
 end
