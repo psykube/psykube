@@ -97,20 +97,24 @@ abstract class Psykube::Generator
     @metadata ||= raw_metadata.merge({"namespace" => namespace})
   end
 
-  def raw_manifest
-    @raw_manifest ||= Manifest.from_yaml(Crustache.render template_yaml, {
-      "metadata" => raw_metadata,
-      "git"      => git_data,
-      "env"      => env_hash,
-    })
-  end
-
-  def manifest
-    @manifest ||= Manifest.from_yaml(Crustache.render template_yaml, {
+  def template_result(metadata : Hash(String, String) = raw_metadata)
+    Crustache.render template_yaml, {
       "metadata" => metadata,
       "git"      => git_data,
       "env"      => env_hash,
-    })
+    }
+  end
+
+  def raw_manifest
+    @raw_manifest ||= Manifest.from_yaml(template_result)
+  rescue e : YAML::ParseException
+    raise Manifest::ParseException.new(template_result, e)
+  end
+
+  def manifest
+    @manifest ||= Manifest.from_yaml(template_result metadata)
+  rescue e : YAML::ParseException
+    raise Manifest::ParseException.new(template_result, e)
   end
 
   def validate_image! : Nil

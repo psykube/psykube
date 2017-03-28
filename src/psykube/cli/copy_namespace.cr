@@ -33,5 +33,7 @@ class Psykube::Commands::CopyNamespace < Admiral::Command
 
   def run
     kubectl_copy_namespace(arguments.from, arguments.to, flags.resources, flags.force)
+  rescue e : Psykube::Manifest::ParseException
+    panic e.message
   end
 end
