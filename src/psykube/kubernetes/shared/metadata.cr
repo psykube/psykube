@@ -34,11 +34,12 @@ class Psykube::Kubernetes::Shared::Metadata
 
   class OwnerReference
     Kubernetes.mapping(
-      apiVersion: {type: String},
-      kind: {type: String},
-      name: {type: String},
-      uid: {type: String},
-      controller: {type: Bool}
+      apiVersion: String,
+      kind: String,
+      name: String,
+      uid: String,
+      controller: Bool,
+      block_owner_deletion: Bool
     )
   end
 end

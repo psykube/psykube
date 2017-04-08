@@ -32,7 +32,7 @@ class Psykube::Commands::PortForward < Admiral::Command
 
   def run
     kubectl_exec(command: "port-forward", args: [kubectl_get_pods.first.name.to_s] + arguments[0..-1])
-  rescue e : Psykube::Manifest::ParseException
+  rescue e : Psykube::ParseException
     panic e.message
   end
 end

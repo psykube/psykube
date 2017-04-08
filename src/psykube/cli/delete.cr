@@ -27,7 +27,7 @@ class Psykube::Commands::Delete < Admiral::Command
     end
   rescue e : Generator::ValidationError
     panic "Error: #{e.message}".colorize(:red)
-  rescue e : Psykube::Manifest::ParseException
+  rescue e : Psykube::ParseException
     panic e.message
   end
 end

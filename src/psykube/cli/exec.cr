@@ -26,7 +26,7 @@ class Psykube::Commands::Exec < Admiral::Command
     args << arguments.command
     args.concat(arguments[0..-1])
     kubectl_exec(command: "exec", args: args, input: flags.stdin)
-  rescue e : Psykube::Manifest::ParseException
+  rescue e : Psykube::ParseException
     panic e.message
   end
 end

@@ -1,4 +1,5 @@
 require "admiral"
+require "./parse_exception"
 require "./cli/*"
 require "./name_cleaner"
 
