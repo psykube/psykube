@@ -36,7 +36,9 @@ abstract class Psykube::Generator
     private def generate_persistent_volume_claim(mount_path : String, claim : Manifest::Volume::Claim)
       volume_name = name_from_mount_path(mount_path)
       Kubernetes::PersistentVolumeClaim.new(volume_name, claim.size, claim.access_modes).tap do |pvc|
-        assign_annotations(pvc, {"volume.beta.kubernetes.io/storage-class" => claim.storage_class.to_s})
+        if spec = pvc.spec
+          spec.storage_class_name = claim.storage_class.to_s
+        end
         assign_annotations(pvc, claim)
       end
     end

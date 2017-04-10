@@ -29,8 +29,4 @@ module Psykube::Kubernetes::Resource
 
     ::Psykube::Kubernetes.mapping({{properties}})
   end
-
-  macro definition(api_version, kind, **properties)
-    ::Psykube::Resource.mapping(api_version, kind, {{properties}})
-  end
 end

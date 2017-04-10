@@ -12,7 +12,7 @@ class Psykube::Commands::History < Admiral::Command
       panic "ERROR: #{flags.file} specified type `#{generator.manifest.type}`, rollouts can only be managed for `Deployment`.".colorize(:red)
     end
     kubectl_run("rollout", ["history", "deployment/#{generator.name}"])
-  rescue e : Psykube::Manifest::ParseException
+  rescue e : Psykube::ParseException
     panic e.message
   end
 end

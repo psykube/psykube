@@ -12,6 +12,7 @@ abstract class Psykube::Generator
 
   delegate lookup_port, to: manifest
 
+  @raw_manifest : Manifest?
   @manifest : Manifest?
   @raw_metadata : Hash(String, String)?
   @metadata : Hash(String, String)?
@@ -108,13 +109,13 @@ abstract class Psykube::Generator
   def raw_manifest
     @raw_manifest ||= Manifest.from_yaml(template_result)
   rescue e : YAML::ParseException
-    raise Manifest::ParseException.new(template_result, e)
+    raise ParseException.new(template_result, e)
   end
 
   def manifest
     @manifest ||= Manifest.from_yaml(template_result metadata)
   rescue e : YAML::ParseException
-    raise Manifest::ParseException.new(template_result, e)
+    raise ParseException.new(template_result, e)
   end
 
   def validate_image! : Nil

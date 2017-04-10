@@ -17,6 +17,7 @@ RUN mv ./bin/psykube /usr/local/bin/psykube
 RUN mkdir /tmp/psykube
 WORKDIR /tmp/psykube
 RUN git init
+RUN npm install
 RUN psykube init
 RUN git config --global user.email "engineering@commercialtribe.com"
 RUN git config --global user.name "CommercialTribe, Inc."

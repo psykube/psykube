@@ -16,7 +16,7 @@ class Psykube::Commands::Rollback < Admiral::Command
     puts "Rolling back #{flags.revision == 0 ? "to last deployment" : "to revision `#{flags.revision}`"}.".colorize(:yellow)
     kubectl_run("rollout", ["undo", "deployment/#{generator.name}"], flags: {"--to-revision" => flags.revision.to_s})
     kubectl_run("rollout", ["status", "deployment/#{deployment_generator.name}"])
-  rescue e : Psykube::Manifest::ParseException
+  rescue e : Psykube::ParseException
     panic e.message
   end
 end
