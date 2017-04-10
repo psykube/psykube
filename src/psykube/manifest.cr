@@ -4,12 +4,6 @@ require "./name_cleaner"
 class Psykube::Manifest
   macro mapping(properties)
     ::YAML.mapping({{properties}}, true)
-
-    def self.from_yaml(string_or_io)
-      super(string_or_io)
-    rescue e : YAML::ParseException
-      raise Psykube::ParseException.new(string_or_io, e)
-    end
   end
 
   alias VolumeMap = Hash(String, Volume | String)
