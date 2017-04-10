@@ -9,6 +9,7 @@ env:
 install:
   - curl -sL https://deb.nodesource.com/setup_6.x | bash -
   - apt-get install nodejs -y
+  - npm install
 before_script:
   # Authorize with gcloud
   - echo $GCLOUD_ENCODED_CREDS | base64 -d > /tmp/gcloud.json
