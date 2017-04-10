@@ -17,6 +17,8 @@ class Psykube::Kubernetes::Pod::Spec
     host_pid:                         String?,
     host_ipc:                         {type: String, nilable: true, key: "hostIPC"},
     security_context:                 Shared::SecurityContext?,
+    scheduler_name:                   String?,
+    tolerations:                      Array(Toleration)?,
     image_pull_secrets:               Array(ImagePullSecret)?,
     hostname:                         String?,
     subdomain:                        String?,

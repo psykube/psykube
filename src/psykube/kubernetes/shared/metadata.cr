@@ -39,7 +39,7 @@ class Psykube::Kubernetes::Shared::Metadata
       name: String,
       uid: String,
       controller: Bool,
-      block_owner_deletion: Bool
+      block_owner_deletion: Bool?
     )
   end
 end
