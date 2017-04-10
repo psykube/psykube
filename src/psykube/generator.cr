@@ -12,6 +12,7 @@ abstract class Psykube::Generator
 
   delegate lookup_port, to: manifest
 
+  @raw_manifest : Manifest?
   @manifest : Manifest?
   @raw_metadata : Hash(String, String)?
   @metadata : Hash(String, String)?

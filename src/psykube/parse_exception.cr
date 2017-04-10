@@ -1,3 +1,5 @@
+require "colorize"
+
 class Psykube::ParseException < Exception
   getter source : String = ""
 
