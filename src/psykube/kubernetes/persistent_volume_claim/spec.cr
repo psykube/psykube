@@ -4,10 +4,11 @@ require "../../shared/selector"
 
 class Psykube::Kubernetes::PersistentVolumeClaim::Spec
   Kubernetes.mapping({
-    access_modes: Array(String)?,
-    selector:     Shared::Selector?,
-    resources:    Shared::ResourceRequirements?,
-    volume_name:  {type: String, nilable: true, setter: false, clean: true},
+    access_modes:       Array(String)?,
+    storage_class_name: String?,
+    selector:           Shared::Selector?,
+    resources:          Shared::ResourceRequirements?,
+    volume_name:        {type: String, nilable: true, setter: false, clean: true},
   })
 
   def initialize(size : String, @access_modes : Array(String) = ["ReadWriteOnce"])
