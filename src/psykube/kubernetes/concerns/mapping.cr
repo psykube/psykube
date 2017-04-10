@@ -72,13 +72,6 @@ module Psykube::Kubernetes
 
     include Cleaner
 
-    def self.from_json(string_or_io)
-      pretty_input = JSON.parse(string_or_io).to_pretty_json
-      super(pretty_input)
-    rescue e : JSON::ParseException
-      raise Psykube::ParseException.new(pretty_input.to_s, e)
-    end
-
     ::YAML.mapping({{obj_properties}}, true)
     ::JSON.mapping({{obj_properties}}, true)
   end
