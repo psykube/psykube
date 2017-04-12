@@ -1,4 +1,4 @@
-{% if !system("which docker || true").empty? %}
+{% if !`which docker || true`.empty? %}
 require "admiral"
 require "./concerns/*"
 

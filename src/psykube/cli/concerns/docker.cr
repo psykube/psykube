@@ -1,3 +1,4 @@
+{% if !`which docker || true`.empty? %}
 module Psykube::Commands::Docker
   def self.bin
     @@bin ||= ENV["DOCKER_BIN"]? || `which docker`.strip
@@ -43,3 +44,4 @@ module Psykube::Commands::Docker
     end
   end
 end
+{% end %}
