@@ -10,19 +10,9 @@ ADD . /build
 WORKDIR /build
 
 # Build
+RUN npm install
 RUN shards build --release
 RUN mv ./bin/psykube /usr/local/bin/psykube
-
-# Move back to root
-RUN mkdir /tmp/psykube
-WORKDIR /tmp/psykube
-RUN git init
-RUN npm install
-RUN psykube init
-RUN git config --global user.email "engineering@commercialtribe.com"
-RUN git config --global user.name "CommercialTribe, Inc."
-RUN git add -A
-RUN git commit -m "initial commit"
 
 # Cleanup
 RUN apt-get remove nodejs -y
@@ -30,5 +20,15 @@ RUN apt-get purge
 RUN rm -rf /build
 RUN rm `which crystal`
 RUN rm `which shards`
+
+# Move back to root
+RUN mkdir /workdir
+WORKDIR /workdir
+RUN git init
+RUN git config --global user.email "engineering@commercialtribe.com"
+RUN git config --global user.name "CommercialTribe, Inc."
+RUN psykube init
+RUN git add -A
+RUN git commit -m "initial commit"
 
 ENTRYPOINT [ "/usr/local/bin/psykube" ]
