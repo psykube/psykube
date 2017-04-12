@@ -12,6 +12,7 @@ class Psykube::Commands::Apply < Admiral::Command
   {% else %}
   define_flag image, description: "The docker image to apply.", required: true
   {% end %}
+  define_flag tag, description: "The docker tag to apply.", short: t
   define_flag copy_namespace, description: CopyNamespace::DESCRIPTION
 
   define_flag copy_resources : String,

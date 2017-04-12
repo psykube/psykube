@@ -15,6 +15,12 @@ module Psykube::Commands::PsykubeFileFlag
     flags.image
   end
 
+  private def tag_flag
+    flags = @flags
+    return unless flags.responds_to? :tag
+    flags.tag
+  end
+
   private def namespace_flag
     flags = @flags
     return unless flags.responds_to? :namespace
@@ -35,6 +41,7 @@ module Psykube::Commands::PsykubeFileFlag
       filename: flags.file,
       cluster_name: cluster_name,
       image: image_flag,
+      tag: tag_flag,
       namespace: namespace_flag
     )
   end
