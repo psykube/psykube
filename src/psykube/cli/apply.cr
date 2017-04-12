@@ -2,6 +2,8 @@ require "admiral"
 require "./concerns/*"
 
 class Psykube::Commands::Apply < Admiral::Command
+  private DOCKER = system "which docker" rescue false
+
   include Docker
   include Kubectl
   include KubectlAll
@@ -9,8 +11,8 @@ class Psykube::Commands::Apply < Admiral::Command
   define_help description: "Apply the kubernetes manifests."
 
   define_flag copy_namespace, description: CopyNamespace::DESCRIPTION
-  define_flag push : Bool, description: "Build and push the docker image.", default: true
-  define_flag image, description: "Override the docker image."
+  define_flag push : Bool, description: "Build and push the docker image.", default: DOCKER
+  define_flag image, description: "Override the docker image.", required: DOCKER
   define_flag copy_resources : String,
     description: "The resource types to copy for copy-namespace.",
     short: r,
