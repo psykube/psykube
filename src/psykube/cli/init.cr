@@ -72,7 +72,5 @@ class Psykube::Commands::Init < Admiral::Command
         file.write string.lines[1..-1].join("\n").to_slice
       end
     end
-  rescue e : Psykube::ParseException
-    panic e.message
   end
 end

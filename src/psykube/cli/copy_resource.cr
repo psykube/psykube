@@ -30,8 +30,6 @@ class Psykube::Commands::CopyResource < Admiral::Command
     resource.clean!
     resource.name = new_resource_name
     kubectl_run(command: "apply", manifest: resource, flags: {"--force" => flags.force})
-  rescue e : Psykube::ParseException
-    panic e.message
   end
 
   private def new_resource_name

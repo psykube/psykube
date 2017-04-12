@@ -1,3 +1,4 @@
+{% if !system("which docker || true").empty? %}
 require "admiral"
 require "./concerns/*"
 
@@ -18,7 +19,6 @@ class Psykube::Commands::Push < Admiral::Command
   def run
     return docker_build_and_push(generator.image) if flags.tags.empty?
     flags.tags.each { |tag| docker_build_and_push tag }
-  rescue e : Psykube::ParseException
-    panic e.message
   end
 end
+{% end %}

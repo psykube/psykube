@@ -14,7 +14,5 @@ class Psykube::Commands::Validate < Admiral::Command
     puts generator.template_result
     puts ""
     puts "Template OK".colorize(:green)
-  rescue e : Psykube::ParseException
-    panic e.message
   end
 end

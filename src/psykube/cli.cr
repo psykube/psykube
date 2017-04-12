@@ -6,6 +6,14 @@ require "./name_cleaner"
 class Psykube::CLI < Admiral::Command
   {{ run "#{__DIR__}/parse_version.cr" }}
 
+  rescue_from Psykube::ParseException do |e|
+    panic e.message
+  end
+
+  rescue_from Generator::ValidationError do |e|
+    panic "Error: #{e.message}".colorize(:red)
+  end
+
   define_version VERSION
   define_help
 
@@ -16,7 +24,9 @@ class Psykube::CLI < Admiral::Command
   register_sub_command delete, Commands::Delete
   register_sub_command exec, Commands::Exec
   register_sub_command "port-forward", Commands::PortForward
+  {% if !system("which docker || true").empty? %}
   register_sub_command push, Commands::Push
+  {% end %}
   register_sub_command status, Commands::Status
   register_sub_command logs, Commands::Logs
   register_sub_command init, Commands::Init

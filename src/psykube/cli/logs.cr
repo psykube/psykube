@@ -16,7 +16,5 @@ class Psykube::Commands::Logs < Admiral::Command
         output: LabeledIO.new(STDOUT, label: pod.name, index: index)
       )
     end.each(&.wait)
-  rescue e : Psykube::ParseException
-    panic e.message
   end
 end

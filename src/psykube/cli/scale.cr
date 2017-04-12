@@ -24,7 +24,5 @@ class Psykube::Commands::Scale < Admiral::Command
       ["#{generator.manifest.type.downcase}/#{generator.name}"],
       flags: {"--replicas" => arguments.size.to_s}
     )
-  rescue e : Psykube::ParseException
-    panic e.message
   end
 end

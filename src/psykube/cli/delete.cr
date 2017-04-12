@@ -25,9 +25,5 @@ class Psykube::Commands::Delete < Admiral::Command
         kubectl_new("delete", manifest: item)
       end.all?(&.wait.success?) || panic("Failed kubectl delete.".colorize(:red))
     end
-  rescue e : Generator::ValidationError
-    panic "Error: #{e.message}".colorize(:red)
-  rescue e : Psykube::ParseException
-    panic e.message
   end
 end
