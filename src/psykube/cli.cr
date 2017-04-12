@@ -24,7 +24,7 @@ class Psykube::CLI < Admiral::Command
   register_sub_command delete, Commands::Delete
   register_sub_command exec, Commands::Exec
   register_sub_command "port-forward", Commands::PortForward
-  {% if `which docker || true`.empty? %}
+  {% if !`which docker || true`.empty? %}
   register_sub_command push, Commands::Push
   {% end %}
   register_sub_command status, Commands::Status
