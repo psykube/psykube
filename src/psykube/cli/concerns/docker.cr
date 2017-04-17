@@ -1,4 +1,4 @@
-{% if !`which docker || true`.empty? %}
+{% if env("EXCLUDE_DOCKER") != "true" %}
 module Psykube::Commands::Docker
   def self.bin
     @@bin ||= ENV["DOCKER_BIN"]? || `which docker`.strip

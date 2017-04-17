@@ -1,4 +1,4 @@
-{% if !`which docker || true`.empty? %}
+{% if env("EXCLUDE_DOCKER") != "true" %}
 require "admiral"
 require "./concerns/*"
 

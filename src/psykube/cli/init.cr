@@ -2,7 +2,11 @@ require "admiral"
 require "./concerns/*"
 
 def current_docker_user
+  {% if env("EXCLUDE_DOCKER") != "true" %}
   `#{Psykube::Commands::Docker.bin} info`.lines.find(&.=~ /^Username/).try(&.split(":")[1]?).to_s.strip
+  {% else %}
+  ""
+  {% end %}
 end
 
 class Psykube::Commands::Init < Admiral::Command

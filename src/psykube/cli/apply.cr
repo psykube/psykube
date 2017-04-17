@@ -5,7 +5,7 @@ class Psykube::Commands::Apply < Admiral::Command
   include Kubectl
   include KubectlAll
 
-  {% if !`which docker || true`.empty? %}
+  {% if env("EXCLUDE_DOCKER") != "true" %}
   include Docker
   define_flag push : Bool, description: "Build and push the docker image.", default: true
   define_flag image, description: "Override the generated docker image."
@@ -29,7 +29,7 @@ class Psykube::Commands::Apply < Admiral::Command
 
   def run
     kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy) if flags.copy_namespace
-    {% if !`which docker || true`.empty? %}
+    {% if env("EXCLUDE_DOCKER") != "true" %}
     docker_build_and_push(generator.image) if !flags.image && !generator.manifest.image && flags.push
     {% end %}
     result = generator.result

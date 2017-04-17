@@ -2,6 +2,7 @@ FROM crystallang/crystal:0.21.1
 
 # Deps
 ENV NPM_CONFIG_LOGLEVEL warn
+ENV EXLUDE_DOCKER true
 RUN apt-get update
 RUN apt-get install curl -y
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
