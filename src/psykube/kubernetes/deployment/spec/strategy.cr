@@ -6,7 +6,7 @@ class Psykube::Kubernetes::Deployment::Spec::Strategy
     rolling_update: RollingUpdate?,
   })
 
-  def initialize(max_unavailable : UInt32 | String, max_surge : UInt32 | String)
+  def initialize(max_unavailable : UInt32 | Manifest::Percentage, max_surge : UInt32 | Manifest::Percentage)
     @type = "RollingUpdate"
     @rolling_update = RollingUpdate.new(
       max_unavailable: max_unavailable,

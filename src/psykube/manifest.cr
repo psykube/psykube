@@ -27,8 +27,8 @@ class Psykube::Manifest
     resources:              Resources?,
     deploy_timeout:         {type: UInt32, nilable: true, getter: false},
     restart_policy:         String?,
-    max_unavailable:        {type: UInt32 | String, nilable: true, getter: false},
-    max_surge:              {type: UInt32 | String, nilable: true, getter: false},
+    max_unavailable:        {type: UInt32 | Percentage, nilable: true, getter: false},
+    max_surge:              {type: UInt32 | Percentage, nilable: true, getter: false},
     command:                Array(String) | String | Nil,
     args:                   Array(String)?,
     env:                    {type: Hash(String, Env | String), nilable: true, getter: false},
@@ -81,11 +81,11 @@ class Psykube::Manifest
   end
 
   def max_unavailable
-    @max_unavailable || "25%"
+    @max_unavailable || Percentage.new("25%")
   end
 
   def max_surge
-    @max_surge || "25%"
+    @max_surge || Percentage.new("25%")
   end
 
   def ports
