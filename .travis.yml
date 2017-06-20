@@ -7,8 +7,9 @@ env:
     - PSYKUBE_DEBUG=true
     - CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
 install:
-  - curl -sL https://deb.nodesource.com/setup_6.x | bash -
-  - apt-get install nodejs -y
+  - curl -sL https://deb.nodesource.com/setup_8.x | bash -
+  - sudo apt-get install nodejs -y
+  - sudo npm install -g npm
   - npm install
 before_script:
   # Authorize with gcloud
