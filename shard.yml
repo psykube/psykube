@@ -1,9 +1,10 @@
 name: psykube
-version: 1.6.0.5
+version: 1.6.0.6
 
 authors:
   - Jason Waldrip <jwaldrip@commercialtribe.com>
   - Eric Irwin <eirwin@commercialtribe.com>
+  - Jacob Caban-Tomski <jcabantomski@commercialtribe.com>
 
 description: |
   A tool to help with kubernetes deployments in CI/CD deployments.

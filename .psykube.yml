@@ -6,6 +6,7 @@ registry_user: commercialtribe
 image_tag: {{git.tag}}
 {{/git.tag}}
 
+replicas: 5
 args: [ "playground", "--bind=0.0.0.0" ]
 ports:
   http: 8080
