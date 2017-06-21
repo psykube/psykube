@@ -207,6 +207,15 @@ healthcheck:
       - "./check-status.sh"
       - "arg"
 
+# = Rolling Deploy ==
+# Set rolling deploy values
+# Defaults to 25%
+max_surge: "50%"
+max_unavailable: "30%"
+
+# # of pods
+max_surge: 2
+max_unavailable: 1
 
 # = Cluster Settings ==
 # When running the `apply` and `generate` commands, you specify a cluster that
