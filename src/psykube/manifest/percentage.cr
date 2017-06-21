@@ -13,13 +13,13 @@ class Psykube::Manifest::Percentage
     initialize pull.read_string
   end
 
-  def initialize(value : String)
-    raise InvalidError.new("is not a valid percentage") unless value.ends_with?('%')
-		initialize value.chomp('%').to_u32
+  def initialize(@value : String)
+    raise InvalidError.new("#{value} is not a valid percentage") unless value.ends_with?('%')
+    initialize value.chomp('%').to_u32
   end
 
   def initialize(value : Int32)
-		initialize value.to_u32
+    initialize value.to_u32
   end
 
   def initialize(@value : UInt32)
@@ -30,11 +30,11 @@ class Psykube::Manifest::Percentage
   end
 
   def to_json(io)
-		to_s.to_json(io)
+    to_s.to_json(io)
   end
 
   def to_yaml(io)
-		to_s.to_yaml(io)
+    to_s.to_yaml(io)
   end
 
 end
