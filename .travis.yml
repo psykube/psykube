@@ -6,22 +6,35 @@ env:
   global:
     - PSYKUBE_DEBUG=true
     - CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+cache:
+  directories:
+    - "$HOME/google-cloud-sdk/"
 install:
   - curl -sL https://deb.nodesource.com/setup_8.x | bash -
   - sudo apt-get install nodejs -y
   - sudo npm install -g npm
   - npm install
 before_script:
+  # Update Google Cloud components
+  - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; curl https://sdk.cloud.google.com | bash; fi
+  - source /home/travis/google-cloud-sdk/path.bash.inc
+  - gcloud version
+
   # Authorize with gcloud
   - echo $GCLOUD_ENCODED_CREDS | base64 -d > /tmp/gcloud.json
   - gcloud auth activate-service-account $(jq -r ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
 
-  # Install and configure kubectl
-  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl --version 142.0.0
-  - export PATH=/usr/lib/google-cloud-sdk/bin:$PATH
-  - sudo chown -R $USER /home/travis/.config/gcloud
+  # Setup credentials for Google Cloud staging
   - gcloud container clusters get-credentials staging --project=commercial-tribe-staging --zone=us-central1-a
+
+  # Authorize Docker
   - gcloud docker --authorize-only
+
+  # Install Kubectl
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - sudo mv ./kubectl /usr/local/bin/kubectl
 install: shards install
 script:
   - crystal spec --verbose
