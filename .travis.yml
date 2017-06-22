@@ -6,6 +6,10 @@ env:
   global:
     - PSYKUBE_DEBUG=true
     - CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+cache:
+  directories:
+    - "$HOME/google-cloud-sdk/"
 install:
   - curl -sL https://deb.nodesource.com/setup_8.x | bash -
   - sudo apt-get install nodejs -y
