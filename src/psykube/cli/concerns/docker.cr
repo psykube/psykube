@@ -26,6 +26,7 @@ module Psykube::Commands::Docker
       args << "--build-arg=#{arg}"
     end
     image = tag.includes?(":") ? tag : generator.image(tag)
+    args << "--cache-from=#{generator.image("latest")}"
     args << "--tag=#{image}"
     args << generator.dir
     docker_run args
