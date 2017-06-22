@@ -17,7 +17,7 @@ before_script:
   - gcloud auth activate-service-account $(jq -r ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
 
   # Install and configure kubectl
-  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl --version 142.0.0
+  - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl
   - export PATH=/usr/lib/google-cloud-sdk/bin:$PATH
   - sudo chown -R $USER /home/travis/.config/gcloud
   - gcloud container clusters get-credentials staging --project=commercial-tribe-staging --zone=us-central1-a
