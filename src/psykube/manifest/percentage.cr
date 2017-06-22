@@ -7,10 +7,14 @@ class Psykube::Manifest::Percentage
 
   def initialize(pull : YAML::PullParser)
     initialize pull.read_scalar
+  rescue ex
+    raise YAML::ParseException.new(ex.message.not_nil!, 0, 0)
   end
 
   def initialize(pull : JSON::PullParser)
     initialize pull.read_string
+  rescue ex
+    raise JSON::ParseException.new(ex.message.not_nil!, 0, 0)
   end
 
   def initialize(@value : String)
