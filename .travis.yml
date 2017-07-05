@@ -2,6 +2,12 @@ sudo: required
 language: crystal
 services:
   - docker
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - libstdc++-4.9-dev
 env:
   global:
     - PSYKUBE_DEBUG=true
