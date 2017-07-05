@@ -2,8 +2,7 @@ require "./concerns/resource"
 require "./shared/network_status"
 
 class Psykube::Kubernetes::Service
-  include Resource
-  definition("v1", "Service", {
+  Resource.definition("v1", "Service", {
     spec:   Spec?,
     status: {type: Shared::NetworkStatus, nilable: true, clean: true},
   })

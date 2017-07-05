@@ -1,8 +1,7 @@
 require "./concerns/resource"
 
 class Psykube::Kubernetes::ThirdPartyResource
-  include Resource
-  definition("extensions/v1beta1", "ThirdPartyResource", {
+  Resource.definition("extensions/v1beta1", "ThirdPartyResource", {
     versions: Array(Version)?,
   })
 end

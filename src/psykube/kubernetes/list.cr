@@ -30,7 +30,6 @@ require "./storage_class"
 require "./third_party_resource"
 
 class Psykube::Kubernetes::List
-  include Resource
   alias ListableTypes = Cluster |
                         ComponentStatus |
                         ConfigMap |
@@ -62,7 +61,7 @@ class Psykube::Kubernetes::List
 
   delegate :select, :[], :[]?, :find, :unshift, to: @items
 
-  definition("v1", "List", {
+  Resource.definition("v1", "List", {
     items:            {type: Array(ListableTypes), default: [] of ListableTypes},
     resource_version: String?,
     self_link:        String?,

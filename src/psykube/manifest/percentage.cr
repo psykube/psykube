@@ -2,8 +2,7 @@ require "yaml"
 require "json"
 
 class Psykube::Manifest::Percentage
-
-  class InvalidError < Exception ; end
+  class InvalidError < Exception; end
 
   def initialize(pull : YAML::PullParser)
     initialize pull.read_scalar
@@ -40,5 +39,4 @@ class Psykube::Manifest::Percentage
   def to_yaml(io)
     to_s.to_yaml(io)
   end
-
 end

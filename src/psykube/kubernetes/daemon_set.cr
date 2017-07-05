@@ -2,8 +2,7 @@ require "./shared/metadata"
 require "./concerns/resource"
 
 class Psykube::Kubernetes::DaemonSet
-  include Resource
-  definition("extensions/v1beta1", "DaemonSet", {
+  Resource.definition("extensions/v1beta1", "DaemonSet", {
     spec:   Spec?,
     status: {type: Status, nilable: true, clean: true},
   })

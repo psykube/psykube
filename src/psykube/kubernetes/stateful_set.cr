@@ -3,8 +3,7 @@ require "./shared/object_reference"
 require "./concerns/resource"
 
 class Psykube::Kubernetes::StatefulSet
-  include Resource
-  definition("apps/v1beta1", "StatefulSet", {
+  Resource.definition("apps/v1beta1", "StatefulSet", {
     spec:   Spec?,
     status: {type: Status, nilable: true, clean: true},
   })

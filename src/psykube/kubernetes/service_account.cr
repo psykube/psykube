@@ -3,8 +3,7 @@ require "./shared/object_reference"
 require "./concerns/resource"
 
 class Psykube::Kubernetes::ServiceAccount
-  include Resource
-  definition("v1", "ServiceAccount", {
+  Resource.definition("v1", "ServiceAccount", {
     image_pull_secrets: Array(Shared::LocalObjectReference)?,
     secrets:            Array(Shared::ObjectReference)?,
   })

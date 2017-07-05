@@ -37,7 +37,7 @@ module Psykube::Commands::Kubectl
   end
 
   {% for m in %w(run exec new) %}
-  def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest : Kubernetes::Resource? = nil, namespace : String? = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
+  def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest = nil, namespace : String? = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
     File.exists?(Kubectl.bin) || self.panic("kubectl not found")
     flags = Flags.new.merge(flags)
     {% for io in %w(input output error) %}

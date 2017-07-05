@@ -1,8 +1,7 @@
 require "./concerns/resource"
 
 class Psykube::Kubernetes::PersistentVolumeClaim
-  include Resource
-  definition("v1", "PersistentVolumeClaim", {
+  Resource.definition("v1", "PersistentVolumeClaim", {
     spec:   Spec?,
     status: {type: Status, nilable: true, clean: true},
   })

@@ -10,7 +10,7 @@ class Psykube::Kubernetes::Pod::Status
     pod_ip:             {type: String, setter: false, nilable: true, key: "podIP"},
     start_time:         {type: Time, setter: false, nilable: true},
     container_statuses: {type: Array(ContainerStatus), setter: false, nilable: true},
-    qos_class:          {type: String, setter: false, nilable: true}
+    qos_class:          {type: String, setter: false, nilable: true},
   })
 end
 

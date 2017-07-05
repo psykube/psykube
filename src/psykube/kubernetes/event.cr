@@ -2,8 +2,7 @@ require "./concerns/resource"
 require "./shared/object_reference"
 
 class Psykube::Kubernetes::Event
-  include Resource
-  definition("v1", "Event", {
+  Resource.definition("v1", "Event", {
     count:           Int32?,
     first_timestamp: Time?,
     involved_object: Shared::ObjectReference,
