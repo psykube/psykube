@@ -30,7 +30,7 @@ class Psykube::Commands::Apply < Admiral::Command
   def run
     kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy) if flags.copy_namespace
     {% if env("EXCLUDE_DOCKER") != "true" %}
-    docker_build_and_push(generator.image) if !flags.image && !generator.manifest.image && flags.push
+    docker_build_and_push(generator.image) if !flags.tag && !flags.image && !generator.manifest.image && flags.push
     {% end %}
     result = generator.result
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
