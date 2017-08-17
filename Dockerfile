@@ -1,8 +1,8 @@
 FROM crystallang/crystal:0.22.0
 
 # Deps
-ENV NPM_CONFIG_LOGLEVEL warn
-ENV EXLUDE_DOCKER true
+ARG NPM_CONFIG_LOGLEVEL=warn
+ARG EXLUDE_DOCKER=true
 RUN apt-get update
 RUN apt-get install curl -y
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
@@ -12,8 +12,8 @@ WORKDIR /build
 
 # Build
 RUN npm install
-RUN shards build --release
-RUN mv ./bin/psykube /usr/local/bin/psykube
+RUN shards build --release psykube-playground
+RUN mv ./bin/psykube-playground /usr/local/bin/psykube-playground
 
 # Cleanup
 RUN apt-get remove nodejs -y
@@ -28,8 +28,10 @@ WORKDIR /workdir
 RUN git init
 RUN git config --global user.email "engineering@commercialtribe.com"
 RUN git config --global user.name "CommercialTribe, Inc."
-RUN psykube init
+RUN touch test.text
 RUN git add -A
 RUN git commit -m "initial commit"
 
-ENTRYPOINT [ "/usr/local/bin/psykube" ]
+ENV BIND 0.0.0.0
+
+ENTRYPOINT [ "/usr/local/bin/psykube-playground" ]

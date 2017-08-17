@@ -1,5 +1,5 @@
 name: psykube
-version: 1.6.0.9
+version: 1.7.3.0
 
 authors:
   - Jason Waldrip <jwaldrip@commercialtribe.com>
@@ -22,3 +22,5 @@ license: MIT
 targets:
   psykube:
     main: src/psykube.cr
+  psykube-playground:
+    main: src/psykube/playground/standalone.cr

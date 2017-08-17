@@ -1,9 +1,5 @@
-require "ecr"
-require "crouter"
-require "http/server"
 require "admiral"
 require "./concerns/*"
-require "../../playground/server"
 
 class Psykube::Commands::Playground < Admiral::Command
   define_help description: "Start the playground."
@@ -12,6 +8,6 @@ class Psykube::Commands::Playground < Admiral::Command
   define_flag port : Int32, "The port to bind to.", short: 'p', default: 8080
 
   def run
-    Psykube::Playground::Server.listen(port: flags.port, bind: flags.bind)
+    Psykube::Playground.listen(port: flags.port, bind: flags.bind)
   end
 end

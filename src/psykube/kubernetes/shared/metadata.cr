@@ -1,5 +1,11 @@
 require "../concerns/mapping"
 
+def Time.new(pull : JSON::PullParser)
+  Time::Format::ISO_8601_DATE_TIME.parse(pull.read_string)
+rescue e : Time::Format::Error
+  raise JSON::ParseException.new(e.message, 0, 0)
+end
+
 class Psykube::Kubernetes::Shared::Metadata
   Kubernetes.mapping(
     name: String?,
@@ -9,7 +15,7 @@ class Psykube::Kubernetes::Shared::Metadata
     uid: {type: String, nilable: true, setter: false, clean: true},
     resource_version: {type: String, nilable: true, setter: false, clean: true},
     generation: {type: Int32, nilable: true, setter: false, clean: true},
-    creation_timestamp: {type: Time, nilable: true, setter: false, clean: true},
+    creation_timestamp: {type: Time | Nil, nilable: true, setter: false, clean: true},
     deletion_timestamp: {type: Time, nilable: true, setter: false, clean: true},
     deletion_grace_period_seconds: {type: Int32, nilable: true, setter: false, clean: true},
     labels: Hash(String, String) | Nil,
