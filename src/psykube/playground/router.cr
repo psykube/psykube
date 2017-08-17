@@ -1,3 +1,5 @@
+{% system "npm install" %}
+
 class Psykube::Playground::Router < Crouter::Router
   DUCK = {{ `cat #{__DIR__}/../../../psykube-ico.png`.stringify }}
 

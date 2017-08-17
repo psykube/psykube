@@ -4,8 +4,6 @@ require "http/server"
 require "./router"
 require "./generate_controller"
 
-{% system "npm install" %}
-
 struct Psykube::Playground::Server
   def self.listen(**options)
     new(**options).listen
