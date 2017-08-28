@@ -12,6 +12,9 @@ class Psykube::Commands::CopyResource < Admiral::Command
   define_flag cluster, "The cluster configuration to use.", default: "default"
   define_flag source_namespace, description: "The namespace to copy the resource from"
   define_flag namespace, description: "The namespace to copy the resource to", long: "dest-namespace"
+  define_flag explicit : Bool,
+    description: %(Only copy resources that have the annotation "psykube.io/allow-copy" set to "true"),
+    default: false
 
   define_argument resource_type, required: true
   define_argument resource_name, required: true
@@ -27,9 +30,17 @@ class Psykube::Commands::CopyResource < Admiral::Command
       namespace: source_namespace || namespace
     )
     resource = Kubernetes::List::ListableTypes.from_json(json)
+    allow_copy = case resource.metadata.annotations.try(&.["psykube.io/allow-copy"]?)
+                 when "true"
+                   true
+                 when "false"
+                   false
+                 else
+                   !flags.explicit
+                 end
     resource.clean!
     resource.name = new_resource_name
-    kubectl_run(command: "apply", manifest: resource, flags: {"--force" => flags.force})
+    kubectl_run(command: "apply", manifest: resource, flags: {"--force" => flags.force}) if allow_copy
   end
 
   private def new_resource_name

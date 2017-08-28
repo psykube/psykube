@@ -24,11 +24,14 @@ class Psykube::Commands::Apply < Admiral::Command
     description: "Copy the namespace even the destination already exists."
   define_flag force : Bool,
     description: "Force the recreation of the kubernetes resources."
+  define_flag explicit_copy : Bool,
+    description: %(Only copy resources that have the annotation "psykube.io/allow-copy" set to "true"),
+    default: false
 
   define_help description: "Apply the kubernetes manifests."
 
   def run
-    kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy) if flags.copy_namespace
+    kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy, flags.explicit_copy) if flags.copy_namespace
     {% if env("EXCLUDE_DOCKER") != "true" %}
     docker_build_and_push(generator.image) if !flags.tag && !flags.image && !generator.manifest.image && flags.push
     {% end %}

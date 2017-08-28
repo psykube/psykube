@@ -19,6 +19,9 @@ class Psykube::Commands::CopyNamespace < Admiral::Command
     default: DEFAULT_RESOURCES
   define_flag force : Bool,
     description: "Copy the namespace even the destination already exists."
+  define_flag explicit : Bool,
+    description: %(Only copy resources that have the annotation "psykube.io/allow-copy" set to "true"),
+    default: false
 
   define_argument from, description: "The namespace to copy resources from", required: true
   define_argument to, description: "The namespace to copy resources to", required: true
@@ -32,6 +35,6 @@ class Psykube::Commands::CopyNamespace < Admiral::Command
   end
 
   def run
-    kubectl_copy_namespace(arguments.from, arguments.to, flags.resources, flags.force)
+    kubectl_copy_namespace(arguments.from, arguments.to, flags.resources, flags.force, flags.explicit)
   end
 end

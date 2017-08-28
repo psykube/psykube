@@ -96,7 +96,7 @@ module Psykube::Commands::Kubectl
     panic "Error: #{e.message}".colorize(:red)
   end
 
-  def kubectl_copy_namespace(from : String, to : String, resources : String, force : Bool = false)
+  def kubectl_copy_namespace(from : String, to : String, resources : String, force : Bool = false, explicit : Bool = false)
     from = NameCleaner.clean(from)
     to = NameCleaner.clean(to)
     begin
@@ -108,6 +108,17 @@ module Psykube::Commands::Kubectl
       # Gather the existing resources
       json = kubectl_json(resource: resources, namespace: from)
       list = Kubernetes::List.from_json json
+
+      list.items.select! do |resource|
+        case resource.metadata.annotations.try(&.["psykube.io/allow-copy"]?)
+        when "true"
+          true
+        when "false"
+          false
+        else
+          !explicit
+        end
+      end
 
       # Get or build the new namespace
       namespace = Kubernetes::Namespace.new(to)
