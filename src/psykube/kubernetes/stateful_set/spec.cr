@@ -11,7 +11,7 @@ class Psykube::Kubernetes::StatefulSet::Spec
     service_name:           String,
     template:               PodTemplate::Template,
     volume_claim_templates: Array(PersistentVolumeClaim)?,
-    update_strategy: UpdateStrategy?
+    update_strategy:        UpdateStrategy?,
   })
 
   def initialize(name : String, @service_name : String)
