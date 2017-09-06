@@ -44,5 +44,6 @@ class Psykube::Commands::Apply < Admiral::Command
     if deployment_generator.manifest.type == "Deployment"
       kubectl_run("rollout", ["status", "deployment/#{deployment_generator.name}"])
     end
+    kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.now.to_json}"])
   end
 end
