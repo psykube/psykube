@@ -1,4 +1,4 @@
-class Psykube::Generator
+abstract class Psykube::Generator
   struct Concerns::IgnoreParser
     getter ignores : Array(Regex) = [] of Regex
     getter exceptions : Array(Regex) = [] of Regex

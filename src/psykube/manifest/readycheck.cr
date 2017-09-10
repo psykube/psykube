@@ -1,13 +1,13 @@
 class Psykube::Manifest::Readycheck
   Manifest.mapping({
     http:                  {type: Healthcheck::Http | String, nilable: true},
-    tcp:                   {type: Healthcheck::Tcp | String | UInt16, nilable: true},
+    tcp:                   {type: Healthcheck::Tcp | String | Int32, nilable: true},
     exec:                  {type: Healthcheck::Exec | String | Array(String), nilable: true},
-    initial_delay_seconds: UInt32?,
-    timeout_seconds:       UInt32?,
-    period_seconds:        UInt32?,
-    success_threshold:     UInt32?,
-    failure_threshold:     UInt32?,
+    initial_delay_seconds: Int32?,
+    timeout_seconds:       Int32?,
+    period_seconds:        Int32?,
+    success_threshold:     Int32?,
+    failure_threshold:     Int32?,
   })
 end
 

@@ -1,4 +1,3 @@
-require "../kubernetes/persistent_volume_claim"
 require "./concerns/*"
 
 abstract class Psykube::Generator
@@ -7,12 +6,7 @@ abstract class Psykube::Generator
 
     protected def result
       result = manifest_claims.map do |mount_path, volume|
-        if claim = generate_persistent_volume_claim(mount_path, volume)
-          assign_labels(claim, manifest)
-          assign_labels(claim, cluster_manifest)
-          claim.metadata.namespace = namespace
-        end
-        claim
+        generate_persistent_volume_claim(mount_path, volume)
       end.compact
       result unless result.empty?
     end
@@ -35,12 +29,18 @@ abstract class Psykube::Generator
 
     private def generate_persistent_volume_claim(mount_path : String, claim : Manifest::Volume::Claim)
       volume_name = name_from_mount_path(mount_path)
-      Kubernetes::PersistentVolumeClaim.new(volume_name, claim.size, claim.access_modes).tap do |pvc|
-        if spec = pvc.spec
-          spec.storage_class_name = claim.storage_class.to_s
-        end
-        assign_annotations(pvc, claim)
-      end
+      Kubernetes::Api::V1::PersistentVolumeClaim.new(
+        metadata: generate_metadata(name: volume_name, annotations: [claim.annotations]),
+        spec: Kubernetes::Api::V1::PersistentVolumeClaimSpec.new(
+          storage_class_name: claim.storage_class,
+          access_modes: claim.access_modes || ["ReadWriteOnce"],
+          resources: Kubernetes::Api::V1::ResourceRequirements.new(
+            requests: {
+              "storage" => claim.size,
+            }
+          )
+        )
+      )
     end
 
     private def generate_persistent_volume_claim(mount_path : String, nothing : Nil)
@@ -48,7 +48,17 @@ abstract class Psykube::Generator
 
     private def generate_persistent_volume_claim(mount_path : String, size : String)
       volume_name = name_from_mount_path(mount_path)
-      Kubernetes::PersistentVolumeClaim.new(volume_name, size)
+      Kubernetes::Api::V1::PersistentVolumeClaim.new(
+        metadata: generate_metadata(name: volume_name),
+        spec: Kubernetes::Api::V1::PersistentVolumeClaimSpec.new(
+          access_modes: ["ReadWriteOnce"],
+          resources: Kubernetes::Api::V1::ResourceRequirements.new(
+            requests: {
+              "storage" => size,
+            }
+          )
+        )
+      )
     end
   end
 end

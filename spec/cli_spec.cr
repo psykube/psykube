@@ -1,7 +1,8 @@
 require "spec"
 require "http/client"
 require "secure_random"
-require "../src/psykube/cli"
+require "../src/psykube"
+require "../src/cli/main"
 
 NAMESPACE = "psykube-test-#{SecureRandom.uuid}"
 
@@ -14,7 +15,7 @@ class Admiral::Command
 end
 
 def kubectl(args : String)
-  bin = Psykube::Commands::Kubectl.bin
+  bin = Psykube::CLI::Commands::Kubectl.bin
   File.exists?(bin) || raise("kubectl not found")
   Process.run(bin, args.split(" "))
 end

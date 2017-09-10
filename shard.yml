@@ -16,11 +16,13 @@ dependencies:
     github: jwaldrip/admiral.cr
   crouter:
     github: jreinert/crouter
+  pyrite:
+    github: jwaldrip/pyrite
 
 license: MIT
 
 targets:
   psykube:
-    main: src/psykube.cr
+    main: src/cli.cr
   psykube-playground:
-    main: src/psykube/playground/standalone.cr
+    main: src/playground-standalone.cr

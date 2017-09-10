@@ -6,21 +6,48 @@ abstract class Psykube::Generator
 
     class InvalidHealthcheck < Exception; end
 
-    alias Volume = Kubernetes::Pod::Spec::Volume
-    alias Container = Kubernetes::Pod::Spec::Container
+    # Templates and specs
+    private def generate_pod_template
+      Kubernetes::Api::V1::PodTemplateSpec.new(
+        spec: generate_pod_spec,
+        metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
+          labels: {
+            "app" => name
+          }
+        )
+      )
+    end
+
+    private def generate_selector
+      Pyrite::Apimachinery::Apis::Meta::V1::LabelSelector.new(
+        match_labels: {
+          "app" => name
+        }
+      )
+    end
+
+    private def generate_pod_spec
+      Kubernetes::Api::V1::PodSpec.new(
+        restart_policy: manifest.restart_policy,
+        volumes: generate_volumes,
+        containers: [generate_container]
+      )
+    end
 
     # Containers
     private def generate_container
-      Container.new(name, image).tap do |container|
-        container.resources = generate_container_resources
-        container.env = generate_container_env
-        container.volume_mounts = generate_container_volume_mounts(manifest.volumes)
-        container.liveness_probe = generate_container_liveness_probe(manifest.healthcheck)
-        container.readiness_probe = generate_container_readiness_probe(manifest.readycheck || manifest.healthcheck)
-        container.ports = generate_container_ports(manifest.ports)
-        container.command = generate_container_command(manifest.command)
-        container.args = generate_container_args(manifest.args)
-      end
+      Kubernetes::Api::V1::Container.new(
+        name: name,
+        image: image,
+        resources: generate_container_resources,
+        env: generate_container_env,
+        volume_mounts: generate_container_volume_mounts(manifest.volumes),
+        liveness_probe: generate_container_liveness_probe(manifest.healthcheck),
+        readiness_probe: generate_container_readiness_probe(manifest.readycheck || manifest.healthcheck),
+        ports: generate_container_ports(manifest.ports),
+        command: generate_container_command(manifest.command),
+        args: generate_container_args(manifest.args)
+      )
     end
 
     # Volumes
@@ -32,9 +59,12 @@ abstract class Psykube::Generator
 
     private def generate_volume(mount_path : String, size : String)
       volume_name = name_from_mount_path(mount_path)
-      Volume.new(volume_name).tap do |volume|
-        volume.persistent_volume_claim = Volume::Source::PersistentVolumeClaim.new(volume_name)
-      end
+      Kubernetes::Api::V1::Volume.new(
+        name: volume_name,
+        persistent_volume_claim: Kubernetes::Api::V1::PersistentVolumeClaimVolumeSource.new(
+          claim_name: volume_name
+        )
+      )
     end
 
     private def generate_volume(mount_path : String, volume : Manifest::Volume)
@@ -48,10 +78,10 @@ abstract class Psykube::Generator
         limits = resources.limits
         requests = resources.requests
         return unless limits || requests
-        Kubernetes::Shared::ResourceRequirements.new.tap do |req|
-          req.limits = {"cpu" => limits.cpu, "memory" => limits.memory} if limits
-          req.requests = {"cpu" => requests.cpu, "memory" => requests.memory} if requests
-        end
+        Kubernetes::Api::V1::ResourceRequirements.new(
+          limits: limits && {"cpu" => limits.cpu, "memory" => limits.memory}.compact,
+          requests: requests && {"cpu" => requests.cpu, "memory" => requests.memory}.compact
+        )
       end
     end
 
@@ -59,9 +89,12 @@ abstract class Psykube::Generator
     private def generate_container_ports(ports : Nil)
     end
 
-    private def generate_container_ports(ports : Hash(String, UInt16))
+    private def generate_container_ports(ports : Hash(String, Int32))
       ports.map do |name, port|
-        Container::Port.new(name, port)
+        Kubernetes::Api::V1::ContainerPort.new(
+          name: name,
+          container_port: port
+        )
       end
     end
 
@@ -72,25 +105,27 @@ abstract class Psykube::Generator
     # TODO: Deprecate!
     private def generate_container_liveness_probe(enabled : Bool)
       return unless enabled && manifest.ports?
-      Container::Probe.new.tap do |probe|
-        probe.http_get = Container::Action::HttpGet.new(lookup_port "default")
-      end
+      Kubernetes::Api::V1::Probe.new(
+        http_get: Kubernetes::Api::V1::HTTPGetAction.new(
+          port: lookup_port "default"
+        )
+      )
     end
 
     private def generate_container_liveness_probe(healthcheck : Manifest::Healthcheck | Manifest::Readycheck)
       return unless healthcheck.http || healthcheck.tcp || healthcheck.exec
-      Container::Probe.new.tap do |probe|
-        raise InvalidHealthcheck.new("Cannot perform http check without specifying ports.") if !manifest.ports? && healthcheck.http
-        raise InvalidHealthcheck.new("Cannot perform tcp check without specifying ports.") if !manifest.ports? && healthcheck.tcp
-        probe.http_get = generate_container_probe_http_get(healthcheck.http)
-        probe.exec = generate_container_probe_exec(healthcheck.exec)
-        probe.tcp_socket = generate_container_probe_tcp_socket(healthcheck.tcp)
-        probe.initial_delay_seconds = healthcheck.initial_delay_seconds
-        probe.timeout_seconds = healthcheck.timeout_seconds
-        probe.period_seconds = healthcheck.period_seconds
-        probe.success_threshold = healthcheck.success_threshold
-        probe.failure_threshold = healthcheck.failure_threshold
-      end
+      raise InvalidHealthcheck.new("Cannot perform http check without specifying ports.") if !manifest.ports? && healthcheck.http
+      raise InvalidHealthcheck.new("Cannot perform tcp check without specifying ports.") if !manifest.ports? && healthcheck.tcp
+      Kubernetes::Api::V1::Probe.new(
+        http_get: generate_container_probe_http_get(healthcheck.http),
+        exec: generate_container_probe_exec(healthcheck.exec),
+        tcp_socket: generate_container_probe_tcp_socket(healthcheck.tcp),
+        initial_delay_seconds: healthcheck.initial_delay_seconds,
+        timeout_seconds: healthcheck.timeout_seconds,
+        period_seconds: healthcheck.period_seconds,
+        success_threshold: healthcheck.success_threshold,
+        failure_threshold: healthcheck.failure_threshold
+      )
     end
 
     private def generate_container_readiness_probe(healthcheck : Nil)
@@ -115,27 +150,35 @@ abstract class Psykube::Generator
 
     private def generate_container_probe_http_get(enabled : Bool)
       return unless manifest.ports?
-      Container::Action::HttpGet.new(lookup_port "default") if enabled
+      Kubernetes::Api::V1::HTTPGetAction.new(
+        port: lookup_port("default")
+      ) if enabled
     end
 
     private def generate_container_probe_http_get(path : String)
       return unless manifest.ports?
-      return generate_container_probe_http_get enabled: true if path == "true"
-      return generate_container_probe_http_get enabled: false if path == "false"
-      Container::Action::HttpGet.new(lookup_port "default") do |http|
-        http.path = path
+      case path
+      when "true"
+        generate_container_probe_http_get enabled: true if path == "true"
+      when "false"
+        generate_container_probe_http_get enabled: false if path == "false"
+      else
+        Kubernetes::Api::V1::HTTPGetAction.new(
+          port: lookup_port("default"),
+          path: path
+        )
       end
     end
 
     private def generate_container_probe_http_get(http_check : Manifest::Healthcheck::Http)
       return unless manifest.ports?
-      Container::Action::HttpGet.new(lookup_port http_check.port) do |http|
-        http.path = http_check.path
-        http.host = http_check.host
-        http.scheme = http_check.scheme
-        http_headers = Container::Action::HttpGet::HttpHeader.from_hash(http_check.headers)
-        http.http_headers = http_headers unless http_headers.empty?
-      end
+      Kubernetes::Api::V1::HTTPGetAction.new(
+        path: http_check.path,
+        port: lookup_port(http_check.port).not_nil!,
+        host: http_check.host,
+        scheme: http_check.scheme,
+        http_headers: http_check.headers.try(&.map { |k, v| Kubernetes::Api::V1::HTTPHeader.new(name: k, value: v) })
+      )
     end
 
     private def generate_container_probe_tcp_socket(tcp : Nil)
@@ -143,33 +186,50 @@ abstract class Psykube::Generator
 
     private def generate_container_probe_tcp_socket(enabled : Bool)
       return unless manifest.ports?
-      Container::Action::TcpSocket.new(lookup_port "default") if enabled
+      Kubernetes::Api::V1::TCPSocketAction.new(
+        port: lookup_port "default"
+      )
     end
 
     private def generate_container_probe_tcp_socket(port_name : String)
       return unless manifest.ports?
-      return generate_container_probe_tcp_socket enabled: true if port_name == "true"
-      return generate_container_probe_tcp_socket enabled: false if port_name == "false"
-      Container::Action::TcpSocket.new(lookup_port port_name)
+      case port_name
+      when "true"
+        return generate_container_probe_tcp_socket enabled: true
+      when "false"
+        return generate_container_probe_tcp_socket enabled: false
+      else
+        Kubernetes::Api::V1::TCPSocketAction.new(
+          port: lookup_port port_name
+        )
+      end
     end
 
-    private def generate_container_probe_tcp_socket(port : UInt16)
-      Container::Action::TcpSocket.new(port)
+    private def generate_container_probe_tcp_socket(port : Int32)
+      Kubernetes::Api::V1::TCPSocketAction.new(
+        port: port
+      )
     end
 
     private def generate_container_probe_tcp_socket(tcp : Manifest::Healthcheck::Tcp)
-      Container::Action::TcpSocket.new(lookup_port tcp.port)
+      Kubernetes::Api::V1::TCPSocketAction.new(
+        port: lookup_port tcp.port
+      )
     end
 
     private def generate_container_probe_exec(exec : Nil)
     end
 
-    private def generate_container_probe_exec(command : String | Array(String))
-      Container::Action::Exec.new(command)
+    private def generate_container_probe_exec(command : String)
+      generate_container_probe_exec [command]
     end
 
     private def generate_container_probe_exec(exec : Manifest::Healthcheck::Exec)
-      Container::Action::Exec.new(exec.command)
+      generate_container_probe_exec exec.command
+    end
+
+    private def generate_container_probe_exec(command : Array(String))
+      Kubernetes::Api::V1::ExecAction.new command: command
     end
 
     # Volume Mounts
@@ -179,7 +239,10 @@ abstract class Psykube::Generator
     private def generate_container_volume_mounts(volumes : Manifest::VolumeMap)
       volumes.map do |mount_path, volume|
         volume_name = name_from_mount_path(mount_path)
-        Container::VolumeMount.new(volume_name, mount_path)
+        Kubernetes::Api::V1::VolumeMount.new(
+          name: volume_name,
+          mount_path: mount_path
+        )
       end
     end
 
@@ -191,7 +254,7 @@ abstract class Psykube::Generator
     end
 
     private def expand_env(key : String, value : Manifest::Env)
-      value_from = Container::Env::ValueFrom.new.tap do |value_from|
+      value_from = Kubernetes::Api::V1::EnvVarSource.new.tap do |value_from|
         case
         when config_map = value.config_map
           value_from.config_map_key_ref = expand_env_config_map(config_map)
@@ -203,48 +266,52 @@ abstract class Psykube::Generator
           value_from.resource_field_ref = expand_env_resource_field(resource_field)
         end
       end
-      Container::Env.new(key, value_from)
+      Kubernetes::Api::V1::EnvVar.new(name: key, value_from: value_from)
     end
 
     private def expand_env(key : String, value : String)
-      Container::Env.new(key, value)
+      Kubernetes::Api::V1::EnvVar.new(name: key, value: value)
     end
 
     private def expand_env_config_map(key : String)
       raise ValidationError.new "ConfigMap `#{key}` not defined in cluster: `#{cluster_name}`." unless cluster_config_map.has_key? key
-      Container::Env::ValueFrom::KeyRef.new(name, key)
+      Kubernetes::Api::V1::ConfigMapKeySelector.new(key: key, name: name)
     end
 
     private def expand_env_config_map(key_ref : Manifest::Env::KeyRef)
-      Container::Env::ValueFrom::KeyRef.new(key_ref.name, key_ref.key)
+      Kubernetes::Api::V1::ConfigMapKeySelector.new(key: key_ref.key, name: key_ref.name)
     end
 
     private def expand_env_secret(key : String)
       raise ValidationError.new "Secret `#{key}` not defined in cluster: `#{cluster_name}`." unless cluster_secrets.has_key? key
-      Container::Env::ValueFrom::KeyRef.new(name, key)
+      Kubernetes::Api::V1::SecretKeySelector.new(key: key, name: name)
     end
 
     private def expand_env_secret(key_ref : Manifest::Env::KeyRef)
-      Container::Env::ValueFrom::KeyRef.new(key_ref.name, key_ref.key)
+      Kubernetes::Api::V1::SecretKeySelector.new(key: key_ref.key, name: key_ref.name)
     end
 
     private def expand_env_field(field : String)
-      Container::Env::ValueFrom::FieldRef.new(field)
+      Kubernetes::Api::V1::ObjectFieldSelector.new(
+        field_path: field
+      )
     end
 
     private def expand_env_field(field_ref : Manifest::Env::FieldRef)
-      Container::Env::ValueFrom::FieldRef.new(
+      Kubernetes::Api::V1::ObjectFieldSelector.new(
         field_path: field_ref.path,
         api_version: field_ref.api_version
       )
     end
 
     private def expand_env_resource_field(resource_field : String)
-      Container::Env::ValueFrom::ResourceFieldRef.new(resource_field)
+      Kubernetes::Api::V1::ResourceFieldSelector.new(
+        resource: resource_field
+      )
     end
 
     private def expand_env_resource_field(field_ref : Manifest::Env::ResourceFieldRef)
-      Container::Env::ValueFrom::ResourceFieldRef.new(
+      Kubernetes::Api::V1::ResourceFieldSelector.new(
         resource: field_ref.resource,
         container_name: field_ref.container,
         divisor: field_ref.divisor

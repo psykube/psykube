@@ -1,14 +1,11 @@
-require "../kubernetes/secret"
-
 abstract class Psykube::Generator
   class Secret < Generator
     protected def result
-      unless combined_secrets.empty?
-        Kubernetes::Secret.new(name, encoded_secrets).tap do |secret|
-          assign_labels(secret, manifest)
-          assign_labels(secret, cluster_manifest)
-          secret.metadata.namespace = namespace
-        end
+      unless encoded_secrets.empty?
+        Kubernetes::Api::V1::Secret.new(
+          metadata: generate_metadata,
+          data: encoded_secrets
+        )
       end
     end
 
