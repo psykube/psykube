@@ -14,5 +14,5 @@ shards:
 
   pyrite:
     github: jwaldrip/pyrite
-    commit: 81dc225afd95b5fd44bbc1d8b71d47182b10ceda
+    commit: 3617101587a02ed7a7b315329bc4fe3110154c6a
 
