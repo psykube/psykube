@@ -1,5 +1,3 @@
-require "../kubernetes/deployment"
-
 class Psykube::Manifest::Service
   Manifest.mapping({
     type:                        {type: String, default: "ClusterIP", getter: false},

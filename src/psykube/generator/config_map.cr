@@ -1,14 +1,11 @@
-require "../kubernetes/config_map"
-
 abstract class Psykube::Generator
   class ConfigMap < Generator
     protected def result
       unless combined_config_map.empty?
-        Kubernetes::ConfigMap.new(name, combined_config_map).tap do |config_map|
-          assign_labels(config_map, manifest)
-          assign_labels(config_map, cluster_manifest)
-          config_map.metadata.namespace = namespace
-        end
+        Kubernetes::Api::V1::ConfigMap.new(
+          metadata: generate_metadata,
+          data: combined_config_map
+        )
       end
     end
 

@@ -1,5 +1,3 @@
-require "../kubernetes/deployment"
-require "../kubernetes/pod"
 require "./concerns/*"
 
 abstract class Psykube::Generator
@@ -9,19 +7,14 @@ abstract class Psykube::Generator
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::ReplicationController.new(name).tap do |rc|
-        assign_labels(rc, manifest)
-        assign_labels(rc, cluster_manifest)
-        assign_annotations(rc, manifest)
-        assign_annotations(rc, cluster_manifest)
-        rc.metadata.namespace = namespace
-        if spec = rc.spec
-          spec.replicas = manifest.replicas
-          spec.template.spec.restart_policy = manifest.restart_policy
-          spec.template.spec.volumes = generate_volumes
-          spec.template.spec.containers << generate_container
-        end
-      end
+      Kubernetes::Api::V1::ReplicationController.new(
+        metadata: generate_metadata,
+        spec: Kubernetes::Api::V1::ReplicationControllerSpec.new(
+          selector: generate_selector.match_labels,
+          replicas: manifest.replicas,
+          template: generate_pod_template
+        )
+      )
     end
   end
 end

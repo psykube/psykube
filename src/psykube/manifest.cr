@@ -14,21 +14,22 @@ class Psykube::Manifest
     suffix:                 String?,
     annotations:            Hash(String, String)?,
     labels:                 Hash(String, String)?,
-    replicas:               UInt32?,
-    completions:            UInt32?,
-    parallelism:            UInt32?,
+    replicas:               Int32?,
+    completions:            Int32?,
+    parallelism:            Int32?,
     registry_host:          String?,
     registry_user:          String?,
     context:                String?,
     namespace:              String?,
     image:                  String?,
     image_tag:              String?,
-    revision_history_limit: UInt32?,
+    revision_history_limit: Int32?,
     resources:              Resources?,
-    deploy_timeout:         {type: UInt32, nilable: true, getter: false},
+    deploy_timeout:         {type: Int32, nilable: true, getter: false},
     restart_policy:         String?,
-    max_unavailable:        {type: UInt32 | Percentage, nilable: true, getter: false},
-    max_surge:              {type: UInt32 | Percentage, nilable: true, getter: false},
+    max_unavailable:        {type: Int32 | String, nilable: true, getter: false},
+    max_surge:              {type: Int32 | String, nilable: true, getter: false},
+    partition:              {type: Int32, nilable: true},
     command:                Array(String) | String | Nil,
     args:                   Array(String)?,
     env:                    {type: Hash(String, Env | String), nilable: true, getter: false},
@@ -36,7 +37,7 @@ class Psykube::Manifest
     service:                {type: String | Service, default: "ClusterIP", nilable: true, getter: false},
     config_map:             {type: Hash(String, String), nilable: true, getter: false},
     secrets:                {type: Hash(String, String), nilable: true, getter: false},
-    ports:                  {type: Hash(String, UInt16), nilable: true, getter: false},
+    ports:                  {type: Hash(String, Int32), nilable: true, getter: false},
     clusters:               {type: Hash(String, Cluster), nilable: true, getter: false},
     healthcheck:            {type: Bool | Healthcheck, nilable: true, default: false, getter: false},
     readycheck:             {type: Bool | Readycheck, nilable: true, default: false, getter: false},
@@ -73,7 +74,7 @@ class Psykube::Manifest
   end
 
   def deploy_timeout
-    @deploy_timeout || 300_u32
+    @deploy_timeout || 300
   end
 
   def build_args
@@ -81,15 +82,15 @@ class Psykube::Manifest
   end
 
   def max_unavailable
-    @max_unavailable || Percentage.new("25%")
+    @max_unavailable || "25%"
   end
 
   def max_surge
-    @max_surge || Percentage.new("25%")
+    @max_surge || "25%"
   end
 
   def ports
-    @ports || {} of String => UInt16
+    @ports || {} of String => Int32
   end
 
   def config_map
@@ -109,13 +110,13 @@ class Psykube::Manifest
     end
   end
 
-  def lookup_port(port : UInt16)
+  def lookup_port(port : Int32)
     port
   end
 
   def lookup_port(port_name : String)
-    if port_name.to_u16?
-      port_name.to_u16
+    if port_name.to_i?
+      port_name.to_i
     elsif port_name == "default" && !ports.key?("default")
       ports.values.first
     else

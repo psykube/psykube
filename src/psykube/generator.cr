@@ -2,6 +2,7 @@ require "openssl"
 require "file_utils"
 require "crustache"
 require "./manifest"
+require "./generator/concerns/*"
 require "./generator/*"
 require "./name_cleaner"
 
@@ -9,6 +10,8 @@ abstract class Psykube::Generator
   class ValidationError < Exception; end
 
   alias TemplateData = Hash(String, String)
+
+  include Concerns::MetadataHelper
 
   delegate lookup_port, to: manifest
 
@@ -198,26 +201,6 @@ abstract class Psykube::Generator
       end
     end.hexdigest
     "#{kind}-#{hexdigest}"
-  end
-
-  private def assign_annotations(target, hash : Hash(String, String)?)
-    if (annotations = target.metadata.annotations ||= {} of String => String)
-      annotations.merge! hash if hash
-    end
-  end
-
-  private def assign_annotations(target, source)
-    assign_annotations target, source.annotations
-  end
-
-  private def assign_labels(target, hash : Hash(String, String)?)
-    if (labels = target.metadata.labels ||= {} of String => String)
-      labels.merge! hash if hash
-    end
-  end
-
-  private def assign_labels(target, source)
-    assign_labels target, source.labels
   end
 
   private def git_branch

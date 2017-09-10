@@ -1,7 +1,3 @@
-require "../kubernetes/deployment"
-require "../kubernetes/pod"
-require "./concerns/*"
-
 abstract class Psykube::Generator
   class DaemonSet < Generator
     class InvalidHealthcheck < Exception; end
@@ -9,18 +5,19 @@ abstract class Psykube::Generator
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::DaemonSet.new(name).tap do |ds|
-        assign_labels(ds, manifest)
-        assign_labels(ds, cluster_manifest)
-        assign_annotations(ds, manifest)
-        assign_annotations(ds, cluster_manifest)
-        ds.metadata.namespace = namespace
-        if spec = ds.spec
-          spec.template.spec.restart_policy = manifest.restart_policy
-          spec.template.spec.volumes = generate_volumes
-          spec.template.spec.containers << generate_container
-        end
-      end
+      Kubernetes::Apis::Extensions::V1beta1::DaemonSet.new(
+        metadata: generate_metadata,
+        spec: Kubernetes::Apis::Extensions::V1beta1::DaemonSetSpec.new(
+          template: generate_pod_template,
+          selector: generate_selector,
+          update_strategy: Kubernetes::Apis::Extensions::V1beta1::DaemonSetUpdateStrategy.new(
+            type: "RollingUpdate",
+            rolling_update: Kubernetes::Apis::Extensions::V1beta1::RollingUpdateDaemonSet.new(
+              max_unavailable: manifest.max_unavailable
+            )
+          ),
+        )
+      )
     end
   end
 end

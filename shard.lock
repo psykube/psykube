@@ -2,7 +2,7 @@ version: 1.0
 shards:
   admiral:
     github: jwaldrip/admiral.cr
-    version: 1.2.0
+    version: 1.2.1
 
   crouter:
     github: jreinert/crouter
@@ -11,4 +11,8 @@ shards:
   crustache:
     github: MakeNowJust/crustache
     version: 2.3.0
+
+  pyrite:
+    github: jwaldrip/pyrite
+    commit: 81dc225afd95b5fd44bbc1d8b71d47182b10ceda
 

@@ -6,7 +6,7 @@ class Psykube::Manifest::Ingress::Host
 
   Manifest.mapping({
     tls:   Tls | Bool | Nil,
-    port:  {type: UInt16 | String, default: "default"},
+    port:  {type: Int32 | String, default: "default"},
     path:  {type: String, default: "/"},
     paths: {type: PathList | PathMap, nilable: true, getter: false},
   })
