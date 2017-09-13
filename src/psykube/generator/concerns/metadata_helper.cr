@@ -1,12 +1,13 @@
 abstract class Psykube::Generator
   module Concerns::MetadataHelper
 
-    private def generate_metadata(*, name : String = self.name, labels = [] of Hash(String, String)?, annotations = [] of Hash(String, String)?)
+    private def generate_metadata(*, name : String = self.name, labels = [] of Hash(String, String)?, annotations = [] of Hash(String, String)?, **metadata)
       annotations << combined_annotations
       annotations << ANNOTATIONS
       labels << combined_labels
       labels << LABELS
       Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
+        **metadata,
         name: name,
         namespace: namespace,
         annotations: annotations.compact.reduce { |p, n| p.merge(n) },

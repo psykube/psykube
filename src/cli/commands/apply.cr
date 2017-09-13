@@ -39,6 +39,9 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
     result.items.not_nil!.map do |item|
       force = flags.force
+      if item.is_a?(Kubernetes::Api::V1::Service) && (service = Kubernetes::Api::V1::Service.from_json(kubectl_json(manifest: item, panic: false, error: false)) rescue nil)
+        item.metadata.not_nil!.resource_version = service.metadata.not_nil!.resource_version
+      end
       kubectl_new("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
     if deployment_generator.manifest.type == "Deployment"
