@@ -133,7 +133,7 @@ module Psykube::CLI::Commands::Kubectl
             annotations.delete_if { |k, _| k.starts_with? "pv.kubernetes.io/" }
           end
         when Kubernetes::Api::V1::Service
-          item.spec.not_nil!.cluster_ip = nil
+          item.spec.not_nil!.cluster_ip = nil unless item.spec.not_nil!.cluster_ip == "None"
           item.spec.not_nil!.ports.not_nil!.each(&.node_port = nil)
         end
       end
