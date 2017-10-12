@@ -6,6 +6,10 @@ registry_user: commercialtribe
 image_tag: {{git.tag}}
 {{/git.tag}}
 
+init_containers:
+  - name: foo
+    image: bar
+
 replicas: 5
 args: [ "playground", "--bind=0.0.0.0" ]
 ports:

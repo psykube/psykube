@@ -13,7 +13,10 @@ abstract class Psykube::Generator
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           labels: {
             "app" => name
-          }
+          },
+          annotations: manifest.init_containers ? {
+            "pod.beta.kubernetes.io/init-containers" => manifest.init_containers.to_json
+          } : nil
         )
       )
     end

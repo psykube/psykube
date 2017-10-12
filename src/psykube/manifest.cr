@@ -21,6 +21,7 @@ class Psykube::Manifest
     registry_user:          String?,
     context:                String?,
     namespace:              String?,
+    init_containers:        Array(Pyrite::Kubernetes::Api::V1::Container)?,
     image:                  String?,
     image_tag:              String?,
     revision_history_limit: Int32?,
