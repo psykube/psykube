@@ -1,4 +1,4 @@
-require "pyrite/versions/v1.7.5"
+require "pyrite/versions/v1.7.8"
 require "tempfile"
 require "colorize"
 
