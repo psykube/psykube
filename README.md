@@ -21,8 +21,8 @@ registry_user: johndoe
 ports:
   http: 8080
   ingress:
-  tls: true
-  host: hello-world.example.com
+    tls: true
+    host: hello-world.example.com
 ```
 
 ## Installation
