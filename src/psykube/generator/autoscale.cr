@@ -1,16 +1,16 @@
 abstract class Psykube::Generator
   class Autoscale < Generator
-    @resource : Kubernetes::Resource?
+    @resource : Pyrite::Kubernetes::Resource?
 
     protected def result
       return unless (cluster_autoscale = self.cluster_autoscale)
-      Kubernetes::Apis::Autoscaling::V1::HorizontalPodAutoscaler.new(
+      Pyrite::Api::Autoscaling::V1::HorizontalPodAutoscaler.new(
         metadata: generate_metadata,
-        spec: Kubernetes::Apis::Autoscaling::V1::HorizontalPodAutoscalerSpec.new(
+        spec: Pyrite::Api::Autoscaling::V1::HorizontalPodAutoscalerSpec.new(
           min_replicas: cluster_autoscale.min,
           max_replicas: cluster_autoscale.max,
           target_cpu_utilization_percentage: cluster_autoscale.target_cpu_percentage,
-          scale_target_ref: Kubernetes::Apis::Autoscaling::V1::CrossVersionObjectReference.new(
+          scale_target_ref: Pyrite::Api::Autoscaling::V1::CrossVersionObjectReference.new(
             api_version: resource.api_version,
             kind: resource.kind,
             name: resource.metadata.not_nil!.name.not_nil!

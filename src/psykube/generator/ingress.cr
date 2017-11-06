@@ -3,9 +3,9 @@ require "digest"
 abstract class Psykube::Generator
   class Ingress < Generator
     protected def result
-      Kubernetes::Apis::Extensions::V1beta1::Ingress.new(
+      Pyrite::Api::Extensions::V1beta1::Ingress.new(
         metadata: generate_metadata(annotations: [cluster_ingress_annotations]),
-        spec: Kubernetes::Apis::Extensions::V1beta1::IngressSpec.new(
+        spec: Pyrite::Api::Extensions::V1beta1::IngressSpec.new(
           rules: generate_rules,
           tls: generate_tls
         )
@@ -64,7 +64,7 @@ abstract class Psykube::Generator
         return generate_host_tls_auto host, auto
       end
       if (secret_name = tls.secret_name)
-        Kubernetes::Apis::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
+        Pyrite::Api::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
       end
     end
 
@@ -74,12 +74,12 @@ abstract class Psykube::Generator
 
     private def generate_host_tls_auto(host : String, auto : Manifest::Ingress::Tls::Auto)
       secret_name = "cert-" + auto.prefix.to_s + Digest::SHA1.hexdigest(host.downcase) + auto.suffix.to_s
-      Kubernetes::Apis::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
+      Pyrite::Api::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
     end
 
     private def generate_host_tls_auto(host : String, auto : Bool)
       secret_name = "cert-" + Digest::SHA1.hexdigest(host.downcase)
-      Kubernetes::Apis::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
+      Pyrite::Api::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
     end
 
     private def generate_rules
@@ -90,13 +90,13 @@ abstract class Psykube::Generator
     end
 
     private def generate_host_paths(host, paths : Manifest::Ingress::Host::PathMap)
-      Kubernetes::Apis::Extensions::V1beta1::IngressRule.new(
+      Pyrite::Api::Extensions::V1beta1::IngressRule.new(
         host: host,
-        http: Kubernetes::Apis::Extensions::V1beta1::HTTPIngressRuleValue.new(
+        http: Pyrite::Api::Extensions::V1beta1::HTTPIngressRuleValue.new(
           paths: paths.map do |path, path_spec|
-            Kubernetes::Apis::Extensions::V1beta1::HTTPIngressPath.new(
+            Pyrite::Api::Extensions::V1beta1::HTTPIngressPath.new(
               path: path,
-              backend: Kubernetes::Apis::Extensions::V1beta1::IngressBackend.new(
+              backend: Pyrite::Api::Extensions::V1beta1::IngressBackend.new(
                 service_name: name,
                 service_port: lookup_port(path_spec.port)
               )

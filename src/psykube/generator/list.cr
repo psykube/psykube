@@ -1,8 +1,8 @@
 abstract class Psykube::Generator
   class List < Generator
     protected def result
-      Kubernetes::Api::V1::List.new(
-        items: ([] of Kubernetes::Resource?).tap do |list|
+      Pyrite::Api::Core::V1::List.new(
+        items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
           list << ConfigMap.result(self)
           list << Secret.result(self)
           list << (podable = Autoscale.result(self))
@@ -11,7 +11,7 @@ abstract class Psykube::Generator
           list << Ingress.result(self)
 
           # Add PVCs
-          unless podable.is_a? Kubernetes::Apis::Apps::V1beta1::StatefulSetSpec
+          unless podable.is_a? Pyrite::Api::Apps::V1beta1::StatefulSetSpec
             PersistentVolumeClaims.result(self).tap do |claims|
               list.concat(claims) if claims
             end

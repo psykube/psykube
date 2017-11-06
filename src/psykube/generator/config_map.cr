@@ -2,7 +2,7 @@ abstract class Psykube::Generator
   class ConfigMap < Generator
     protected def result
       unless combined_config_map.empty?
-        Kubernetes::Api::V1::ConfigMap.new(
+        Pyrite::Api::Core::V1::ConfigMap.new(
           metadata: generate_metadata,
           data: combined_config_map
         )

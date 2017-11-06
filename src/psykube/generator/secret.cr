@@ -2,7 +2,7 @@ abstract class Psykube::Generator
   class Secret < Generator
     protected def result
       unless encoded_secrets.empty?
-        Kubernetes::Api::V1::Secret.new(
+        Pyrite::Api::Core::V1::Secret.new(
           metadata: generate_metadata,
           data: encoded_secrets
         )

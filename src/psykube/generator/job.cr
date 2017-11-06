@@ -7,9 +7,9 @@ abstract class Psykube::Generator
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::Apis::Batch::V1::Job.new(
+      Pyrite::Api::Batch::V1::Job.new(
         metadata: generate_metadata,
-        spec: Kubernetes::Apis::Batch::V1::JobSpec.new(
+        spec: Pyrite::Api::Batch::V1::JobSpec.new(
           selector: generate_selector,
           parallelism: manifest.parallelism,
           completions: manifest.completions,

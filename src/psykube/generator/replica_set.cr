@@ -7,9 +7,9 @@ abstract class Psykube::Generator
     include Concerns::PodHelper
 
     protected def result
-      Kubernetes::Apis::Extensions::V1beta1::ReplicaSet.new(
+      Pyrite::Api::Extensions::V1beta1::ReplicaSet.new(
         metadata: generate_metadata,
-        spec: Kubernetes::Apis::Extensions::V1beta1::ReplicaSetSpec.new(
+        spec: Pyrite::Api::Extensions::V1beta1::ReplicaSetSpec.new(
           selector: generate_selector,
           replicas: manifest.replicas,
           template: generate_pod_template

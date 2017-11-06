@@ -29,12 +29,12 @@ abstract class Psykube::Generator
 
     private def generate_persistent_volume_claim(mount_path : String, claim : Manifest::Volume::Claim)
       volume_name = name_from_mount_path(mount_path)
-      Kubernetes::Api::V1::PersistentVolumeClaim.new(
+      Pyrite::Api::Core::V1::PersistentVolumeClaim.new(
         metadata: generate_metadata(name: volume_name, annotations: [claim.annotations]),
-        spec: Kubernetes::Api::V1::PersistentVolumeClaimSpec.new(
+        spec: Pyrite::Api::Core::V1::PersistentVolumeClaimSpec.new(
           storage_class_name: claim.storage_class,
           access_modes: claim.access_modes || ["ReadWriteOnce"],
-          resources: Kubernetes::Api::V1::ResourceRequirements.new(
+          resources: Pyrite::Api::Core::V1::ResourceRequirements.new(
             requests: {
               "storage" => claim.size,
             }
@@ -48,11 +48,11 @@ abstract class Psykube::Generator
 
     private def generate_persistent_volume_claim(mount_path : String, size : String)
       volume_name = name_from_mount_path(mount_path)
-      Kubernetes::Api::V1::PersistentVolumeClaim.new(
+      Pyrite::Api::Core::V1::PersistentVolumeClaim.new(
         metadata: generate_metadata(name: volume_name),
-        spec: Kubernetes::Api::V1::PersistentVolumeClaimSpec.new(
+        spec: Pyrite::Api::Core::V1::PersistentVolumeClaimSpec.new(
           access_modes: ["ReadWriteOnce"],
-          resources: Kubernetes::Api::V1::ResourceRequirements.new(
+          resources: Pyrite::Api::Core::V1::ResourceRequirements.new(
             requests: {
               "storage" => size,
             }

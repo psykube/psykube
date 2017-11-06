@@ -2,8 +2,8 @@ class Psykube::Manifest::Volume
   Manifest.mapping({
     claim:      Claim?,
     spec:       Spec?,
-    secret:     Array(String) | String | Array(Kubernetes::Api::V1::KeyToPath) | Kubernetes::Api::V1::SecretVolumeSource | Nil,
-    config_map: Array(String) | String | Array(Kubernetes::Api::V1::KeyToPath) | Kubernetes::Api::V1::ConfigMapVolumeSource | Nil,
+    secret:     Array(String) | String | Array(Pyrite::Api::Core::V1::KeyToPath) | Pyrite::Api::Core::V1::SecretVolumeSource | Nil,
+    config_map: Array(String) | String | Array(Pyrite::Api::Core::V1::KeyToPath) | Pyrite::Api::Core::V1::ConfigMapVolumeSource | Nil,
   })
 
   def to_deployment_volume(name : String, volume_name : String)

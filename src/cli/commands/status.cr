@@ -10,7 +10,7 @@ class Psykube::CLI::Commands::Status < Admiral::Command
   def run
     statuses = kubectl_get_pods(phase: nil).map do |pod|
       case pod
-      when Kubernetes::Api::V1::Pod
+      when Pyrite::Api::Core::V1::Pod
         if (status = pod.status)
           age_span = (Time.now - (status.start_time || Time.now))
           age_string = ""

@@ -10,7 +10,7 @@ module Psykube::CLI::Commands::Kubectl
   def kubectl_json(resource : String? = nil,
                    name : String? = nil,
                    flags : Flags = Flags.new,
-                   manifest : Kubernetes::Resource? = nil,
+                   manifest : Pyrite::Kubernetes::Resource? = nil,
                    export : Bool = true,
                    namespace : String? = namespace,
                    error : Bool | IO = true,
@@ -79,15 +79,15 @@ module Psykube::CLI::Commands::Kubectl
     flags = Flags.new
     flags["--selector"] = deployment_generator.result.spec.try(&.selector.try(&.match_labels.try(&.map(&.join("=")).join(",")))).to_s
     json = kubectl_json(resource: "pods", flags: flags, export: false)
-    pods = Kubernetes::Api::V1::List.from_json(json).items.not_nil!.select do |pod|
-      if pod.is_a?(Kubernetes::Api::V1::Pod)
+    pods = Pyrite::Api::Core::V1::List.from_json(json).items.not_nil!.select do |pod|
+      if pod.is_a?(Pyrite::Api::Core::V1::Pod)
         next pod unless phase
-        (pod.status || Kubernetes::Api::V1::PodStatus.new).phase == phase
+        (pod.status || Pyrite::Api::Core::V1::PodStatus.new).phase == phase
       end
     end
 
     # Exec into the pod
-    if pods.any?(&.is_a? Kubernetes::Api::V1::Pod)
+    if pods.any?(&.is_a? Pyrite::Api::Core::V1::Pod)
       pods
     else
       raise "There are no running pods, try running `psykube status`"
@@ -101,13 +101,13 @@ module Psykube::CLI::Commands::Kubectl
     to = NameCleaner.clean(to)
     begin
       raise "forced" if force
-      Kubernetes::Api::V1::Namespace.from_json(kubectl_json(resource: "namespace", name: to, panic: false))
+      Pyrite::Api::Core::V1::Namespace.from_json(kubectl_json(resource: "namespace", name: to, panic: false))
       puts "Namespace exists, skipping copy...".colorize(:light_yellow)
     rescue
       puts "Copying Namespace: `#{from}` to `#{to}` (resources: #{resources.split(",").join(", ")})...".colorize(:cyan)
       # Gather the existing resources
       json = kubectl_json(resource: resources, namespace: from)
-      list = Kubernetes::Api::V1::List.from_json json
+      list = Pyrite::Api::Core::V1::List.from_json json
 
       items = list.items.not_nil!.select do |resource|
         case resource.metadata.not_nil!.annotations.try(&.["psykube.io/allow-copy"]?)
@@ -127,19 +127,19 @@ module Psykube::CLI::Commands::Kubectl
         metadata.self_link = nil
         metadata.creation_timestamp = nil
         case item
-        when Kubernetes::Api::V1::PersistentVolumeClaim
+        when Pyrite::Api::Core::V1::PersistentVolumeClaim
           item.spec.not_nil!.volume_name = nil
           if annotations = item.metadata.try(&.annotations)
             annotations.delete_if { |k, _| k.starts_with? "pv.kubernetes.io/" }
           end
-        when Kubernetes::Api::V1::Service
+        when Pyrite::Api::Core::V1::Service
           item.spec.not_nil!.cluster_ip = nil unless item.spec.not_nil!.cluster_ip == "None"
           item.spec.not_nil!.ports.not_nil!.each(&.node_port = nil)
         end
       end
 
       # Get or build the new namespace
-      namespace = Kubernetes::Api::V1::Namespace.new(
+      namespace = Pyrite::Api::Core::V1::Namespace.new(
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           name: to,
           labels: LABELS,

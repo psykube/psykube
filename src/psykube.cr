@@ -1,10 +1,9 @@
-require "pyrite/versions/v1.7.8"
+require "pyrite/versions/v1.8.1"
 require "tempfile"
 require "colorize"
 
 module Psykube
   {{ run "#{__DIR__}/parse_version.cr" }}
-  alias Kubernetes = Pyrite::Kubernetes
 
   LABELS = {
     "psykube" => "true"
