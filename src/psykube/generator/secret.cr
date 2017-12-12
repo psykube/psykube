@@ -11,7 +11,7 @@ abstract class Psykube::Generator
 
     private def encoded_secrets
       combined_secrets.each_with_object({} of String => String) do |(k, v), hash|
-        hash[k] = Base64.encode(v)
+        hash[k] = Base64.urlsafe_encode(v)
       end
     end
 
