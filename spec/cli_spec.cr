@@ -33,7 +33,7 @@ Dir.cd("spec") do
     it "should set up the environment" do
       kubectl "delete namespace #{NAMESPACE}"
       kubectl "create namespace #{NAMESPACE}"
-      kubectl "--namespace=#{NAMESPACE} run hello-world --image=tutumcloud/hello-world --port=80 --expose"
+      kubectl "--namespace=#{NAMESPACE} run hello-world --image=hello-world --port=80 --expose"
     end
 
     psykube "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80"
