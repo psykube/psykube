@@ -1,10 +1,10 @@
 require "spec"
 require "http/client"
-require "random/secure"
+require "uuid"
 require "../src/psykube"
 require "../src/cli/main"
 
-NAMESPACE = "psykube-test-#{Random::Secure.uuid}"
+NAMESPACE = "psykube-test-#{UUID.random}"
 
 class Exited < Exception; end
 
