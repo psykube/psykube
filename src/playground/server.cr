@@ -3,6 +3,8 @@ require "orion"
 require "http/server"
 require "./generate_controller"
 
+{% system "npm install" %}
+
 router Psykube::Playground::Server do
     use HTTP::ErrorHandler.new
     use HTTP::LogHandler.new
