@@ -1,4 +1,4 @@
-FROM crystallang/crystal:0.22.0
+FROM crystallang/crystal:0.24.1
 
 # Deps
 ARG NPM_CONFIG_LOGLEVEL=warn
