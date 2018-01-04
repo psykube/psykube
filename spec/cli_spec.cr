@@ -1,6 +1,6 @@
 require "spec"
 require "http/client"
-require "secure_random"
+require "random/secure"
 require "../src/psykube"
 require "../src/cli/main"
 
