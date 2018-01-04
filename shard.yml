@@ -1,5 +1,6 @@
 name: psykube
-version: 1.8.4.0
+version: 1.8.4.1
+crystal: 0.24.1
 
 authors:
   - Jason Waldrip <jwaldrip@commercialtribe.com>
