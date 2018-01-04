@@ -1,23 +1,32 @@
 require "ecr"
-require "crouter"
+require "orion"
 require "http/server"
-require "./router"
 require "./generate_controller"
 
-struct Psykube::Playground::Server
-  def self.listen(**options)
-    new(**options).listen
-  end
+router Psykube::Playground::Server do
+    use HTTP::ErrorHandler.new
+    use HTTP::LogHandler.new
 
-  def initialize(**options, @port = 8080, @bind = "127.0.0.1"); end
+    DUCK = {{ `cat #{__DIR__}/../../psykube-ico.png`.stringify }}
 
-  def listen
-    handlers = [
-      HTTP::ErrorHandler.new,
-      HTTP::LogHandler.new,
-      Router.new,
-    ]
-    puts "Listening on #{@bind}:#{@port}"
-    HTTP::Server.new(@bind, @port, handlers).listen
-  end
+    post "/generate", to: "Generate#generate"
+
+    get "/favicon", accept: "image/png" do |context|
+      context.response.content_type = "image/png"
+      context.response << DUCK
+    end
+
+    get "/duck", accept: "image/png" do |context|
+      context.response.content_type = "image/png"
+      context.response << DUCK
+    end
+
+    get "/app", accept: "application/javascript" do |context|
+      context.response.content_type = "application/javascript"
+      context.response << {{ `npm run -s build`.stringify }}
+    end
+
+    get "/" do |context|
+      context.response << {{ `cat #{__DIR__}/index.html`.stringify }}
+    end
 end

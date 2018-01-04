@@ -64,7 +64,8 @@ class Psykube::Manifest
 
   def service
     return unless ports?
-    @service = case (service = @service)
+    service = @service
+    @service = case service
                when "true", true
                  Service.new "ClusterIP"
                when String

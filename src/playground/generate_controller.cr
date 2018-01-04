@@ -1,9 +1,5 @@
 struct Psykube::Playground::GenerateController
-  private getter context : HTTP::Server::Context
-  private getter params : HTTP::Params
-
-  def initialize(@context, @params)
-  end
+  include Orion::ControllerHelper
 
   def generate
     if (body = context.request.body)

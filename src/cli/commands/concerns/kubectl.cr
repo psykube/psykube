@@ -41,7 +41,15 @@ module Psykube::CLI::Commands::Kubectl
     File.exists?(Kubectl.bin) || self.panic("kubectl not found")
     flags = Flags.new.merge(flags)
     {% for io in %w(input output error) %}
-    {{io.id}}_io = {{io.id}} == true ? @{{io.id}}_io : {{io.id}}{% end %}
+    {{io.id}}_io = case {{io.id}}
+      when true
+        @{{io.id}}_io
+      when IO
+        {{io.id}}
+      else
+        Process::Redirect::Close
+      end
+    {% end %}
 
     # Add context and namespace
     command_args = [command]

@@ -11,11 +11,11 @@ description: |
 
 dependencies:
   crustache:
-    github: MakeNowJust/crustache
+    github: jwaldrip/crustache
   admiral:
     github: jwaldrip/admiral.cr
-  crouter:
-    github: jreinert/crouter
+  orion:
+    github: obsidian/orion
   pyrite:
     github: jwaldrip/pyrite
 

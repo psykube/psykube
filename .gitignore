@@ -2,8 +2,7 @@
 /.shards
 /lib
 /tmp
+/bin
 .idea/
-/bin/psykube
-/bin/psykube-playground
 /spec/.psykube.yml
 /node_modules

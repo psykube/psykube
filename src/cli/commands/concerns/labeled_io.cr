@@ -1,5 +1,4 @@
-class Psykube::CLI::Commands::LabeledIO
-  include IO
+class Psykube::CLI::Commands::LabeledIO < IO
   Colors = %i(
     light_red
     light_green
