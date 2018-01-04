@@ -4,7 +4,7 @@ require "random/secure"
 require "../src/psykube"
 require "../src/cli/main"
 
-NAMESPACE = "psykube-test-#{SecureRandom.uuid}"
+NAMESPACE = "psykube-test-#{Random::Secure.uuid}"
 
 class Exited < Exception; end
 
