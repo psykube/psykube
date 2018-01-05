@@ -12,10 +12,10 @@ abstract class Psykube::Generator
         spec: generate_pod_spec,
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           labels: {
-            "app" => name
+            "app" => name,
           },
           annotations: manifest.init_containers ? {
-            "pod.beta.kubernetes.io/init-containers" => manifest.init_containers.to_json
+            "pod.beta.kubernetes.io/init-containers" => manifest.init_containers.to_json,
           } : nil
         )
       )
@@ -24,7 +24,7 @@ abstract class Psykube::Generator
     private def generate_selector
       Pyrite::Apimachinery::Apis::Meta::V1::LabelSelector.new(
         match_labels: {
-          "app" => name
+          "app" => name,
         }
       )
     end

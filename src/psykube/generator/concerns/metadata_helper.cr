@@ -1,6 +1,5 @@
 abstract class Psykube::Generator
   module Concerns::MetadataHelper
-
     private def generate_metadata(*, name : String = self.name, labels = [] of Hash(String, String)?, annotations = [] of Hash(String, String)?, **metadata)
       annotations << combined_annotations
       annotations << ANNOTATIONS

@@ -5,7 +5,7 @@ abstract class Psykube::Generator
     protected def result
       if (service = manifest.service)
         Pyrite::Api::Core::V1::Service.new(
-          metadata: generate_metadata(labels: [{ "service" => name }], annotations: [service.annotations]),
+          metadata: generate_metadata(labels: [{"service" => name}], annotations: [service.annotations]),
           spec: Pyrite::Api::Core::V1::ServiceSpec.new(
             selector: generate_selector.match_labels,
             type: service.type,
