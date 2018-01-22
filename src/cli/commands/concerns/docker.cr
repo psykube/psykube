@@ -8,11 +8,25 @@ module Psykube::CLI::Commands::Docker
     define_flag build_args : Set(String),
       description: "The build args to add to docker build.",
       default: Set(String).new
+
+    define_flag build_context : String?,
+      description: "The build context for the docker build."
+
+    define_flag dockerfile : String?,
+      description: "The Dockerfile to use for the docker build."
   end
 
   def build_args
     flags.build_args.to_a +
       generator.manifest.build_args.map(&.join("="))
+  end
+
+  def build_context
+    flags.build_context || generator.manifest.build_context || generator.dir
+  end
+
+  def dockerfile
+     flags.dockerfile || generator.manifest.dockerfile
   end
 
   def docker_build_and_push(tag)
@@ -28,7 +42,8 @@ module Psykube::CLI::Commands::Docker
     image = tag.includes?(":") ? tag : generator.image(tag)
     args << "--cache-from=#{generator.image("latest")}"
     args << "--tag=#{image}"
-    args << generator.dir
+    args << "--file=#{dockerfile}" if dockerfile
+    args << build_context
     docker_run args
   end
 

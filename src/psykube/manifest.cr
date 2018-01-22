@@ -45,6 +45,8 @@ class Psykube::Manifest
     volumes:                {type: VolumeMap, nilable: true},
     autoscale:              {type: Autoscale, nilable: true},
     build_args:             {type: Hash(String, String), nilable: true, getter: false},
+    build_context:          String?,
+    dockerfile:             String?,
   })
 
   def initialize(@name : String, @type : String = "Deployment")
