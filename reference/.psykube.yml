@@ -14,6 +14,21 @@ registry_host: gcr.io
 # This allows Psykube to be used in a Config only scenario.
 image: tutum/hello-world
 
+# Specify docker build args, such as the npm token to use for private repositories.
+# Use brackets and env checks if the arg is optional.
+build_args:
+  FOO: bar
+  FIZZ: {{env.BUZZ}}
+  {{#env.NPM_TOKEN}}
+  NPM_TOKEN: {{env.NPM_TOKEN}}
+  {{/env.NPM_TOKEN}}
+
+# Specify docker build context if it is different than where the .psykube.yml file is located.
+build_context: some/directory
+
+# Specify dockerfile to use if it is somewhere other than where the .psykube.yml file is located.
+dockerfile: location/Dockerfile
+
 # = Config Maps ==
 # Config maps to generate for this application. This section allows for global
 # config maps which will be combined with the cluster config maps specified
