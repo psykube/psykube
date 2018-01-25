@@ -21,7 +21,8 @@ class Psykube::Manifest
     registry_user:          String?,
     context:                String?,
     namespace:              String?,
-    init_containers:        Array(Pyrite::Api::Core::V1::Container)?,
+    # TODO Add in support for multiple init containers.
+    init_container:         Container?,
     image:                  String?,
     image_tag:              String?,
     revision_history_limit: Int32?,
