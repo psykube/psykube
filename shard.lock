@@ -2,7 +2,7 @@ version: 1.0
 shards:
   admiral:
     github: jwaldrip/admiral.cr
-    version: 1.4.0
+    version: 1.3.3
 
   crustache:
     github: jwaldrip/crustache
@@ -14,7 +14,7 @@ shards:
 
   mime-types:
     github: jwaldrip/mime-types.cr
-    version: 1.1.0
+    version: 0.12.3
 
   oak:
     github: obsidian/oak
@@ -22,9 +22,8 @@ shards:
 
   orion:
     github: obsidian/orion
-    version: 1.4.0
+    version: 1.1.0
 
   pyrite:
     github: jwaldrip/pyrite
     commit: b79dbfc5a96ed0534d4cbd7a3ecccc8b278b7eb2
-
