@@ -18,7 +18,7 @@ dependencies:
   orion:
     github: obsidian/orion
   pyrite:
-    github: jwaldrip/pyrite
+    github: psykube/pyrite
 
 license: MIT
 
