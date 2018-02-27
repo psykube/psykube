@@ -1,5 +1,8 @@
 module Psykube::Manifest
-  alias Any = Manifest::V1 | Manifest::V2::Any
+  alias StringMap = Hash(String, String)
+  alias PortMap = Hash(String, Int32)
+  alias VolumeMap = Hash(String, V1::Volume | String)
+  alias Any = V1 | V2::Any
 
   macro mapping(*properties)
     {% all_properties = {} of String => _ %}

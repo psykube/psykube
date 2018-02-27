@@ -2,8 +2,6 @@ require "yaml"
 require "../name_cleaner"
 
 class Psykube::Manifest::V1
-  alias VolumeMap = Hash(String, Volume | String)
-
   Manifest.mapping({
     name:                   {type: String, getter: false},
     type:                   {type: String, default: "Deployment"},
@@ -34,9 +32,9 @@ class Psykube::Manifest::V1
     env:                    {type: Hash(String, Env | String), nilable: true, getter: false},
     ingress:                Ingress?,
     service:                {type: String | Service, default: "ClusterIP", nilable: true, getter: false},
-    config_map:             {type: Hash(String, String), nilable: true, getter: false},
-    secrets:                {type: Hash(String, String), nilable: true, getter: false},
-    ports:                  {type: Hash(String, Int32), nilable: true, getter: false},
+    config_map:             {type: StringMap, nilable: true, getter: false},
+    secrets:                {type: StringMap, nilable: true, getter: false},
+    ports:                  {type: PortMap, nilable: true, getter: false},
     clusters:               {type: Hash(String, Cluster), nilable: true, getter: false},
     healthcheck:            {type: Bool | Healthcheck, nilable: true, default: false, getter: false},
     readycheck:             {type: Bool | Readycheck, nilable: true, default: false, getter: false},

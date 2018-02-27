@@ -1,6 +1,6 @@
 abstract class Psykube::Generator
   class List < Generator
-    protected def result
+    protected def result(manifest : Manifest::Any)
       Pyrite::Api::Core::V1::List.new(
         items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
           podable = generate_podable

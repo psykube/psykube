@@ -4,7 +4,7 @@ class Psykube::Manifest::V2::Shared::Container
     build_context: {type: String, default: "."},
     build_args:    {type: Hash(String, String), nilable: true, getter: false},
     ports:         {type: Hash(String, Int32), nilable: true, getter: false},
-    volumes:       {type: V1::VolumeMap, nilable: true},
+    volumes:       {type: VolumeMap, nilable: true},
     env:           {type: Hash(String, V1::Env | String), nilable: true, getter: false},
   })
 

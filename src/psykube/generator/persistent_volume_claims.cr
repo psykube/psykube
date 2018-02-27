@@ -4,7 +4,7 @@ abstract class Psykube::Generator
   class PersistentVolumeClaims < Generator
     include Concerns::Volumes
 
-    protected def result
+    protected def result(manifest : Manifest::V1 | Manifest::V2::StatefulSet)
       result = manifest_claims.map do |mount_path, volume|
         generate_persistent_volume_claim(mount_path, volume)
       end.compact

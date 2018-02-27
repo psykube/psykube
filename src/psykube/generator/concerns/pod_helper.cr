@@ -258,7 +258,7 @@ abstract class Psykube::Generator
     private def generate_container_volume_mounts(volumes : Nil)
     end
 
-    private def generate_container_volume_mounts(volumes : Manifest::V1::VolumeMap)
+    private def generate_container_volume_mounts(volumes : Manifest::VolumeMap)
       volumes.map do |mount_path, volume|
         volume_name = name_from_mount_path(mount_path)
         Pyrite::Api::Core::V1::VolumeMount.new(

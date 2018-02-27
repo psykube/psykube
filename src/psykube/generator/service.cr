@@ -2,7 +2,7 @@ abstract class Psykube::Generator
   class Service < Generator
     include Concerns::PodHelper
 
-    protected def result
+    protected def result(manifest : Manifest::V1 | Manifest::V2::Serviceable)
       if (service = manifest.service)
         Pyrite::Api::Core::V1::Service.new(
           metadata: generate_metadata(labels: [{"service" => name}], annotations: [service.annotations]),

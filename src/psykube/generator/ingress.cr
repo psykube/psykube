@@ -2,7 +2,7 @@ require "digest"
 
 abstract class Psykube::Generator
   class Ingress < Generator
-    protected def result
+    protected def result(manifest : Manifest::V1 | Manifest::V2::Serviceable)
       Pyrite::Api::Extensions::V1beta1::Ingress.new(
         metadata: generate_metadata(annotations: [cluster_ingress_annotations]),
         spec: Pyrite::Api::Extensions::V1beta1::IngressSpec.new(

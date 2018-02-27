@@ -1,6 +1,6 @@
 abstract class Psykube::Generator
   class Secret < Generator
-    protected def result
+    protected def result(manifest : Manifest::Any)
       unless encoded_secrets.empty?
         Pyrite::Api::Core::V1::Secret.new(
           metadata: generate_metadata,

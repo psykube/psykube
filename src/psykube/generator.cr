@@ -9,11 +9,25 @@ require "./name_cleaner"
 abstract class Psykube::Generator
   class ValidationError < Exception; end
 
+  macro with_manifest(name, *, raw = false)
+    def {{name}}(manifest) : Nil
+    end
+
+    macro finished
+      def {{name}}
+        {{name}}({{ "raw_".id if raw }}manifest)
+      end
+    end
+  end
+
   alias TemplateData = Hash(String, String)
 
   include Concerns::MetadataHelper
 
   delegate lookup_port, to: manifest
+  with_manifest result
+  with_manifest registry_host
+  with_manifest registry_user
 
   @raw_manifest : Manifest::Any?
   @manifest : Manifest::Any?
@@ -134,12 +148,12 @@ abstract class Psykube::Generator
     image.sub(/:.+$/, ":" + tag)
   end
 
-  def registry_host
-    cluster_manifest.registry_host || manifest.registry_host
+  def registry_host(manifest : Manifest::V1)
+    cluster_manifest.as(Manifest::V1::Cluster).registry_host || manifest.registry_host
   end
 
-  def registry_user
-    cluster_manifest.registry_user || manifest.registry_user
+  def registry_user(manifest : Manifest::V1)
+    cluster_manifest.as(Manifest::V1::Cluster).registry_user || manifest.registry_user
   end
 
   def name
@@ -161,8 +175,6 @@ abstract class Psykube::Generator
   def to_json(*args, **props)
     result.to_json(*args, **props)
   end
-
-  abstract def result
 
   private def env_hash
     ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] }.reject { |k, v| v.empty? }

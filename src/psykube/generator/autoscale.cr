@@ -2,8 +2,8 @@ abstract class Psykube::Generator
   class Autoscale < Generator
     @resource : Pyrite::Kubernetes::Resource?
 
-    protected def result
-      return unless (cluster_autoscale = self.cluster_autoscale)
+    protected def result(manifest : Manifest::V1 | Manifest::V2::Deployment)
+      return unless (cluster_autoscale = self.cluster_autoscale(manifest))
       Pyrite::Api::Autoscaling::V1::HorizontalPodAutoscaler.new(
         metadata: generate_metadata,
         spec: Pyrite::Api::Autoscaling::V1::HorizontalPodAutoscalerSpec.new(
@@ -32,7 +32,7 @@ abstract class Psykube::Generator
                     end
     end
 
-    protected def cluster_autoscale
+    protected def cluster_autoscale(manifest : Manifest::V1 | Manifest::V2::Deployment)
       mas = manifest.autoscale
       cas = cluster_manifest.autoscale
       if mas && cas

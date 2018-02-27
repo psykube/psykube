@@ -6,7 +6,7 @@ abstract class Psykube::Generator
 
     include Concerns::PodHelper
 
-    protected def result
+    protected def result(manifest : Manifest::V1 | Manifest::V2::Job)
       Pyrite::Api::Batch::V1::Job.new(
         metadata: generate_metadata,
         spec: Pyrite::Api::Batch::V1::JobSpec.new(

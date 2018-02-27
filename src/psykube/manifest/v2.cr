@@ -1,3 +1,5 @@
+require "./v2/shared/*"
+
 module Psykube::Manifest::V2
   struct VersionCheck
     def initialize
@@ -9,6 +11,8 @@ module Psykube::Manifest::V2
   end
 
   alias Any = V2::Deployment | V2::Job | V2::StatefulSet | V2::CronJob | V2::Pod | V2::DaemonSet
+  alias ClusterMap = Hash(String, Shared::Cluster)
+  alias ContainerMap = Hash(String, Shared::Container)
 
   macro declare_manifest(type, properties = nil, *, service = true, default = false)
     struct TypeCheck
@@ -25,6 +29,14 @@ module Psykube::Manifest::V2
 
     def name
       NameCleaner.clean(@name)
+    end
+
+    def volumes
+      containers.each_with_object(VolumeMap.new) do |(container_name, container), volume_map|
+        container.volumes.each do |volume_name, volume|
+          volume_map["#{container_name}.#{volume_name}"] = volume
+        end
+      end
     end
 
     {% if service %}
@@ -54,7 +66,7 @@ module Psykube::Manifest::V2
       end
 
       def ports
-        containers.each_with_object({} of String => Int32) do |(container_name, container), port_map|
+        containers.each_with_object(PortMap.new) do |(container_name, container), port_map|
           container.ports.each do |port_name, port|
             port_map[port_name] ||= port
             port_map["#{container_name}.#{port_name}"] = port
@@ -71,66 +83,45 @@ module Psykube::Manifest::V2
           ports[port_name]? || raise "Invalid port #{port_name}"
         end
       end
-
-      Manifest.mapping({{properties}}, {
-        type: TypeCheck{% if default %}?{% end %},
-        version:                         Psykube::Manifest::V2::VersionCheck,
-        automount_service_account_token: {type: Bool, nilable: true},
-        affinity:                        {type: Pyrite::Api::Core::V1::Affinity, nilable: true},
-        name:                            {type: String, getter: false},
-        prefix:                          {type: String, nilable: true},
-        suffix:                          {type: String, nilable: true},
-        annotations:                     {type: Hash(String, String)?, nilable: true},
-        labels:                          {type: Hash(String, String)?, nilable: true},
-        registry_host:                   {type: String, nilable: true},
-        registry_user:                   {type: String, nilable: true},
-        default_context:                 {type: String, nilable: true},
-        default_namespace:               {type: String, nilable: true},
-        restart_policy:                  {type: String, nilable: true},
-        config_map:                      {type: Hash(String, String)},
-        secrets:                         {type: Hash(String, String)},
-        init_containers:                 {type: Hash(String, Shared::Container)},
-        containers:                      {type: Hash(String, Shared::Container)},
-        clusters:                        {type: Hash(String, V1::Cluster)},
-        ingress: {type: V1::Ingress, nilable: true},
-        service: {type: String | V1::Service, default: "ClusterIP", nilable: true, getter: false}
-      })
-    {% else %}
-      Manifest.mapping({{properties}}, {
-        type: TypeCheck{% if default %}?{% end %},
-        version:                         Psykube::Manifest::V2::VersionCheck,
-        automount_service_account_token: {type: Bool, nilable: true},
-        affinity:                        {type: Pyrite::Api::Core::V1::Affinity, nilable: true},
-        name:                            {type: String, getter: false},
-        prefix:                          {type: String, nilable: true},
-        suffix:                          {type: String, nilable: true},
-        annotations:                     {type: Hash(String, String), default: {} of String => String},
-        labels:                          {type: Hash(String, String), default: {} of String => String},
-        registry_host:                   {type: String, nilable: true},
-        registry_user:                   {type: String, nilable: true},
-        default_context:                 {type: String, nilable: true},
-        default_namespace:               {type: String, nilable: true},
-        restart_policy:                  {type: String, nilable: true},
-        config_map:                      {type: Hash(String, String), default: {} of String => String},
-        secrets:                         {type: Hash(String, String), default: {} of String => String},
-        init_containers:                 {type: Hash(String, Shared::Container), default: {} of String => Shared::Container},
-        containers:                      {type: Hash(String, Shared::Container)},
-        clusters:                        {type: Hash(String, V1::Cluster), default: {} of String => V1::Cluster },
-      })
     {% end %}
 
-    @version = Psykube::Manifest::V2::VersionCheck.new
+    Manifest.mapping({{properties}}, {
+      type:                            TypeCheck{% if default %}?{% end %},
+      name:                            {type: String, getter: false},
+      version:                         {type: V2::VersionCheck},
+      automount_service_account_token: {type: Bool, nilable: true},
+      prefix:                          {type: String, nilable: true},
+      suffix:                          {type: String, nilable: true},
+      registry_host:                   {type: String, nilable: true},
+      registry_user:                   {type: String, nilable: true},
+      default_context:                 {type: String, nilable: true},
+      default_namespace:               {type: String, nilable: true},
+      restart_policy:                  {type: String, nilable: true},
+      annotations:                     {type: StringMap, default: StringMap.new},
+      labels:                          {type: StringMap, default: StringMap.new},
+      config_map:                      {type: StringMap, default: StringMap.new},
+      secrets:                         {type: StringMap, default: StringMap.new},
+      affinity:                        {type: Pyrite::Api::Core::V1::Affinity, nilable: true},
+      init_containers:                 {type: ContainerMap, default: ContainerMap.new},
+      containers:                      {type: ContainerMap},
+      clusters:                        {type: ClusterMap, default: ClusterMap.new },
+      {% if service %}
+        ingress: {type: V1::Ingress, nilable: true},
+        service: {type: String | V1::Service, default: "ClusterIP", nilable: true, getter: false}
+      {% end %}
+    })
+
     @type = TypeCheck.new
     @name = ""
-    @containers = {} of String => Shared::Container
-    @init_containers = {} of String => Shared::Container
-    @secrets = {} of String => String
-    @config_map = {} of String => String
-    @clusters = {} of String => V1::Cluster
-    @annotations = {} of String => String
-    @labels = {} of String => String
+    @version = V2::VersionCheck.new
+    @containers = ContainerMap.new
+    @init_containers = ContainerMap.new
+    @secrets = StringMap.new
+    @config_map = StringMap.new
+    @clusters = ClusterMap.new
+    @annotations = StringMap.new
+    @labels = StringMap.new
   end
 end
 
 require "./v2/*"
-require "./v2/shared/*"
