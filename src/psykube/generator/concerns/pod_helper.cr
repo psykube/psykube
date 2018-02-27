@@ -13,10 +13,7 @@ abstract class Psykube::Generator
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           labels: {
             "app" => name,
-          },
-          annotations: manifest.init_containers ? {
-            "pod.beta.kubernetes.io/init-containers" => manifest.init_containers.to_json,
-          } : nil
+          }
         )
       )
     end
@@ -33,17 +30,39 @@ abstract class Psykube::Generator
       Pyrite::Api::Core::V1::PodSpec.new(
         restart_policy: manifest.restart_policy,
         volumes: generate_volumes,
-        containers: [generate_container]
+        containers: generate_containers(manifest),
+        init_containers: generate_init_containers(manifest)
       )
     end
 
+    # Init Containers
+    private def generate_init_containers(manifest : Manifest::V1)
+      manifest.init_containers.to_json
+    end
+
+    private def generate_init_containers(manifest : Manifest::V2::Any)
+      manifest.init_containers.map do |container_name, container|
+        generate_container("#{name}_#{container_name}", container)
+      end
+    end
+
     # Containers
-    private def generate_container
+    private def generate_containers(manifest : Manifest::V1)
+      [generate_container(manifest)]
+    end
+
+    private def generate_containers(manifest : Manifest::V2::Any)
+      manifest.containers.map do |container_name, container|
+        generate_container("#{name}_#{container_name}", container)
+      end
+    end
+
+    private def generate_container(name : String, manifest : Manifest::V1 | Manifest::V2::Shared::Container)
       Pyrite::Api::Core::V1::Container.new(
         name: name,
-        image: image,
-        resources: generate_container_resources,
-        env: generate_container_env,
+        image: manifest.image,
+        resources: generate_container_resources(manifest),
+        env: generate_container_env(manifest.env),
         volume_mounts: generate_container_volume_mounts(manifest.volumes),
         liveness_probe: generate_container_liveness_probe(manifest.healthcheck),
         readiness_probe: generate_container_readiness_probe(manifest.readycheck || manifest.healthcheck),
@@ -70,13 +89,13 @@ abstract class Psykube::Generator
       )
     end
 
-    private def generate_volume(mount_path : String, volume : Manifest::Volume)
+    private def generate_volume(mount_path : String, volume : Manifest::V1::Volume)
       volume_name = name_from_mount_path(mount_path)
       volume.to_deployment_volume(name: name, volume_name: volume_name)
     end
 
     # Resources
-    private def generate_container_resources
+    private def generate_container_resources(manifest : Manifest::V1 | Manifest::V2::Shared::Container)
       if (resources = manifest.resources)
         limits = resources.limits
         requests = resources.requests
@@ -115,7 +134,7 @@ abstract class Psykube::Generator
       )
     end
 
-    private def generate_container_liveness_probe(healthcheck : Manifest::Healthcheck | Manifest::Readycheck)
+    private def generate_container_liveness_probe(healthcheck : Manifest::V1::Healthcheck | Manifest::V1::Readycheck)
       return unless healthcheck.http || healthcheck.tcp || healthcheck.exec
       raise InvalidHealthcheck.new("Cannot perform http check without specifying ports.") if !manifest.ports? && healthcheck.http
       raise InvalidHealthcheck.new("Cannot perform tcp check without specifying ports.") if !manifest.ports? && healthcheck.tcp
@@ -138,13 +157,13 @@ abstract class Psykube::Generator
       generate_container_liveness_probe(healthcheck)
     end
 
-    private def generate_container_readiness_probe(healthcheck : Manifest::Healthcheck)
+    private def generate_container_readiness_probe(healthcheck : Manifest::V1::Healthcheck)
       if healthcheck.readiness
         generate_container_liveness_probe(healthcheck)
       end
     end
 
-    private def generate_container_readiness_probe(readycheck : Manifest::Readycheck)
+    private def generate_container_readiness_probe(readycheck : Manifest::V1::Readycheck)
       generate_container_liveness_probe(readycheck)
     end
 
@@ -173,7 +192,7 @@ abstract class Psykube::Generator
       end
     end
 
-    private def generate_container_probe_http_get(http_check : Manifest::Healthcheck::Http)
+    private def generate_container_probe_http_get(http_check : Manifest::V1::Healthcheck::Http)
       return unless manifest.ports?
       Pyrite::Api::Core::V1::HTTPGetAction.new(
         path: http_check.path,
@@ -214,7 +233,7 @@ abstract class Psykube::Generator
       )
     end
 
-    private def generate_container_probe_tcp_socket(tcp : Manifest::Healthcheck::Tcp)
+    private def generate_container_probe_tcp_socket(tcp : Manifest::V1::Healthcheck::Tcp)
       Pyrite::Api::Core::V1::TCPSocketAction.new(
         port: lookup_port tcp.port
       )
@@ -227,7 +246,7 @@ abstract class Psykube::Generator
       generate_container_probe_exec [command]
     end
 
-    private def generate_container_probe_exec(exec : Manifest::Healthcheck::Exec)
+    private def generate_container_probe_exec(exec : Manifest::V1::Healthcheck::Exec)
       generate_container_probe_exec exec.command
     end
 
@@ -239,7 +258,7 @@ abstract class Psykube::Generator
     private def generate_container_volume_mounts(volumes : Nil)
     end
 
-    private def generate_container_volume_mounts(volumes : Manifest::VolumeMap)
+    private def generate_container_volume_mounts(volumes : Manifest::V1::VolumeMap)
       volumes.map do |mount_path, volume|
         volume_name = name_from_mount_path(mount_path)
         Pyrite::Api::Core::V1::VolumeMount.new(
@@ -250,13 +269,13 @@ abstract class Psykube::Generator
     end
 
     # Environment
-    private def generate_container_env
+    private def generate_container_env(manifest : Manifest::V1 | Manifest::V2::Shared::Container)
       manifest.env.map do |key, value|
         expand_env(key, value)
       end
     end
 
-    private def expand_env(key : String, value : Manifest::Env)
+    private def expand_env(key : String, value : Manifest::V1::Env)
       value_from = Pyrite::Api::Core::V1::EnvVarSource.new.tap do |value_from|
         case
         when config_map = value.config_map
@@ -281,7 +300,7 @@ abstract class Psykube::Generator
       Pyrite::Api::Core::V1::ConfigMapKeySelector.new(key: key, name: name)
     end
 
-    private def expand_env_config_map(key_ref : Manifest::Env::KeyRef)
+    private def expand_env_config_map(key_ref : Manifest::V1::Env::KeyRef)
       Pyrite::Api::Core::V1::ConfigMapKeySelector.new(key: key_ref.key, name: key_ref.name)
     end
 
@@ -290,7 +309,7 @@ abstract class Psykube::Generator
       Pyrite::Api::Core::V1::SecretKeySelector.new(key: key, name: name)
     end
 
-    private def expand_env_secret(key_ref : Manifest::Env::KeyRef)
+    private def expand_env_secret(key_ref : Manifest::V1::Env::KeyRef)
       Pyrite::Api::Core::V1::SecretKeySelector.new(key: key_ref.key, name: key_ref.name)
     end
 
@@ -300,7 +319,7 @@ abstract class Psykube::Generator
       )
     end
 
-    private def expand_env_field(field_ref : Manifest::Env::FieldRef)
+    private def expand_env_field(field_ref : Manifest::V1::Env::FieldRef)
       Pyrite::Api::Core::V1::ObjectFieldSelector.new(
         field_path: field_ref.path,
         api_version: field_ref.api_version
@@ -313,7 +332,7 @@ abstract class Psykube::Generator
       )
     end
 
-    private def expand_env_resource_field(field_ref : Manifest::Env::ResourceFieldRef)
+    private def expand_env_resource_field(field_ref : Manifest::V1::Env::ResourceFieldRef)
       Pyrite::Api::Core::V1::ResourceFieldSelector.new(
         resource: field_ref.resource,
         container_name: field_ref.container,

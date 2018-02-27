@@ -15,8 +15,8 @@ abstract class Psykube::Generator
 
   delegate lookup_port, to: manifest
 
-  @raw_manifest : Manifest?
-  @manifest : Manifest?
+  @raw_manifest : Manifest::Any?
+  @manifest : Manifest::Any?
   @raw_metadata : Hash(String, String)?
   @metadata : Hash(String, String)?
   @git_data : Hash(String, String)?
@@ -56,12 +56,12 @@ abstract class Psykube::Generator
   def initialize(io : IO, cluster_name : String? = nil, context : String? = nil, namespace : String? = nil, image : String? = nil, tag : String? = nil)
     @yaml = String.build { |string_io| IO.copy(io, string_io) }
     @cluster_name = cluster_name || raw_manifest.clusters.keys.first? || "default"
-    @context = context || raw_cluster_manifest.context || raw_manifest.context
-    namespace ||= raw_cluster_manifest.namespace || raw_manifest.namespace
+    @context = context || raw_cluster_manifest.context || get_default_context(raw_manifest)
+    namespace ||= raw_cluster_manifest.namespace || get_default_namespace(raw_manifest)
     @namespace = NameCleaner.clean(namespace) if namespace
-    validate_image!
-    @tag = tag || cluster_manifest.image_tag || manifest.image_tag || digest
-    @image = image || manifest.image || default_image || raise("Image is not specified.")
+    validate_image!(manifest)
+    @tag = tag || get_default_image_tag(cluster_manifest) || get_default_image_tag(manifest) || digest
+    @image = image || get_default_image(raw_manifest) || default_image || raise("Image is not specified.")
   end
 
   def initialize(filename : String, *args, **props)
@@ -110,21 +110,24 @@ abstract class Psykube::Generator
   end
 
   def raw_manifest
-    @raw_manifest ||= Manifest.from_yaml(template_result)
+    @raw_manifest ||= Manifest::Any.from_yaml(template_result)
   rescue e : YAML::ParseException
     raise ParseException.new(template_result, e)
   end
 
   def manifest
-    @manifest ||= Manifest.from_yaml(template_result metadata)
+    @manifest ||= Manifest::Any.from_yaml(template_result metadata)
   rescue e : YAML::ParseException
     raise ParseException.new(template_result, e)
   end
 
-  def validate_image! : Nil
+  def validate_image!(manifest : Manifest::V1) : Nil
     if manifest.image && registry_user
       raise "Cannot specify both `image` and `registry` infromation in the same manifest!"
     end
+  end
+
+  def validate_image!(manifest) : Nil
   end
 
   def image(tag)
@@ -174,11 +177,11 @@ abstract class Psykube::Generator
   end
 
   private def cluster_manifest
-    manifest.clusters[cluster_name]? || Manifest::Cluster.new
+    manifest.clusters[cluster_name]? || Manifest::V1::Cluster.new
   end
 
   private def raw_cluster_manifest
-    raw_manifest.clusters[cluster_name]? || Manifest::Cluster.new
+    raw_manifest.clusters[cluster_name]? || Manifest::V1::Cluster.new
   end
 
   private def cluster_config_map
@@ -190,7 +193,47 @@ abstract class Psykube::Generator
   end
 
   private def manifest_env
-    manifest.env || {} of String => String | Manifest::Env
+    manifest.env || {} of String => String | Manifest::V1::Env
+  end
+
+  private def get_default_context(manifest : Manifest::V2::Any)
+    manifest.default_context
+  end
+
+  private def get_default_namespace(manifest : Manifest::V2::Any)
+    manifest.default_namespace
+  end
+
+  private def get_default_image(manifest : Manifest::V2::Any)
+    nil
+  end
+
+  private def get_default_image_tag(manifest : Manifest::V2::Any)
+    nil
+  end
+
+  private def get_default_image_tag(manifest : Manifest::V2::Shared::Cluster)
+    nil
+  end
+
+  private def get_default_namespace(manifest : Manifest::V1)
+    manifest.image
+  end
+
+  private def get_default_image_tag(manifest : Manifest::V1 | Manifest::V1::Cluster)
+    manifest.image_tag
+  end
+
+  private def get_default_image(manifest : Manifest::V1)
+    manifest.image
+  end
+
+  private def get_default_namespace(manifest : Manifest::V1)
+    manifest.namespace
+  end
+
+  private def get_default_context(manifest : Manifest::V1)
+    manifest.context
   end
 
   private def get_digest(kind : String = "sha256")

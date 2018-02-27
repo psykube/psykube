@@ -17,7 +17,7 @@ abstract class Psykube::Generator
     end
 
     private def cluster_manifest_ingress
-      cluster_manifest.ingress || Manifest::Ingress.new
+      cluster_manifest.ingress || Manifest::V1::Ingress.new
     end
 
     private def cluster_ingress_annotations
@@ -30,7 +30,7 @@ abstract class Psykube::Generator
     end
 
     private def manifest_ingress
-      manifest.ingress || Manifest::Ingress.new
+      manifest.ingress || Manifest::V1::Ingress.new
     end
 
     private def cluster_tls
@@ -39,8 +39,8 @@ abstract class Psykube::Generator
 
     private def acme?
       return true if cluster_tls == true
-      if cluster_tls.is_a? Manifest::Ingress::Tls
-        return true if cluster_tls.as(Manifest::Ingress::Tls).auto
+      if cluster_tls.is_a? Manifest::V1::Ingress::Tls
+        return true if cluster_tls.as(Manifest::V1::Ingress::Tls).auto
       else
         false
       end
@@ -58,7 +58,7 @@ abstract class Psykube::Generator
       tls_list unless tls_list.empty?
     end
 
-    private def generate_host_tls(host : String, tls : Manifest::Ingress::Tls)
+    private def generate_host_tls(host : String, tls : Manifest::V1::Ingress::Tls)
       raise "Cannot assign automatic TLS with a static secret name." if tls.auto && tls.secret_name
       if (auto = tls.auto)
         return generate_host_tls_auto host, auto
@@ -72,7 +72,7 @@ abstract class Psykube::Generator
       generate_host_tls_auto(host, auto) if auto
     end
 
-    private def generate_host_tls_auto(host : String, auto : Manifest::Ingress::Tls::Auto)
+    private def generate_host_tls_auto(host : String, auto : Manifest::V1::Ingress::Tls::Auto)
       secret_name = "cert-" + auto.prefix.to_s + Digest::SHA1.hexdigest(host.downcase) + auto.suffix.to_s
       Pyrite::Api::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
     end
@@ -89,7 +89,7 @@ abstract class Psykube::Generator
       rules.empty? ? nil : rules
     end
 
-    private def generate_host_paths(host, paths : Manifest::Ingress::Host::PathMap)
+    private def generate_host_paths(host, paths : Manifest::V1::Ingress::Host::PathMap)
       Pyrite::Api::Extensions::V1beta1::IngressRule.new(
         host: host,
         http: Pyrite::Api::Extensions::V1beta1::HTTPIngressRuleValue.new(

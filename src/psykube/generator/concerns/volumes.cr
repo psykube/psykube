@@ -5,7 +5,7 @@ abstract class Psykube::Generator
     end
 
     private def manifest_volumes
-      manifest.volumes || {} of String => Manifest::Volume | String
+      manifest.volumes || {} of String => Manifest::V1::Volume | String
     end
   end
 end
