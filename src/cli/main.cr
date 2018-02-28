@@ -1,4 +1,5 @@
 require "../psykube"
+require "./ext/**"
 require "./commands/*"
 
 class Psykube::CLI::Main < Admiral::Command
