@@ -11,7 +11,7 @@ class Psykube::CLI::Commands::Validate < Admiral::Command
   end
 
   def run
-    puts generator.template_result
+    puts actor.template_result
     puts ""
     puts "Template OK".colorize(:green)
   end

@@ -25,22 +25,12 @@ module Psykube::CLI::Commands::PsykubeFileFlag
     flags.namespace
   end
 
-  private def deployment_generator
-    Generator::Deployment.new(
-      filename: flags.file,
-      image: image_flag,
-      cluster_name: cluster_name,
-      namespace: namespace_flag
-    )
+  private def actor
+    Actor.new(self)
   end
 
-  private def generator
-    Generator::List.new(
-      filename: flags.file,
-      cluster_name: cluster_name,
-      image: image_flag,
-      tag: tag_flag,
-      namespace: namespace_flag
-    )
+  private def deployment
+    deployment = actor.generate.items.not_nil!.find(&.kind.== "Deployment")
+    deployment.as(Pyrite::Api::Extensions::V1beta1::Deployment) if deployment
   end
 end

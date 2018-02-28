@@ -20,7 +20,7 @@ def kubectl(args : String)
   Process.run(bin, args.split(" "))
 end
 
-macro psykube(command, timeout = 30)
+macro psykube_it(command, timeout = 30)
   command = {{command}}
   it "should run `psykube #{command}` and not fail" do
     puts ""
@@ -36,11 +36,11 @@ Dir.cd("spec") do
       kubectl "--namespace=#{NAMESPACE} run hello-world --image=hello-world --port=80 --expose"
     end
 
-    psykube "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80"
-    psykube "generate default"
-    psykube "apply default"
-    psykube "status default"
-    psykube "push"
+    psykube_it "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80"
+    psykube_it "generate default"
+    psykube_it "apply default"
+    psykube_it "status default"
+    psykube_it "push"
 
     it "should run exec" do
       Process.fork { Psykube::CLI.run "exec default -- echo 'hello world'" }.wait
@@ -61,10 +61,10 @@ Dir.cd("spec") do
       process.wait
     end
 
-    psykube "copy-namespace #{NAMESPACE} #{NAMESPACE}-copy --force"
+    psykube_it "copy-namespace #{NAMESPACE} #{NAMESPACE}-copy --force"
 
     # Cleanup
-    psykube "delete default -y"
+    psykube_it "delete default -y"
 
     it "deletes the namespace" do
       kubectl "delete namespace #{NAMESPACE}-copy"

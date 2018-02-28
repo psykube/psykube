@@ -33,19 +33,21 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   def run
     kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy, flags.explicit_copy) if flags.copy_namespace
     {% if env("EXCLUDE_DOCKER") != "true" %}
-    docker_build_and_push(generator.image) if !flags.tag && !flags.image && !generator.manifest.image && flags.push
+    docker_build_and_push(actor.build_contexts) if !flags.tag && !flags.image && !actor.manifest.image && flags.push
     {% end %}
-    result = generator.result
+    result = actor.generate
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
+    deployment_name = nil
     result.items.not_nil!.map do |item|
       force = flags.force
       if item.is_a?(Pyrite::Api::Core::V1::Service) && (service = Pyrite::Api::Core::V1::Service.from_json(kubectl_json(manifest: item, panic: false, error: false)) rescue nil)
         item.metadata.not_nil!.resource_version = service.metadata.not_nil!.resource_version
       end
+      deployment_name = item.metadata.not_nil!.name if item.kind == "Deployment"
       kubectl_new("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
-    if deployment_generator.manifest.type == "Deployment"
-      kubectl_run("rollout", ["status", "deployment/#{deployment_generator.name}"])
+    if actor.manifest.type == "Deployment"
+      kubectl_run("rollout", ["status", "deployment/#{deployment_name}"])
     end
     kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.now.to_json}"], flags: {"--overwrite" => "true"})
   end

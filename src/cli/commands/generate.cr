@@ -13,7 +13,7 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
 
   def run
     if (io = @output_io).is_a?(IO::FileDescriptor)
-      flags.pretty ? generator.to_pretty_json(io) : generator.to_json(io)
+      flags.pretty ? actor.to_pretty_json(io) : actor.to_json(io)
     end
   end
 end

@@ -6,7 +6,7 @@ class Psykube::CLI::Main < Admiral::Command
     panic e.message
   end
 
-  rescue_from Generator::ValidationError do |e|
+  rescue_from V1::Generator::ValidationError do |e|
     panic "Error: #{e.message}".colorize(:red)
   end
 

@@ -11,29 +11,38 @@ module Psykube::CLI::Commands::Docker
   end
 
   def build_args
-    flags.build_args.to_a +
-      generator.manifest.build_args.map(&.join("="))
+    flags.build_args.to_a
   end
 
-  def docker_build_and_push(tag)
-    docker_build(tag)
-    docker_push(tag)
+  def docker_build_and_push(*args)
+    docker_build(*args)
+    docker_push(*args)
   end
 
-  def docker_build(tag)
+  def docker_build(build_contexts : Array(BuildContext), tag : String? = nil)
+    build_contexts.each { |c| docker_build c }
+  end
+
+  def docker_build(build_context : BuildContext, tag : String? = nil)
     args = ["build"]
     build_args.each do |arg|
       args << "--build-arg=#{arg}"
     end
-    image = tag.includes?(":") ? tag : generator.image(tag)
-    args << "--cache-from=#{generator.image("latest")}"
+    build_context.args.each do |arg|
+      args << "--build-arg=#{arg}"
+    end
+    image = tag && tag.includes?(":") ? tag : build_context.image(tag)
     args << "--tag=#{image}"
-    args << generator.dir
+    args << build_context.context
     docker_run args
   end
 
-  def docker_push(tag : String)
-    image = tag.includes?(":") ? tag : generator.image(tag)
+  def docker_push(build_contexts : Array(BuildContext), tag : String? = nil)
+    build_contexts.each { |c| docker_push c }
+  end
+
+  def docker_push(build_context : BuildContext, tag : String? = nil)
+    image = tag && tag.includes?(":") ? tag : build_context.image(tag)
     docker_run ["push", image]
   end
 
