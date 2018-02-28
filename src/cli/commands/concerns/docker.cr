@@ -33,6 +33,7 @@ module Psykube::CLI::Commands::Docker
     end
     image = tag && tag.includes?(":") ? tag : build_context.image(tag)
     args << "--tag=#{image}"
+    args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
     args << build_context.context
     docker_run args
   end

@@ -61,7 +61,7 @@ class Psykube::Actor
   end
 
   def build_contexts
-    @build_contexts ||= manifest.get_build_contexts(basename: basename, tag: @tag)
+    @build_contexts ||= manifest.get_build_contexts(basename: basename, tag: @tag, build_context: @dir)
   end
 
   def manifest

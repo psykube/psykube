@@ -11,7 +11,7 @@ router Psykube::Playground::Server do
 
   DUCK = {{ `cat #{__DIR__}/../../psykube-ico.png`.stringify }}
 
-  post "/generate", to: "Generate#generate"
+  post "/generate", to: "generate#generate"
 
   get "/favicon", accept: "image/png" do |context|
     context.response.content_type = "image/png"

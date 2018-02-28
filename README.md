@@ -229,6 +229,8 @@ Apply the kubernetes manifests.
 | `--namespace`     | `-n`  |                                      | The namespace to use when invoking kubectl.
 | `--image`         | `-i`  |                                      | Overrides the docker image.
 | `--build-args`    |       |                                      | The build args to add to docker build.
+| `--build-context` |       |                                      | The build context for the docker build.
+| `--dockerfile`    |       |                                      | The dockerfile to use for the docker build.
 | `--context`       | `-c`  | The current context set for kubectl  | The context to use when invoking kubectl.
 | `--copy-namespace`|       |                                      | Copy the specified namespace if the target namespace does not exist.
 | `--force-copy`    |       | `false`                              | Copy the namespace even the destination already exists.
@@ -247,6 +249,8 @@ Build and push the docker image.
 | `--help`          |       |                                      | Displays help for the current command.
 | `--file`          | `-f`  | `./.psykube.yml`                     | The location of the psykube manifest yml file.
 | `--build-args`    |       |                                      | The build args to add to docker build.
+| `--build-context` |       |                                      | The build context for the docker build.
+| `--dockerfile`    |       |                                      | The dockerfile to use for the docker build.
 | `--tag`           | `-t`  |                                      | Additional tags to push.
 
 ### `psykube playground`

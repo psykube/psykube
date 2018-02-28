@@ -14,7 +14,7 @@ shards:
 
   mime-types:
     github: jwaldrip/mime-types.cr
-    version: 0.12.3
+    version: 1.1.0
 
   oak:
     github: obsidian/oak
@@ -22,9 +22,8 @@ shards:
 
   orion:
     github: obsidian/orion
-    version: 1.1.0
+    version: 1.4.0
 
   pyrite:
     github: jwaldrip/pyrite
-    commit: a25b42ec62e4c8af1e815bb2e10ca7cac4882491
-
+    commit: c7b302f44d7ddb3716ab079f4adb82a9b132d8d8

@@ -6,7 +6,6 @@ class Psykube::V1::Manifest
   end
 
   getter name : String
-  @docker_context = "."
 
   alias VolumeMap = Hash(String, Volume | String)
   mapping({
@@ -14,8 +13,6 @@ class Psykube::V1::Manifest
     type:                   {type: String, default: "Deployment"},
     prefix:                 String?,
     suffix:                 String?,
-    docker_context:         {type: String, default: "."},
-    dockerfile:             {type: String?},
     annotations:            Hash(String, String)?,
     labels:                 Hash(String, String)?,
     replicas:               Int32?,
@@ -49,6 +46,8 @@ class Psykube::V1::Manifest
     volumes:                {type: VolumeMap, nilable: true},
     autoscale:              {type: Autoscale, nilable: true},
     build_args:             {type: Hash(String, String), nilable: true, getter: false},
+    build_context:          {type: String?},
+    dockerfile:             {type: String?},
   })
 
   def initialize(@name : String, @type : String = "Deployment")
@@ -210,12 +209,12 @@ class Psykube::V1::Manifest
     clusters[name]? || Cluster.new
   end
 
-  def get_build_contexts(basename : String, tag : String)
+  def get_build_contexts(basename : String, tag : String, build_context : String)
     [BuildContext.new(
       image: basename,
       tag: tag,
       args: build_args,
-      context: docker_context,
+      context: self.build_context || build_context,
       dockerfile: dockerfile
     )]
   end
