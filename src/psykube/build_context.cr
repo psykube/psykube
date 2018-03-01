@@ -13,4 +13,6 @@ struct Psykube::BuildContext
   def image(tag = nil)
     [@image, tag || @tag].join(':')
   end
+
+  def_equals @image, @build, @tag, @context, @dockerfile, @args
 end

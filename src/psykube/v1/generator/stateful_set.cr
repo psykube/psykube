@@ -1,7 +1,8 @@
 require "./concerns/*"
 
-class Psykube::V1::Generator::StatefulSet < Generator
+class Psykube::V1::Generator::StatefulSet < ::Psykube::Generator
   include Concerns::PodHelper
+  cast_manifest Manifest
 
   protected def result
     Pyrite::Api::Apps::V1beta1::StatefulSet.new(

@@ -1,12 +1,12 @@
 class Psykube::V1::Manifest::Service
-  Manifest.mapping({
+  Macros.mapping({
     type:                        {type: String, default: "ClusterIP", getter: false},
-    annotations:                 Hash(String, String)?,
+    annotations:                 {type: StringMap, nilable: true},
     cluster_ip:                  {type: String, nilable: true, getter: false},
-    load_balancer_ip:            String?,
-    external_ips:                Array(String)?,
-    session_affinity:            String?,
-    load_balancer_source_ranges: Array(String)?,
+    load_balancer_ip:            {type: String, nilable: true},
+    external_ips:                {type: Array(String), nilable: true},
+    session_affinity:            {type: String, nilable: true},
+    load_balancer_source_ranges: {type: Array(String), nilable: true},
   })
 
   def initialize(@type : String = "ClusterIP")

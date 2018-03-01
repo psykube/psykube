@@ -1,5 +1,5 @@
 class Psykube::V1::Manifest::Healthcheck::Tcp
-  Manifest.mapping({
+  Macros.mapping({
     port: {type: String | Int32, default: "default"},
   })
 end

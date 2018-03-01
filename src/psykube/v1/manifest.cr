@@ -1,60 +1,48 @@
-require "yaml"
-
 class Psykube::V1::Manifest
-  getter name : String
-
   alias VolumeMap = Hash(String, Volume | String)
   Macros.mapping({
-    name:                   {type: String, getter: false},
+    name:                   {type: String},
     type:                   {type: String, default: "Deployment"},
-    prefix:                 String?,
-    suffix:                 String?,
-    annotations:            Hash(String, String)?,
-    labels:                 Hash(String, String)?,
-    replicas:               Int32?,
-    completions:            Int32?,
-    parallelism:            Int32?,
-    registry_host:          String?,
-    registry_user:          String?,
-    context:                String?,
-    namespace:              String?,
-    init_containers:        Array(Pyrite::Api::Core::V1::Container)?,
-    image:                  String?,
-    image_tag:              String?,
-    revision_history_limit: Int32?,
-    resources:              Resources?,
+    prefix:                 {type: String, nilable: true},
+    suffix:                 {type: String, nilable: true},
+    annotations:            {type: StringMap, nilable: true},
+    labels:                 {type: StringMap, nilable: true},
+    replicas:               {type: Int32, nilable: true},
+    completions:            {type: Int32, nilable: true},
+    parallelism:            {type: Int32, nilable: true},
+    registry_host:          {type: String, nilable: true},
+    registry_user:          {type: String, nilable: true},
+    context:                {type: String, nilable: true},
+    namespace:              {type: String, nilable: true},
+    init_containers:        {type: Array(Pyrite::Api::Core::V1::Container), nilable: true},
+    image:                  {type: String, nilable: true},
+    image_tag:              {type: String, nilable: true},
+    revision_history_limit: {type: Int32, nilable: true},
+    resources:              {type: Resources, nilable: true},
     deploy_timeout:         {type: Int32, nilable: true, getter: false},
-    restart_policy:         String?,
-    max_unavailable:        {type: Int32 | String, nilable: true, getter: false},
-    max_surge:              {type: Int32 | String, nilable: true, getter: false},
+    restart_policy:         {type: String, nilable: true},
+    max_unavailable:        {type: Int32 | String, getter: false, default: "25%"},
+    max_surge:              {type: Int32 | String, getter: false, default: "25%"},
     partition:              {type: Int32, nilable: true},
-    command:                Array(String) | String | Nil,
-    args:                   Array(String)?,
+    command:                {type: Array(String) | String, nilable: true},
+    args:                   {type: Array(String), nilable: true},
     env:                    {type: Hash(String, Env | String), nilable: true, getter: false},
-    ingress:                Ingress?,
+    ingress:                {type: Ingress, nilable: true},
     service:                {type: String | Service, default: "ClusterIP", nilable: true, getter: false},
-    config_map:             {type: Hash(String, String), nilable: true, getter: false},
-    secrets:                {type: Hash(String, String), nilable: true, getter: false},
+    config_map:             {type: StringMap, nilable: true, getter: false},
+    secrets:                {type: StringMap, nilable: true, getter: false},
     ports:                  {type: Hash(String, Int32), nilable: true, getter: false},
     clusters:               {type: Hash(String, Cluster), nilable: true, getter: false},
-    healthcheck:            {type: Bool | Healthcheck, nilable: true, default: false, getter: false},
-    readycheck:             {type: Bool | Readycheck, nilable: true, default: false, getter: false},
+    healthcheck:            {type: Bool | Healthcheck, nilable: true, default: false},
+    readycheck:             {type: Bool | Readycheck, nilable: true, default: false},
     volumes:                {type: VolumeMap, nilable: true},
     autoscale:              {type: Autoscale, nilable: true},
-    build_args:             {type: Hash(String, String), nilable: true, getter: false},
-    build_context:          {type: String?},
-    dockerfile:             {type: String?},
+    build_args:             {type: StringMap, default: StringMap.new},
+    build_context:          {type: String, nilable: true},
+    dockerfile:             {type: String, nilable: true},
   })
 
   def initialize(@name : String, @type : String = "Deployment")
-  end
-
-  def healthcheck
-    @healthcheck || false
-  end
-
-  def readycheck
-    @readycheck || false
   end
 
   def ports?
@@ -76,10 +64,6 @@ class Psykube::V1::Manifest
 
   def deploy_timeout
     @deploy_timeout || 300
-  end
-
-  def build_args
-    @build_args || {} of String => String
   end
 
   def max_unavailable
@@ -133,7 +117,7 @@ class Psykube::V1::Manifest
     @clusters || {} of String => Cluster
   end
 
-  def env=(hash : Hash(String, String))
+  def env=(hash : StringMap)
     @env = Hash(String, Env | String).new.tap do |h|
       hash.each do |k, v|
         h[k] = hash[k]
@@ -167,6 +151,10 @@ class Psykube::V1::Manifest
       context: @build_context || build_context,
       dockerfile: dockerfile
     )]
+  end
+
+  def get_init_build_contexts(cluster_name : String, basename : String, tag : String, build_context : String)
+    [] of BuildContext
   end
 end
 

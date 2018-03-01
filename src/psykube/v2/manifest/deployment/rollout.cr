@@ -1,16 +1,8 @@
 class Psykube::V2::Manifest::Deployment::Rollout
-  Manifest.mapping({
-    progress_timeout: Int32?,
-    history_limit:    Int32?,
-    max_unavailable:  {type: Int32, nilable: true, getter: false},
-    max_surge:        {type: Int32, nilable: true, getter: false},
+  Macros.mapping({
+    progress_timeout: {type: Int32, nilable: true},
+    history_limit:    {type: Int32, nilable: true},
+    max_unavailable:  {type: Int32 | String, default: "25%"},
+    max_surge:        {type: Int32 | String, default: "25%"},
   })
-
-  def max_unavailable
-    @max_unavailable || "25%"
-  end
-
-  def max_surge
-    @max_surge || "25%"
-  end
 end

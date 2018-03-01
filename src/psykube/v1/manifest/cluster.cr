@@ -1,18 +1,19 @@
 class Psykube::V1::Manifest::Cluster
-  Manifest.mapping({
-    image_tag:     String?,
-    registry_host: String?,
-    registry_user: String?,
-    labels:        Hash(String, String)?,
-    annotations:   Hash(String, String)?,
-    prefix:        String?,
-    suffix:        String?,
-    ingress:       Ingress?,
-    context:       String?,
-    namespace:     String?,
-    config_map:    {type: Hash(String, String), nilable: true, getter: false},
-    secrets:       {type: Hash(String, String), nilable: true, getter: false},
-    autoscale:     Autoscale?,
+  Macros.mapping({
+    image_tag:     {type: String, nilable: true},
+    registry_host: {type: String, nilable: true},
+    registry_user: {type: String, nilable: true},
+    labels:        {type: StringMap, nilable: true},
+    annotations:   {type: StringMap, nilable: true},
+    build_args:    {type: StringMap, default: StringMap.new},
+    prefix:        {type: String, nilable: true},
+    suffix:        {type: String, nilable: true},
+    ingress:       {type: Ingress, nilable: true},
+    context:       {type: String, nilable: true},
+    namespace:     {type: String, nilable: true},
+    config_map:    {type: StringMap, default: {} of String => String},
+    secrets:       {type: StringMap, default: {} of String => String},
+    autoscale:     {type: Autoscale, nilable: true},
   })
 
   def initialize(@context : String? = nil)

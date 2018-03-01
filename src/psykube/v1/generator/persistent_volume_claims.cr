@@ -1,5 +1,5 @@
-class Psykube::V1::Generator::PersistentVolumeClaims < Generator
-  include Concerns::Volumes
+class Psykube::V1::Generator::PersistentVolumeClaims < ::Psykube::Generator
+  include ::Psykube::Concerns::Volumes
 
   protected def result
     result = manifest_claims.map do |mount_path, volume|

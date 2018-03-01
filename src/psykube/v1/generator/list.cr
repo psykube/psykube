@@ -1,17 +1,24 @@
-class Psykube::V1::Generator::List < Generator
+class Psykube::V1::Generator::List < ::Psykube::Generator
   protected def result
     Pyrite::Api::Core::V1::List.new(
       items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
-        podable = generate_podable
         list << ConfigMap.result(self)
         list << Secret.result(self)
-        list << Autoscale.result(self)
-        list << Service.result(self)
-        list << Ingress.result(self)
         list << podable
 
+        case manifest.type
+        when "Deployment", "Pod", "DaemonSet", "StatefulSet", "ReplicaSet", "ReplicationController"
+          list << Service.result(self)
+          list << Ingress.result(self)
+        end
+
+        case manifest.type
+        when "Deployment", "ReplicaSet", "ReplicationController"
+          list << Autoscale.result(self)
+        end
+
         # Add PVCs
-        unless podable.is_a? Pyrite::Api::Apps::V1beta1::StatefulSet
+        unless manifest.type == "StatefulSet"
           PersistentVolumeClaims.result(self).tap do |claims|
             list.concat(claims) if claims
           end
@@ -20,7 +27,7 @@ class Psykube::V1::Generator::List < Generator
     )
   end
 
-  private def generate_podable
+  private def podable
     case manifest.type
     when "Deployment"
       Deployment.result(self)

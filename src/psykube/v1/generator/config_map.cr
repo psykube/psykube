@@ -1,4 +1,4 @@
-class Psykube::V1::Generator::ConfigMap < Generator
+class Psykube::V1::Generator::ConfigMap < ::Psykube::Generator
   protected def result
     unless combined_config_map.empty?
       Pyrite::Api::Core::V1::ConfigMap.new(

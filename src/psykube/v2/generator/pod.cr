@@ -1,5 +1,6 @@
-class Psykube::V1::Generator::Pod < Generator
+class Psykube::V2::Generator::Pod < ::Psykube::Generator
   include Concerns::PodHelper
+  cast_manifest Manifest::Pod
 
   protected def result
     Pyrite::Api::Core::V1::Pod.new(

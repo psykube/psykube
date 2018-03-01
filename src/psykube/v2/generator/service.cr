@@ -1,6 +1,6 @@
-class Psykube::V1::Generator::Service < ::Psykube::Generator
+class Psykube::V2::Generator::Service < ::Psykube::Generator
   include Concerns::PodHelper
-  cast_manifest Manifest
+  cast_manifest Manifest::Servicable
 
   protected def result
     if (service = manifest.service)

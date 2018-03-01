@@ -1,9 +1,9 @@
 class Psykube::V1::Manifest::Healthcheck::Http
-  Manifest.mapping({
+  Macros.mapping({
     path:    {type: String, default: "/"},
     port:    {type: String | Int32, default: "default"},
-    host:    String?,
-    scheme:  String?,
-    headers: {type: Hash(String, String), nilable: true},
+    host:    {type: String, nilable: true},
+    scheme:  {type: String, nilable: true},
+    headers: {type: StringMap, nilable: true},
   })
 end

@@ -4,6 +4,6 @@ module Psykube::Concerns::Volumes
   end
 
   private def manifest_volumes
-    manifest.volumes || {} of String => Manifest::Volume | String
+    manifest.volumes || VolumeMap.new
   end
 end

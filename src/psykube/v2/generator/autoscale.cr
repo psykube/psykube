@@ -1,7 +1,7 @@
-class Psykube::V1::Generator::Autoscale < ::Psykube::Generator
+class Psykube::V2::Generator::Autoscale < ::Psykube::Generator
   @resource : Pyrite::Kubernetes::Resource?
 
-  cast_manifest Manifest
+  cast_manifest Manifest::Deployment
 
   protected def result
     return unless (cluster_autoscale = self.cluster_autoscale)
@@ -21,16 +21,8 @@ class Psykube::V1::Generator::Autoscale < ::Psykube::Generator
   end
 
   private def resource
-    @resource ||= case manifest.type
-                  when "Deployment"
-                    Deployment.result(self)
-                  when "ReplicationController"
-                    ReplicationController.result(self)
-                  when "ReplicaSet"
-                    ReplicaSet.result(self)
-                  else
-                    raise "Invalid type for autoscale: `#{manifest.type}`"
-                  end
+    raise "Invalid type for autoscale: `#{manifest.type}`" unless manifest.type == "Deployment"
+    @resource ||= Deployment.result(self)
   end
 
   protected def cluster_autoscale

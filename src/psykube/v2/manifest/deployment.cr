@@ -1,10 +1,9 @@
-require "yaml"
 require "../../name_cleaner"
 
-class Psykube::V2::Manifest::Deployment < Manifest
+class Psykube::V2::Manifest::Deployment < ::Psykube::V2::Manifest
   declare("Deployment", {
-    min_ready_seconds: Int32?,
-    replicas:          Int32?,
+    min_ready_seconds: {type: Int32, nilable: true},
+    replicas:          {type: Int32, nilable: true},
     rollout:           {type: Rollout, nilable: true, getter: false},
     autoscale:         {type: V1::Manifest::Autoscale, nilable: true},
   })

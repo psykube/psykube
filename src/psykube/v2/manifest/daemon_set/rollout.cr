@@ -1,10 +1,6 @@
 class Psykube::V2::Manifest::DaemonSet::Rollout
-  Manifest.mapping({
-    history_limit:   Int32?,
-    max_unavailable: {type: Int32, nilable: true, getter: false},
+  Macros.mapping({
+    history_limit:   {type: Int32, nilable: true},
+    max_unavailable: {type: Int32 | String, default: "25%"},
   })
-
-  def max_unavailable
-    @max_unavailable || "25%"
-  end
 end

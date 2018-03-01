@@ -1,4 +1,3 @@
-require "admiral"
 require "./concerns/*"
 
 class Psykube::CLI::Commands::Generate < Admiral::Command

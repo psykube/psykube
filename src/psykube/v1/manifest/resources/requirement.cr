@@ -1,7 +1,7 @@
 class Psykube::V1::Manifest::Resources::Requirement
-  Manifest.mapping({
-    cpu:    String?,
-    memory: String?,
+  Macros.mapping({
+    cpu:    {type: String, nilable: true},
+    memory: {type: String, nilable: true},
   })
 
   def self.new(cpu : String? = nil, memory : String? = nil)

@@ -1,4 +1,3 @@
-require "admiral"
 require "./concerns/*"
 
 class Psykube::CLI::Commands::Apply < Admiral::Command
@@ -33,7 +32,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   def run
     kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy, flags.explicit_copy) if flags.copy_namespace
     {% if env("EXCLUDE_DOCKER") != "true" %}
-    docker_build_and_push(actor.build_contexts) if !flags.tag && !flags.image && !actor.manifest.image && flags.push
+    docker_build_and_push(actor.all_build_contexts) if !flags.tag && !flags.image && !actor.manifest.image && flags.push
     {% end %}
     result = actor.generate
     puts "Applying Kubernetes Manifests...".colorize(:cyan)

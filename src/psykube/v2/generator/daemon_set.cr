@@ -1,5 +1,6 @@
-class Psykube::V2::Generator::DaemonSet < Generator
+class Psykube::V2::Generator::DaemonSet < ::Psykube::Generator
   include Concerns::PodHelper
+  cast_manifest Manifest::DaemonSet
 
   protected def result
     Pyrite::Api::Extensions::V1beta1::DaemonSet.new(
@@ -10,7 +11,7 @@ class Psykube::V2::Generator::DaemonSet < Generator
         update_strategy: Pyrite::Api::Extensions::V1beta1::DaemonSetUpdateStrategy.new(
           type: "RollingUpdate",
           rolling_update: Pyrite::Api::Extensions::V1beta1::RollingUpdateDaemonSet.new(
-            max_unavailable: manifest.max_unavailable
+            max_unavailable: manifest.rollout.try(&.max_unavailable)
           )
         ),
       )

@@ -1,7 +1,7 @@
 class Psykube::V1::Manifest::Ingress::Tls
-  Manifest.mapping({
-    auto:        Bool | Auto | Nil,
-    secret_name: String?,
+  Macros.mapping({
+    auto:        {type: Bool | Auto, nilable: true},
+    secret_name: {type: String, nilable: true},
   })
 end
 

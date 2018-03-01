@@ -1,6 +1,6 @@
 class Psykube::V1::Manifest::Env::KeyRef
-  Manifest.mapping({
-    name: String,
-    key:  String,
+  Macros.mapping({
+    name: {type: String},
+    key:  {type: String},
   })
 end

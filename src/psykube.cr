@@ -1,6 +1,10 @@
 require "pyrite/versions/v1.9.3"
 require "tempfile"
 require "colorize"
+require "digest"
+require "yaml"
+require "crustache"
+require "openssl"
 
 module Psykube
   {{ run "#{__DIR__}/parse_version.cr" }}

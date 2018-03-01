@@ -1,19 +1,22 @@
-require "openssl"
 require "file_utils"
-require "crustache"
+
 require "./manifest"
-require "./generator/concerns/*"
-require "./generator/*"
 
 abstract class Psykube::Generator
   class ValidationError < Exception; end
 
-  alias TemplateData = Hash(String, String)
+  alias TemplateData = StringMap
 
   include Concerns::MetadataHelper
 
+  macro cast_manifest(type)
+    def manifest
+      @manifest.as({{type}})
+    end
+  end
+
   @actor : Actor
-  getter manifest : Manifest
+  getter manifest : Manifest::Any
 
   delegate name, cluster, tag, digest, namespace, cluster_name, to: @actor
   delegate lookup_port, to: manifest
@@ -27,7 +30,7 @@ abstract class Psykube::Generator
     @actor = generator.@actor
   end
 
-  def initialize(@manifest : Manifest, @actor : Actor); end
+  def initialize(@manifest : Manifest::Any, @actor : Actor); end
 
   def to_yaml(*args, **props)
     result.to_yaml(*args, **props)

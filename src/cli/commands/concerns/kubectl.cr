@@ -1,5 +1,3 @@
-require "tempfile"
-
 module Psykube::CLI::Commands::Kubectl
   alias Flags = Hash(String, String | Bool)
 
@@ -100,7 +98,7 @@ module Psykube::CLI::Commands::Kubectl
     else
       raise "There are no running pods, try running `psykube status`"
     end
-  rescue e : V1::Generator::ValidationError
+  rescue e : Generator::ValidationError
     panic "Error: #{e.message}".colorize(:red)
   end
 

@@ -2,10 +2,10 @@ class Psykube::V1::Manifest::Ingress
   alias HostHash = Hash(String, Host)
   alias HostnameList = Array(String)
 
-  Manifest.mapping({
-    annotations: Hash(String, String) | Nil,
-    tls:         Tls | Bool | Nil,
-    host:        String?,
+  Macros.mapping({
+    annotations: {type: StringMap, nilable: true},
+    tls:         {type: Tls | Bool, nilable: true},
+    host:        {type: String, nilable: true},
     hosts:       {type: HostnameList | HostHash, nilable: true, getter: false},
   })
 
@@ -36,9 +36,6 @@ class Psykube::V1::Manifest::Ingress
                 end
     host_hash[host] = Host.new if host
     host_hash
-  end
-
-  def initialize
   end
 end
 

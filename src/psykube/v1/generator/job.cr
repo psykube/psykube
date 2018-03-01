@@ -1,5 +1,6 @@
-class Psykube::V1::Generator::Job < Generator
+class Psykube::V1::Generator::Job < ::Psykube::Generator
   include Concerns::PodHelper
+  cast_manifest Manifest
 
   protected def result
     Pyrite::Api::Batch::V1::Job.new(

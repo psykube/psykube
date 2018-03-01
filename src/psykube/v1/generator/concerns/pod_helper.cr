@@ -1,4 +1,5 @@
 module Psykube::V1::Generator::Concerns::PodHelper
+  alias ValidationError = Psykube::Generator::ValidationError
   include Psykube::Concerns::Volumes
 
   class InvalidHealthcheck < Exception; end
@@ -8,12 +9,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
     Pyrite::Api::Core::V1::PodTemplateSpec.new(
       spec: generate_pod_spec,
       metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
-        labels: {
-          "app" => name,
-        },
-        annotations: manifest.init_containers ? {
-          "pod.beta.kubernetes.io/init-containers" => manifest.init_containers.to_json,
-        } : nil
+        labels: {"app" => name},
       )
     )
   end
@@ -30,7 +26,8 @@ module Psykube::V1::Generator::Concerns::PodHelper
     Pyrite::Api::Core::V1::PodSpec.new(
       restart_policy: manifest.restart_policy,
       volumes: generate_volumes,
-      containers: [generate_container]
+      containers: [generate_container],
+      init_containers: manifest.init_containers,
     )
   end
 

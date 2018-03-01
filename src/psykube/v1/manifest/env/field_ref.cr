@@ -1,6 +1,6 @@
 class Psykube::V1::Manifest::Env::FieldRef
-  Manifest.mapping({
-    api_version: String?,
-    path:        String,
+  Macros.mapping({
+    api_version: {type: String, nilable: true},
+    path:        {type: String},
   })
 end

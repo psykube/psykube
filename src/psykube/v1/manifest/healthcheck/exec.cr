@@ -1,5 +1,5 @@
 class Psykube::V1::Manifest::Healthcheck::Exec
-  Manifest.mapping({
-    command: String | Array(String),
+  Macros.mapping({
+    command: {type: String | Array(String)},
   })
 end

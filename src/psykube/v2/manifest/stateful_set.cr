@@ -1,11 +1,10 @@
-require "yaml"
 require "../../name_cleaner"
 
-class Psykube::V2::Manifest::StatefulSet < Manifest
+class Psykube::V2::Manifest::StatefulSet < ::Psykube::V2::Manifest
   declare("StatefulSet", {
-    parallel:      Bool?,
-    ready_timeout: Int32?,
-    replicas:      Int32?,
+    parallel:      {type: Bool, nilable: true},
+    ready_timeout: {type: Int32, nilable: true},
+    replicas:      {type: Int32, nilable: true},
     rollout:       {type: Rollout, nilable: true, getter: false},
   })
 

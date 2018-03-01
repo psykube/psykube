@@ -1,10 +1,9 @@
-require "yaml"
 require "../../name_cleaner"
 
-class Psykube::V2::Manifest::DaemonSet < Manifest
+class Psykube::V2::Manifest::DaemonSet < ::Psykube::V2::Manifest
   declare("DaemonSet", {
-    ready_timeout: Int32?,
-    replicas:      Int32?,
+    ready_timeout: {type: Int32, nilable: true},
+    replicas:      {type: Int32, nilable: true},
     rollout:       {type: Rollout, nilable: true, getter: false},
   })
 

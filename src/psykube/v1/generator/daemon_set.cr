@@ -1,5 +1,6 @@
-class Psykube::V2::Generator::DaemonSet < Generator
+class Psykube::V1::Generator::DaemonSet < ::Psykube::Generator
   include Concerns::PodHelper
+  cast_manifest Manifest
 
   protected def result
     Pyrite::Api::Extensions::V1beta1::DaemonSet.new(

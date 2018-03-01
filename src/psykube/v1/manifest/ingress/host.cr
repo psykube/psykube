@@ -4,8 +4,8 @@ class Psykube::V1::Manifest::Ingress::Host
   alias PathList = Array(String)
   alias PathMap = Hash(String, Path)
 
-  Manifest.mapping({
-    tls:   Tls | Bool | Nil,
+  Macros.mapping({
+    tls:   {type: Tls | Bool, nilable: true},
     port:  {type: Int32 | String, default: "default"},
     path:  {type: String, default: "/"},
     paths: {type: PathList | PathMap, nilable: true, getter: false},

@@ -1,7 +1,7 @@
 class Psykube::V1::Manifest::Resources
-  Manifest.mapping({
-    limits:   Requirement?,
-    requests: Requirement?,
+  Macros.mapping({
+    limits:   {type: Requirement, nilable: true},
+    requests: {type: Requirement, nilable: true},
   })
 
   def self.from_flags(cpu_request : String? = nil, memory_request : String? = nil, cpu_limit : String? = nil, memory_limit : String? = nil)

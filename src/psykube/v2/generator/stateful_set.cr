@@ -1,5 +1,6 @@
-class Psykube::V1::Generator::StatefulSet < Generator
+class Psykube::V2::Generator::StatefulSet < ::Psykube::Generator
   include Concerns::PodHelper
+  cast_manifest Manifest::StatefulSet
 
   protected def result
     Pyrite::Api::Apps::V1beta1::StatefulSet.new(
@@ -13,7 +14,7 @@ class Psykube::V1::Generator::StatefulSet < Generator
         update_strategy: Pyrite::Api::Apps::V1beta1::StatefulSetUpdateStrategy.new(
           type: "RollingUpdate",
           rolling_update: Pyrite::Api::Apps::V1beta1::RollingUpdateStatefulSetStrategy.new(
-            partition: manifest.partition
+            partition: manifest.rollout.try(&.partition)
           )
         ),
       )

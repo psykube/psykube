@@ -1,6 +1,8 @@
 require "./concerns/*"
-class Psykube::V1::Generator::ReplicationController < Generator
+
+class Psykube::V1::Generator::ReplicationController < ::Psykube::Generator
   include Concerns::PodHelper
+  cast_manifest Manifest
 
   protected def result
     Pyrite::Api::Core::V1::ReplicationController.new(

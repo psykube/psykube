@@ -1,8 +1,8 @@
 class Psykube::Actor
   @digest : String?
-  @git_data : Hash(String, String)?
-  @metadata : Hash(String, String)?
-  @raw_metadata : Hash(String, String)?
+  @git_data : StringMap?
+  @metadata : StringMap?
+  @raw_metadata : StringMap?
   @raw_manifest : Manifest::Any?
   @manifest : Manifest::Any?
   @template : Crustache::Syntax::Template
@@ -38,8 +38,16 @@ class Psykube::Actor
     manifest.generate(self)
   end
 
+  def all_build_contexts
+    (build_contexts + init_build_contexts).uniq
+  end
+
   def build_contexts
-    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name, basename: basename, tag: @tag, build_context: @dir)
+    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name, basename: basename, tag: @tag, build_context: @dir).uniq
+  end
+
+  def init_build_contexts
+    @build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name, basename: basename, tag: @tag, build_context: @dir).uniq
   end
 
   def manifest
@@ -52,7 +60,7 @@ class Psykube::Actor
     NameCleaner.clean([prefix, manifest.name, suffix].compact.join)
   end
 
-  def template_result(metadata : Hash(String, String) = raw_metadata)
+  def template_result(metadata : StringMap = raw_metadata)
     Crustache.render @template, {
       "metadata" => metadata,
       "git"      => git_data,
