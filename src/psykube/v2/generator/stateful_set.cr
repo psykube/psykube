@@ -1,5 +1,3 @@
-require "./concerns/*"
-
 class Psykube::V1::Generator::StatefulSet < Generator
   include Concerns::PodHelper
 

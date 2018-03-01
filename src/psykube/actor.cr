@@ -20,8 +20,8 @@ class Psykube::Actor
     raw_yaml = String.build { |string_io| IO.copy(io, string_io) }
     @template = Crustache.parse raw_yaml
     @cluster_name = cluster_name || "default"
-    @tag = tag || get_tag
-    @basename = basename || get_basename
+    @tag = tag || digest
+    @basename = basename || [registry_host, registry_user, name].compact.join('/')
     @namespace = namespace || cluster.namespace || manifest.namespace || "default"
     @context = context || cluster.context || manifest.context
   end
@@ -39,7 +39,7 @@ class Psykube::Actor
   end
 
   def build_contexts
-    @build_contexts ||= manifest.get_build_contexts(basename: basename, tag: @tag, build_context: @dir)
+    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name, basename: basename, tag: @tag, build_context: @dir)
   end
 
   def manifest
@@ -106,22 +106,6 @@ class Psykube::Actor
 
   private def git_tag
     ci_tag || `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
-  end
-
-  private def get_tag
-    m = manifest
-    case m
-    when V1::Manifest
-      cluster.image_tag || m.image_tag
-    end || digest
-  end
-
-  private def get_basename
-    m = manifest
-    case m
-    when V1::Manifest
-      m.image
-    end || [registry_host, registry_user, name].compact.join('/')
   end
 
   private def metadata

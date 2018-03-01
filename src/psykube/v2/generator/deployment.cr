@@ -1,4 +1,4 @@
-class Psykube::V1::Generator::Deployment < Generator
+class Psykube::V2::Generator::Deployment < Generator
   include Concerns::PodHelper
 
   protected def result

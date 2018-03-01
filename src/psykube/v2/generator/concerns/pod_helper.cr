@@ -1,4 +1,4 @@
-module Psykube::V1::Generator::Concerns::PodHelper
+module Psykube::V2::Generator::Concerns::PodHelper
   include Psykube::Concerns::Volumes
 
   class InvalidHealthcheck < Exception; end

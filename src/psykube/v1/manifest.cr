@@ -1,14 +1,10 @@
 require "yaml"
 
 class Psykube::V1::Manifest
-  macro mapping(properties)
-    ::YAML.mapping({{properties}}, true)
-  end
-
   getter name : String
 
   alias VolumeMap = Hash(String, Volume | String)
-  mapping({
+  Macros.mapping({
     name:                   {type: String, getter: false},
     type:                   {type: String, default: "Deployment"},
     prefix:                 String?,
@@ -51,10 +47,6 @@ class Psykube::V1::Manifest
   })
 
   def initialize(@name : String, @type : String = "Deployment")
-  end
-
-  def generate(actor : Actor)
-    Generator::List.new(self, actor).result
   end
 
   def healthcheck
@@ -157,16 +149,22 @@ class Psykube::V1::Manifest
     end
   end
 
+  def generate(actor : Actor)
+    Generator::List.new(self, actor).result
+  end
+
   def get_cluster(name)
     clusters[name]? || Cluster.new
   end
 
-  def get_build_contexts(basename : String, tag : String, build_context : String)
+  def get_build_contexts(cluster_name : String, basename : String, tag : String, build_context : String)
+    cluster = get_cluster cluster_name
     [BuildContext.new(
-      image: basename,
-      tag: tag,
-      args: build_args,
-      context: self.build_context || build_context,
+      build: !image,
+      image: image || basename,
+      tag: cluster.image_tag || image_tag || tag,
+      args: build_args.merge(cluster.build_args),
+      context: @build_context || build_context,
       dockerfile: dockerfile
     )]
   end
