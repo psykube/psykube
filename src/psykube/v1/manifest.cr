@@ -1,46 +1,48 @@
 class Psykube::V1::Manifest
   alias VolumeMap = Hash(String, Volume | String)
-  Macros.mapping({
+  Macros.manifest(1, nil, {
     name:                   {type: String},
-    type:                   {type: String, default: "Deployment"},
-    prefix:                 {type: String, nilable: true},
-    suffix:                 {type: String, nilable: true},
-    annotations:            {type: StringMap, nilable: true},
-    labels:                 {type: StringMap, nilable: true},
-    replicas:               {type: Int32, nilable: true},
-    completions:            {type: Int32, nilable: true},
-    parallelism:            {type: Int32, nilable: true},
-    registry_host:          {type: String, nilable: true},
-    registry_user:          {type: String, nilable: true},
-    context:                {type: String, nilable: true},
-    namespace:              {type: String, nilable: true},
-    init_containers:        {type: Array(Pyrite::Api::Core::V1::Container), nilable: true},
-    image:                  {type: String, nilable: true},
-    image_tag:              {type: String, nilable: true},
-    revision_history_limit: {type: Int32, nilable: true},
-    resources:              {type: Resources, nilable: true},
-    deploy_timeout:         {type: Int32, nilable: true, getter: false},
-    restart_policy:         {type: String, nilable: true},
-    max_unavailable:        {type: Int32 | String, getter: false, default: "25%"},
-    max_surge:              {type: Int32 | String, getter: false, default: "25%"},
-    partition:              {type: Int32, nilable: true},
-    command:                {type: Array(String) | String, nilable: true},
-    args:                   {type: Array(String), nilable: true},
-    env:                    {type: Hash(String, Env | String), nilable: true, getter: false},
-    ingress:                {type: Ingress, nilable: true},
-    service:                {type: String | Service, default: "ClusterIP", nilable: true, getter: false},
-    config_map:             {type: StringMap, nilable: true, getter: false},
-    secrets:                {type: StringMap, nilable: true, getter: false},
-    ports:                  {type: Hash(String, Int32), nilable: true, getter: false},
-    clusters:               {type: Hash(String, Cluster), nilable: true, getter: false},
-    healthcheck:            {type: Bool | Healthcheck, nilable: true, default: false},
-    readycheck:             {type: Bool | Readycheck, nilable: true, default: false},
-    volumes:                {type: VolumeMap, nilable: true},
-    autoscale:              {type: Autoscale, nilable: true},
+    prefix:                 {type: String, optional: true},
+    suffix:                 {type: String, optional: true},
+    annotations:            {type: StringMap, optional: true},
+    labels:                 {type: StringMap, optional: true},
+    replicas:               {type: Int32, optional: true},
+    completions:            {type: Int32, optional: true},
+    parallelism:            {type: Int32, optional: true},
+    registry_host:          {type: String, optional: true},
+    registry_user:          {type: String, optional: true},
+    context:                {type: String, optional: true},
+    namespace:              {type: String, optional: true},
+    init_containers:        {type: Array(Pyrite::Api::Core::V1::Container), optional: true},
+    image:                  {type: String, optional: true},
+    image_tag:              {type: String, optional: true},
+    revision_history_limit: {type: Int32, optional: true},
+    resources:              {type: Resources, optional: true},
+    deploy_timeout:         {type: Int32, optional: true},
+    restart_policy:         {type: String, optional: true},
+    max_unavailable:        {type: Int32 | String, default: "25%"},
+    max_surge:              {type: Int32 | String, default: "25%"},
+    partition:              {type: Int32, optional: true},
+    command:                {type: Array(String) | String, optional: true},
+    args:                   {type: Array(String), optional: true},
+    env:                    {type: Hash(String, Env | String), optional: true},
+    ingress:                {type: Ingress, optional: true},
+    service:                {type: String | Service, default: "ClusterIP", optional: true},
+    config_map:             {type: StringMap, optional: true},
+    secrets:                {type: StringMap, optional: true},
+    ports:                  {type: Hash(String, Int32), optional: true},
+    clusters:               {type: Hash(String, Cluster), optional: true},
+    healthcheck:            {type: Bool | Healthcheck, optional: true, default: false},
+    readycheck:             {type: Bool | Readycheck, optional: true, default: false},
+    volumes:                {type: VolumeMap, optional: true},
+    autoscale:              {type: Autoscale, optional: true},
     build_args:             {type: StringMap, default: StringMap.new},
-    build_context:          {type: String, nilable: true},
-    dockerfile:             {type: String, nilable: true},
+    build_context:          {type: String, optional: true},
+    dockerfile:             {type: String, optional: true},
   })
+
+  @version = 1
+  @type = "Deployment"
 
   def initialize(@name : String, @type : String = "Deployment")
   end
@@ -52,14 +54,14 @@ class Psykube::V1::Manifest
   def service
     return unless ports?
     service = @service
-    @service = case service
-               when "true", true
-                 Service.new "ClusterIP"
-               when String
-                 Service.new service
-               when Service
-                 service
-               end
+    case service
+    when true, nil
+      Service.new "ClusterIP"
+    when String
+      Service.new service
+    when Service
+      service
+    end
   end
 
   def deploy_timeout
@@ -146,7 +148,7 @@ class Psykube::V1::Manifest
     [BuildContext.new(
       build: !image,
       image: image || basename,
-      tag: cluster.image_tag || image_tag || tag,
+      tag: cluster.image_tag || image_tag || (image ? nil : tag),
       args: build_args.merge(cluster.build_args),
       context: @build_context || build_context,
       dockerfile: dockerfile

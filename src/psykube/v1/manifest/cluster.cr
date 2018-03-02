@@ -1,19 +1,19 @@
 class Psykube::V1::Manifest::Cluster
   Macros.mapping({
-    image_tag:     {type: String, nilable: true},
-    registry_host: {type: String, nilable: true},
-    registry_user: {type: String, nilable: true},
-    labels:        {type: StringMap, nilable: true},
-    annotations:   {type: StringMap, nilable: true},
+    image_tag:     {type: String, optional: true},
+    registry_host: {type: String, optional: true},
+    registry_user: {type: String, optional: true},
+    labels:        {type: StringMap, optional: true},
+    annotations:   {type: StringMap, optional: true},
     build_args:    {type: StringMap, default: StringMap.new},
-    prefix:        {type: String, nilable: true},
-    suffix:        {type: String, nilable: true},
-    ingress:       {type: Ingress, nilable: true},
-    context:       {type: String, nilable: true},
-    namespace:     {type: String, nilable: true},
+    prefix:        {type: String, optional: true},
+    suffix:        {type: String, optional: true},
+    ingress:       {type: Ingress, optional: true},
+    context:       {type: String, optional: true},
+    namespace:     {type: String, optional: true},
     config_map:    {type: StringMap, default: {} of String => String},
     secrets:       {type: StringMap, default: {} of String => String},
-    autoscale:     {type: Autoscale, nilable: true},
+    autoscale:     {type: Autoscale, optional: true},
   })
 
   def initialize(@context : String? = nil)

@@ -3,10 +3,10 @@ class Psykube::V1::Manifest::Ingress
   alias HostnameList = Array(String)
 
   Macros.mapping({
-    annotations: {type: StringMap, nilable: true},
-    tls:         {type: Tls | Bool, nilable: true},
-    host:        {type: String, nilable: true},
-    hosts:       {type: HostnameList | HostHash, nilable: true, getter: false},
+    annotations: {type: StringMap, optional: true},
+    tls:         {type: Tls | Bool, optional: true},
+    host:        {type: String, optional: true},
+    hosts:       {type: HostnameList | HostHash, optional: true},
   })
 
   def initialize(hosts : Array(String), @tls : Bool? = nil)

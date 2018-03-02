@@ -1,5 +1,5 @@
 class Psykube::V2::Generator::Ingress < ::Psykube::Generator
-  cast_manifest Manifest::Servicable
+  cast_manifest Manifest::Serviceable
 
   protected def result
     Pyrite::Api::Extensions::V1beta1::Ingress.new(

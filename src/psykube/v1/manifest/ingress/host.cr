@@ -5,10 +5,10 @@ class Psykube::V1::Manifest::Ingress::Host
   alias PathMap = Hash(String, Path)
 
   Macros.mapping({
-    tls:   {type: Tls | Bool, nilable: true},
+    tls:   {type: Tls | Bool, optional: true},
     port:  {type: Int32 | String, default: "default"},
     path:  {type: String, default: "/"},
-    paths: {type: PathList | PathMap, nilable: true, getter: false},
+    paths: {type: PathList | PathMap, optional: true},
   })
 
   def initialize
@@ -18,18 +18,17 @@ class Psykube::V1::Manifest::Ingress::Host
 
   def paths
     paths = @paths
-    path = @path
     path_map = case paths
                when PathMap
                  paths
                when PathList
                  paths.each_with_object(PathMap.new) do |path, map|
-                   map[path] = Path.new(@port)
+                   map[path] = Path.new(port)
                  end
                else
                  PathMap.new
                end
-    path_map[@path] = Path.new(@port) if path
+    path_map[path] = Path.new(port) if path
     path_map
   end
 end

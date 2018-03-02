@@ -1,25 +1,21 @@
 module Psykube::Macros
-  # A better way to map, with defaults
+  # :nodoc:
   macro __mapping(properties)
     {% for key, value in properties %}
-      @{{key.id}} : {{value[:type]}} {{ (value[:nilable] ? "?" : "").id }}{% if value[:default] || value[:nilable] %} = {{ value[:default] || "nil".id }}{% end %}
+      @{{key.id}} : {{value[:type]}} {{ (value[:optional] || value[:default] ? "?" : "").id }}
 
-      {% if value[:setter] == nil ? true : value[:setter] %}
-        def {{key.id}}=(_{{key.id}} : {{value[:type]}} {{ (value[:nilable] ? "?" : "").id }})
-          @{{key.id}} = _{{key.id}}
-        end
-      {% end %}
+      def {{key.id}}=(_{{key.id}} : {{value[:type]}} {{ (value[:optional] ? "?" : "").id }})
+        @{{key.id}} = _{{key.id}}
+      end
 
-      {% if value[:getter] == nil ? true : value[:getter] %}
-        def {{key.id}}
-          @{{key.id}}
-        end
-      {% end %}
+      def {{key.id}}
+        @{{key.id}}{% if value[:default] %} || {{ value[:default] }}{% end %}
+      end
     {% end %}
 
     def initialize(*,
       {% for key, value in properties %}
-        @{{key.id}}{% if value[:default] || value[:nilable] %} = {{ value[:default] || "nil".id }}{% end %},
+        @{{key.id}}{% if value[:default] || value[:optional] %} = {{ value[:optional] ? "nil".id : value[:default] }}{% end %},
       {% end %}
     ) ; end
 
@@ -38,8 +34,8 @@ module Psykube::Macros
 
     def initialize(ctx : YAML::ParseContext, node : ::YAML::Nodes::Node, _dummy : Nil)
       {% for key, value in properties %}
-        %var{key.id} = nil
-        %found{key.id} = false
+        __{{key.id}}__value = nil
+        __{{key.id}}__found = false
       {% end %}
 
       case node
@@ -56,57 +52,79 @@ module Psykube::Macros
       end
 
       {% for key, value in properties %}
-        {% unless value[:nilable] || value[:default] != nil %}
-          if %var{key.id}.nil? && !%found{key.id} && !::Union({{value[:type]}}).nilable?
+        {% unless value[:optional] || value[:default] != nil %}
+          if __{{key.id}}__value.nil? && !__{{key.id}}__found && !::Union({{value[:type]}}).nilable?
             node.raise "Missing yaml attribute: {{(value[:key] || key).id}}"
           end
         {% end %}
       {% end %}
 
       {% for key, value in properties %}
-        {% if value[:nilable] %}
-          {% if value[:default] != nil %}
-            @{{key.id}} = %found{key.id} ? %var{key.id} : {{value[:default]}}
-          {% else %}
-            @{{key.id}} = %var{key.id}
-          {% end %}
+        {% if value[:optional] %}
+          @{{key.id}} = __{{key.id}}__value
         {% elsif value[:default] != nil %}
-          @{{key.id}} = %var{key.id}.nil? ? {{value[:default]}} : %var{key.id}
+          @{{key.id}} = __{{key.id}}__value.nil? ? {{value[:default]}} : __{{key.id}}__value
         {% else %}
-          @{{key.id}} = %var{key.id}.as({{value[:type]}})
+          @{{key.id}} = __{{key.id}}__value.as({{value[:type]}})
         {% end %}
       {% end %}
     end
+
+    def to_yaml(yaml : ::YAML::Nodes::Builder)
+      yaml.mapping(reference: self) do
+        {% for key, value in properties %}
+          _{{key.id}} = @{{key.id}}
+
+          unless _{{key.id}}.nil? || (_{{key.id}}.is_a?(Enumerable) && _{{key.id}}.empty?)
+            # Key
+            {{value[:key] || key.id.stringify}}.to_yaml(yaml)
+
+            # Value
+            _{{key.id}}.to_yaml(yaml)
+          end
+        {% end %}
+      end
+    end
   end
 
+  # :nodoc:
+  macro __check_scalar(key_node)
+    unless {{key_node}}.is_a?(YAML::Nodes::Scalar)
+      {{key_node}}.raise "Expected scalar as key for mapping"
+    end
+  end
+
+  # :nodoc:
+  macro __case_keys(key_node, value_node, properties)
+    key = {{key_node}}.value
+
+    case key
+    {% for key, value in properties %}
+      when {{value[:key] || key.id.stringify}}
+        __{{key.id}}__found = true
+
+        __{{key.id}}__value =
+          {% if value[:optional] || value[:default] != nil %} YAML::Schema::Core.parse_null_or({{value_node}}) { {% end %}
+
+          {% if value[:type].is_a?(Path) || value[:type].is_a?(Generic) %}
+            {{value[:type]}}.new(ctx, {{value_node}})
+          {% else %}
+            ::Union({{value[:type]}}).new(ctx, {{value_node}})
+          {% end %}
+
+          {% if value[:optional] || value[:default] != nil %} } {% end %}
+    {% end %}
+    else
+      key_node.raise "Unknown yaml attribute: #{key}"
+    end
+  end
+
+  # A mapping for a sub manifest
   macro mapping(properties)
     ::Psykube::Macros.__mapping({{properties}}) do
       YAML::Schema::Core.each(node) do |key_node, value_node|
-        unless key_node.is_a?(YAML::Nodes::Scalar)
-          key_node.raise "Expected scalar as key for mapping"
-        end
-
-        key = key_node.value
-
-        case key
-        {% for key, value in properties %}
-          when {{value[:key] || key.id.stringify}}
-            %found{key.id} = true
-
-            %var{key.id} =
-              {% if value[:nilable] || value[:default] != nil %} YAML::Schema::Core.parse_null_or(value_node) { {% end %}
-
-              {% if value[:type].is_a?(Path) || value[:type].is_a?(Generic) %}
-                {{value[:type]}}.new(ctx, value_node)
-              {% else %}
-                ::Union({{value[:type]}}).new(ctx, value_node)
-              {% end %}
-
-              {% if value[:nilable] || value[:default] != nil %} } {% end %}
-        {% end %}
-        else
-          key_node.raise "Unknown yaml attribute: #{key}"
-        end
+        ::Psykube::Macros.__check_scalar(key_node)
+        ::Psykube::Macros.__case_keys(key_node, value_node, {{properties}})
       end
     end
   end
@@ -125,46 +143,77 @@ module Psykube::Macros
     getter version : Int32? = nil
     getter type : String? = nil
 
+    {% raise "version key not allowed" if properties[:version] %}
+    {% raise "type key not allowed" if properties[:type] %}
+
     ::Psykube::Macros.__mapping({{properties}}) do
+      version_location = {0,0}
+      type_location = {0,0}
+
       YAML::Schema::Core.each(node) do |key_node, value_node|
-        unless key_node.is_a?(YAML::Nodes::Scalar)
-          key_node.raise "Expected scalar as key for mapping"
-        end
+        ::Psykube::Macros.__check_scalar(key_node)
 
-        key = key_node.value
-
-        case key
+        case key_node.value
         when "version"
+          version_location = key_node.location
           @version = Int32.new(ctx, value_node)
+          next
         when "type"
+          type_location = key_node.location
           @type = String.new(ctx, value_node)
-        {% for key, value in properties %}
-          when {{value[:key] || key.id.stringify}}
-            %found{key.id} = true
-
-            %var{key.id} =
-              {% if value[:nilable] || value[:default] != nil %} YAML::Schema::Core.parse_null_or(value_node) { {% end %}
-
-              {% if value[:type].is_a?(Path) || value[:type].is_a?(Generic) %}
-                {{value[:type]}}.new(ctx, value_node)
-              {% else %}
-                ::Union({{value[:type]}}).new(ctx, value_node)
-              {% end %}
-
-              {% if value[:nilable] || value[:default] != nil %} } {% end %}
-        {% end %}
-        else
-          key_node.raise "Unknown yaml attribute: #{key}"
+          next
         end
+
+        ::Psykube::Macros.__case_keys(key_node, value_node, {{properties}})
       end
 
-      {% if type %}
-        key_node.raise "invalid type: #{@type.inspect}" unless @type == {{type}}
+      {% if version %}
+        {% if version %}raise YAML::ParseException.new("invalid version: #{@version.inspect}", *version_location) unless @version == {{version}}{% end %}
       {% end %}
 
-      {% if version %}
-        key_node.raise "invalid version: #{@version.inspect}" unless @version == {{version}}
+      {% if type %}
+        {% if type %}raise YAML::ParseException.new("invalid type: #{@type.inspect}", *type_location) unless @type == {{type}}{% end %}
       {% end %}
+    end
+
+    def initialize(*,
+      {% for key, value in properties %}
+        @{{key.id}}{% if value[:default] || value[:optional] %} = {{ value[:optional] ? "nil".id : value[:default] }}{% end %},
+      {% end %}
+    )
+      @version = {{version}}
+      @type = {{type}}
+    end
+
+    def to_yaml(yaml : ::YAML::Nodes::Builder)
+      yaml.mapping(reference: self) do
+        version = @version
+        type = @type
+
+        # Set version
+        unless version.nil?
+          "version".to_yaml(yaml)
+          version.to_yaml(yaml)
+        end
+
+        # Set type
+        unless type.nil?
+          "type".to_yaml(yaml)
+          type.to_yaml(yaml)
+        end
+
+        {% for key, value in properties %}
+          _{{key.id}} = @{{key.id}}
+
+          unless _{{key.id}}.nil? || (_{{key.id}}.is_a?(Enumerable) && _{{key.id}}.empty?)
+            # Key
+            {{value[:key] || key.id.stringify}}.to_yaml(yaml)
+
+            # Value
+            _{{key.id}}.to_yaml(yaml)
+          end
+        {% end %}
+      end
     end
   end
 end

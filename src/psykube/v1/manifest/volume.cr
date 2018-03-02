@@ -1,9 +1,9 @@
 class Psykube::V1::Manifest::Volume
   Macros.mapping({
-    claim:      {type: Claim, nilable: true},
-    spec:       {type: Spec, nilable: true},
-    secret:     {type: Array(String) | String | Array(Pyrite::Api::Core::V1::KeyToPath) | Pyrite::Api::Core::V1::SecretVolumeSource, nilable: true},
-    config_map: {type: Array(String) | String | Array(Pyrite::Api::Core::V1::KeyToPath) | Pyrite::Api::Core::V1::ConfigMapVolumeSource, nilable: true},
+    claim:      {type: Claim, optional: true},
+    spec:       {type: Spec, optional: true},
+    secret:     {type: Array(String) | String | Array(Pyrite::Api::Core::V1::KeyToPath) | Pyrite::Api::Core::V1::SecretVolumeSource, optional: true},
+    config_map: {type: Array(String) | String | Array(Pyrite::Api::Core::V1::KeyToPath) | Pyrite::Api::Core::V1::ConfigMapVolumeSource, optional: true},
   })
 
   def to_deployment_volume(name : String, volume_name : String)

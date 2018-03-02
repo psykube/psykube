@@ -1,9 +1,9 @@
 class Psykube::V1::Manifest::Env
   Macros.mapping({
-    config_map:     {type: String | KeyRef, nilable: true},
-    secret:         {type: String | KeyRef, nilable: true},
-    field:          {type: FieldRef | String, nilable: true},
-    resource_field: {type: ResourceFieldRef | String, nilable: true},
+    config_map:     {type: String | KeyRef, optional: true},
+    secret:         {type: String | KeyRef, optional: true},
+    field:          {type: FieldRef | String, optional: true},
+    resource_field: {type: ResourceFieldRef | String, optional: true},
   })
 end
 

@@ -1,17 +1,17 @@
 class Psykube::V2::Manifest::Shared::Container
   Macros.mapping({
-    image:         {type: String, nilable: true},
-    tag:           {type: String, nilable: true},
+    image:         {type: String, optional: true},
+    tag:           {type: String, optional: true},
     build_context: {type: String, default: "."},
     build_args:    {type: StringMap, default: StringMap.new},
-    healthcheck:   {type: Bool | V1::Manifest::Healthcheck, nilable: true, default: false},
-    readycheck:    {type: Bool | V1::Manifest::Readycheck, nilable: true, default: false},
+    healthcheck:   {type: Bool | V1::Manifest::Healthcheck, optional: true, default: false},
+    readycheck:    {type: Bool | V1::Manifest::Readycheck, optional: true, default: false},
     ports:         {type: PortMap, default: PortMap.new},
     volumes:       {type: VolumeMap, default: VolumeMap.new},
-    resources:     {type: V1::Manifest::Resources, nilable: true},
-    env:           {type: Hash(String, V1::Manifest::Env | String), nilable: true, getter: false},
-    command:       {type: Array(String) | String, nilable: true},
-    args:          {type: Array(String), nilable: true},
+    resources:     {type: V1::Manifest::Resources, optional: true},
+    env:           {type: Hash(String, V1::Manifest::Env | String), optional: true},
+    command:       {type: Array(String) | String, optional: true},
+    args:          {type: Array(String), optional: true},
   })
 
   def env

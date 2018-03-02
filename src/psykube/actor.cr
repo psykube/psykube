@@ -62,9 +62,9 @@ class Psykube::Actor
 
   def template_result(metadata : StringMap = raw_metadata)
     Crustache.render @template, {
-      "metadata" => metadata,
-      "git"      => git_data,
-      "env"      => env_hash,
+      "metadata" => escaped(metadata),
+      "git"      => escaped(git_data),
+      "env"      => escaped(env_hash),
     }
   end
 
@@ -81,16 +81,18 @@ class Psykube::Actor
   end
 
   private def env_hash
-    ENV.keys.each_with_object({} of String => String) { |k, h| h[k] = ENV[k] }.reject { |k, v| v.empty? }
+    ENV.keys.each_with_object(StringMap.new) { |k, h| h[k] = ENV[k] }
+  end
+
+  private def escaped(hash : StringMap)
+    hash.each_with_object(StringMap.new) do |(k, v), h|
+      h[k] = v.nil? || v.empty? ? "nil" : [v].to_yaml.lines[1].lchop("-").strip
+    end
   end
 
   private def git_data
     @git_data ||= Dir.cd(dir) do
-      {"sha" => git_sha, "branch" => git_branch}.tap do |data|
-        unless (tag = git_tag).to_s.empty?
-          data["tag"] = tag unless tag.empty?
-        end
-      end
+      {"sha" => git_sha, "branch" => git_branch, "tag": git_tag}
     end
   end
 

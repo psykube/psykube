@@ -9,7 +9,7 @@ class Psykube::V1::Manifest
       @image = flags.image
     else
       @registry_host = flags.registry_host
-      @registry_user = flags.registry_user || Psykube.current_docker_user
+      @registry_user = flags.registry_user || (user = Psykube.current_docker_user).empty? ? "{dockerhub username}" : user
     end
 
     # Set Resources
@@ -37,11 +37,6 @@ class Psykube::V1::Manifest
     @env = flags.env.map(&.split('=')).each_with_object(Hash(String, Manifest::Env | String).new) do |(k, v), memo|
       memo[k] = v
     end unless flags.env.empty?
-
-    # Set Cluster
-    @clusters = {
-      "default" => Cluster.new(context: Psykube.current_kubectl_context),
-    }
 
     # Set Ingress
     @ingress = Ingress.new(hosts: flags.hosts, tls: flags.tls) unless flags.hosts.empty?

@@ -66,6 +66,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_init_containers
+    return if manifest.init_containers.empty?
     manifest.init_containers.map_with_index do |(container_name, container), index|
       Pyrite::Api::Core::V1::Container.new(
         name: container_name,
@@ -118,10 +119,8 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   # Ports
-  private def generate_container_ports(ports : Nil)
-  end
-
   private def generate_container_ports(ports : PortMap)
+    return if ports.empty?
     ports.map do |name, port|
       Pyrite::Api::Core::V1::ContainerPort.new(
         name: name,
@@ -244,6 +243,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_container_volume_mounts(volumes : VolumeMap)
+    return if volumes.empty?
     volumes.map do |mount_path, volume|
       volume_name = name_from_mount_path(mount_path)
       Pyrite::Api::Core::V1::VolumeMount.new(
@@ -255,6 +255,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
 
   # Environment
   private def generate_container_env(container)
+    return if container.env.empty?
     container.env.map do |key, value|
       expand_env(key, value)
     end

@@ -2,10 +2,10 @@ require "../../name_cleaner"
 
 class Psykube::V2::Manifest::StatefulSet < ::Psykube::V2::Manifest
   declare("StatefulSet", {
-    parallel:      {type: Bool, nilable: true},
-    ready_timeout: {type: Int32, nilable: true},
-    replicas:      {type: Int32, nilable: true},
-    rollout:       {type: Rollout, nilable: true, getter: false},
+    parallel:      {type: Bool, optional: true},
+    ready_timeout: {type: Int32, optional: true},
+    replicas:      {type: Int32, optional: true},
+    rollout:       {type: Rollout, optional: true},
   })
 
   def rollout

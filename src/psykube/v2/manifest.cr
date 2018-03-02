@@ -1,59 +1,33 @@
 abstract class Psykube::V2::Manifest
-  module Servicable
-    def ports?
-      !ports.empty?
-    end
+  module Serviceable; end
 
-    def service
-      return unless ports?
-      service = @service
-      @service = case service
-                 when "true", true
-                   V1::Manifest::Service.new "ClusterIP"
-                 when String
-                   V1::Manifest::Service.new service
-                 when V1::Manifest::Service
-                   service
-                 end
-    end
+  DECLARED = [] of Manifest.class
 
-    def service?
-      !!service
-    end
-
-    def lookup_port(port : Int32)
-      port
-    end
-
-    def ports
-      containers.each_with_object(PortMap.new) do |(container_name, container), port_map|
-        container.ports.each do |port_name, port|
-          port_map[port_name] ||= port
-          port_map["#{container_name}.#{port_name}"] = port
+  def Psykube::V2::Manifest.new(ctx : YAML::ParseContext, node : YAML::Nodes::Node)
+    if node.is_a?(YAML::Nodes::Alias)
+      DECLARED.each do |type|
+        ctx.read_alias?(node, type) do |obj|
+          return obj
         end
       end
+
+      node.raise("Error deserailizing alias")
     end
 
-    def lookup_port(port_name : String)
-      if port_name.to_i?
-        port_name.to_i
-      elsif port_name == "default" && !ports.key?("default")
-        ports.values.first
-      else
-        ports[port_name]? || raise "Invalid port #{port_name}"
+    DECLARED.each do |type|
+      begin
+        return type.new(ctx, node)
+      rescue YAML::ParseException
+        # Ignore
       end
     end
-  end
 
-  def self.new(ctx : YAML::ParseContext, node : YAML::Nodes::Node)
-    Any.new(ctx, node)
-  end
-
-  private macro finished
-    alias Any = {{ @type.all_subclasses.join(" | ").id }}
+    node.raise "Couldn't parse #{self}"
   end
 
   macro declare(type, properties = nil, *, service = true, default = false)
+    DECLARED << self
+
     def generate(actor : Actor)
       Generator::List.new(self, actor).result
     end
@@ -64,7 +38,7 @@ abstract class Psykube::V2::Manifest
         BuildContext.new(
           build: !container.image,
           image: container.image || [basename, container_name].join('.'),
-          tag: container.tag || tag,
+          tag: container.image ? nil : (container.tag || tag),
           args: container.build_args.merge(cluster.container_overrides.build_args),
           context: container.build_context || build_context,
           dockerfile: cluster.container_overrides.dockerfile
@@ -78,7 +52,7 @@ abstract class Psykube::V2::Manifest
         BuildContext.new(
           build: !container.image,
           image: container.image || [basename, container_name].join('.'),
-          tag: container.tag || tag,
+          tag: container.image ? nil : (container.tag || tag),
           args: container.build_args.merge(cluster.container_overrides.build_args),
           context: container.build_context || build_context,
           dockerfile: cluster.container_overrides.dockerfile
@@ -98,35 +72,79 @@ abstract class Psykube::V2::Manifest
       end
     end
 
-    {% if service %}
-      include Servicable
-    {% end %}
-
     Macros.manifest(2, {{type}}, {{properties}}, {
       name:                            {type: String},
-      automount_service_account_token: {type: Bool, nilable: true},
-      prefix:                          {type: String, nilable: true},
-      suffix:                          {type: String, nilable: true},
-      registry_host:                   {type: String, nilable: true},
-      registry_user:                   {type: String, nilable: true},
-      context:                         {type: String, nilable: true},
-      namespace:                       {type: String, nilable: true},
-      restart_policy:                  {type: String, nilable: true},
+      automount_service_account_token: {type: Bool, optional: true},
+      prefix:                          {type: String, optional: true},
+      suffix:                          {type: String, optional: true},
+      registry_host:                   {type: String, optional: true},
+      registry_user:                   {type: String, optional: true},
+      context:                         {type: String, optional: true},
+      namespace:                       {type: String, optional: true},
+      restart_policy:                  {type: String, optional: true},
       annotations:                     {type: StringMap, default: StringMap.new},
       labels:                          {type: StringMap, default: StringMap.new},
       config_map:                      {type: StringMap, default: StringMap.new},
       secrets:                         {type: StringMap, default: StringMap.new},
-      affinity:                        {type: Pyrite::Api::Core::V1::Affinity, nilable: true},
+      affinity:                        {type: Pyrite::Api::Core::V1::Affinity, optional: true},
       init_containers:                 {type: ContainerMap, default: ContainerMap.new},
       containers:                      {type: ContainerMap},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
       {% if service %}
-        ingress: {type: V1::Manifest::Ingress, nilable: true},
-        service: {type: String | V1::Manifest::Service, default: "ClusterIP", nilable: true, getter: false}
+        ingress: {type: V1::Manifest::Ingress, optional: true},
+        service: {type: String | V1::Manifest::Service, default: "ClusterIP", optional: true }
       {% end %}
     })
+
+    {% if service %}
+      include Serviceable
+
+      def ports?
+        !ports.empty?
+      end
+
+      def service
+        return unless ports?
+        service = @service
+        case service
+        when true, nil
+          V1::Manifest::Service.new "ClusterIP"
+        when String
+          V1::Manifest::Service.new service
+        when V1::Manifest::Service
+          service
+        end
+      end
+
+      def service?
+        !!service
+      end
+
+      def lookup_port(port : Int32)
+        port
+      end
+
+      def ports
+        containers.each_with_object(PortMap.new) do |(container_name, container), port_map|
+          container.ports.each do |port_name, port|
+            port_map[port_name] ||= port
+            port_map["#{container_name}.#{port_name}"] = port
+          end
+        end
+      end
+
+      def lookup_port(port_name : String)
+        if port_name.to_i?
+          port_name.to_i
+        elsif port_name == "default" && !ports.key?("default")
+          ports.values.first
+        else
+          ports[port_name]? || raise "Invalid port #{port_name}"
+        end
+      end
+    {% end %}
   end
 end
 
-require "./manifest/*"
 require "./manifest/shared/*"
+require "./manifest/*"

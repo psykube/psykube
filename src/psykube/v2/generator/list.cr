@@ -7,8 +7,8 @@ class Psykube::V2::Generator::List < ::Psykube::Generator
         list << podable
 
         case manifest.type
-        when "Deployment", "Pod", "DaemonSet", "StatefulSet",
-             list << Service.result(self)
+        when "Deployment", "Pod", "DaemonSet", "StatefulSet"
+          list << Service.result(self)
           list << Ingress.result(self)
         end
 

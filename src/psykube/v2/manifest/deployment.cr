@@ -2,10 +2,10 @@ require "../../name_cleaner"
 
 class Psykube::V2::Manifest::Deployment < ::Psykube::V2::Manifest
   declare("Deployment", {
-    min_ready_seconds: {type: Int32, nilable: true},
-    replicas:          {type: Int32, nilable: true},
-    rollout:           {type: Rollout, nilable: true, getter: false},
-    autoscale:         {type: V1::Manifest::Autoscale, nilable: true},
+    min_ready_seconds: {type: Int32, optional: true},
+    replicas:          {type: Int32, optional: true},
+    rollout:           {type: Rollout, optional: true},
+    autoscale:         {type: V1::Manifest::Autoscale, optional: true},
   })
 
   # Set as its our default

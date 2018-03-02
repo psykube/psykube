@@ -25,9 +25,9 @@ module Psykube
 
   def self.current_docker_user
     {% if env("EXCLUDE_DOCKER") != "true" %}
-    `#{Psykube::CLI::Commands::Docker.bin} info`.lines.find(&.=~ /^Username/).try(&.split(":")[1]?).to_s.strip
+      `#{Psykube::CLI::Commands::Docker.bin} info`.lines.find(&.=~ /^Username/).try(&.split(":")[1]?).to_s.strip
     {% else %}
-    ""
+      nil
     {% end %}
   end
 

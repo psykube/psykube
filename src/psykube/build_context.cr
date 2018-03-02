@@ -6,7 +6,12 @@ struct Psykube::BuildContext
   getter dockerfile : String?
   getter args : Array(String)
 
-  def initialize(*, @image, @tag, @context, @dockerfile, @build, args)
+  def initialize(*, image : String, tag : String?, @context, @dockerfile, @build, args)
+    parts = image.split(':')
+    image = parts[0]
+    tag = parts[1]? || tag || "latest"
+    @image = image
+    @tag = tag
     @args = args.map &.join('=')
   end
 

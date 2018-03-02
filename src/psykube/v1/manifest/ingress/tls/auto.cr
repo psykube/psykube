@@ -1,6 +1,6 @@
 class Psykube::V1::Manifest::Ingress::Tls::Auto
   Macros.mapping({
-    prefix: {type: String, nilable: true},
-    suffix: {type: String, nilable: true},
+    prefix: {type: String, optional: true},
+    suffix: {type: String, optional: true},
   })
 end

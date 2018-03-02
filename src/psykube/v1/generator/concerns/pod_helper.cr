@@ -82,11 +82,9 @@ module Psykube::V1::Generator::Concerns::PodHelper
     end
   end
 
-  # Ports
-  private def generate_container_ports(ports : Nil)
-  end
-
+  # Ports\
   private def generate_container_ports(ports : Hash(String, Int32))
+    return if ports.empty?
     ports.map do |name, port|
       Pyrite::Api::Core::V1::ContainerPort.new(
         name: name,
@@ -245,6 +243,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
 
   # Environment
   private def generate_container_env
+    return if manifest.env.empty?
     manifest.env.map do |key, value|
       expand_env(key, value)
     end

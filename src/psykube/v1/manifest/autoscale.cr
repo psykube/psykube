@@ -1,8 +1,8 @@
 class Psykube::V1::Manifest::Autoscale
   Macros.mapping({
-    min:                   {type: Int32, nilable: true},
+    min:                   {type: Int32, optional: true},
     max:                   {type: Int32, default: 1},
-    target_cpu_percentage: {type: Int32, nilable: true},
+    target_cpu_percentage: {type: Int32, optional: true},
   })
 
   def merge(other : Psykube::V1::Manifest::Autoscale)
