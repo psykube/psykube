@@ -9,7 +9,7 @@ class Psykube::V1::Manifest
       @image = flags.image
     else
       @registry_host = flags.registry_host
-      @registry_user = flags.registry_user || (user = Psykube.current_docker_user).empty? ? "{dockerhub username}" : user
+      @registry_user = flags.registry_user || "[dockerhub username]"
     end
 
     # Set Resources

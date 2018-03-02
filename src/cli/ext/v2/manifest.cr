@@ -50,7 +50,7 @@ def Psykube::V2::Manifest.new(command : Psykube::CLI::Commands::Init)
   # Set Docker Info
   if !flags.image
     manifest.registry_host = flags.registry_host
-    manifest.registry_user = flags.registry_user || (user = Psykube.current_docker_user).empty? ? "{dockerhub username}" : user
+    manifest.registry_user = flags.registry_user || "[dockerhub username]"
   end
 
   # Set Namespace

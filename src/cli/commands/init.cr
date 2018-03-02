@@ -21,6 +21,7 @@ class Psykube::CLI::Commands::Init < Admiral::Command
   define_flag memory_request, "Set the requested memory resources."
   define_flag cpu_limit, "Set the cpu limit."
   define_flag memory_limit, "Set the memory limit."
+  define_flag preview : Bool, "Don't write the file, just preview it"
 
   def overwrite?
     return true if flags.overwrite
@@ -29,12 +30,16 @@ class Psykube::CLI::Commands::Init < Admiral::Command
   end
 
   def run
-    if !File.exists?(flags.file) || overwrite?
+    manifest = flags.v1 ? Psykube::V1::Manifest.new(self) : Psykube::V2::Manifest.new(self)
+    string = manifest.to_yaml
+    if flags.preview
+      STDOUT.write string.lines[1..-1].join("\n").to_slice
+      STDOUT.puts ""
+    elsif !File.exists?(flags.file) || overwrite?
       puts "Writing #{flags.file}...".colorize(:cyan)
-      File.open(flags.file, "w+") do |file|
-        manifest = flags.v1 ? Psykube::V1::Manifest.new(self) : Psykube::V2::Manifest.new(self)
-        string = manifest.to_yaml
-        file.write string.lines[1..-1].join("\n").to_slice
+      File.open(flags.file, "w+") do |io|
+        io.write string.lines[1..-1].join("\n").to_slice
+        io.puts ""
       end
     end
   end
