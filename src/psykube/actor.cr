@@ -7,7 +7,7 @@ class Psykube::Actor
   @manifest : Manifest::Any?
   @template : Crustache::Syntax::Template
   @build_contexts : Array(BuildContext)?
-  getter cluster_name : String
+  getter cluster_name : String?
   getter basename : String
   getter tag : String
   getter context : String? = nil
@@ -19,7 +19,7 @@ class Psykube::Actor
   def initialize(io, cluster_name = nil, context = nil, namespace = nil, basename = nil, tag = nil)
     raw_yaml = String.build { |string_io| IO.copy(io, string_io) }
     @template = Crustache.parse raw_yaml
-    @cluster_name = cluster_name || "default"
+    @cluster_name = cluster_name
     @tag = tag || digest
     @basename = basename || [registry_host, registry_user, name].compact.join('/')
     @namespace = namespace || cluster.namespace || manifest.namespace || "default"
@@ -27,7 +27,8 @@ class Psykube::Actor
   end
 
   def cluster
-    manifest.get_cluster(cluster_name)
+    raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !manifest.clusters.empty?
+    manifest.get_cluster(cluster_name || "")
   end
 
   def digest
@@ -43,11 +44,11 @@ class Psykube::Actor
   end
 
   def build_contexts
-    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name, basename: basename, tag: @tag, build_context: @dir).uniq
+    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, build_context: @dir).uniq
   end
 
   def init_build_contexts
-    @build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name, basename: basename, tag: @tag, build_context: @dir).uniq
+    @build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, build_context: @dir).uniq
   end
 
   def manifest
@@ -135,7 +136,7 @@ class Psykube::Actor
 
   private def raw_metadata
     @raw_metadata ||= {
-      "cluster_name" => @cluster_name,
+      "cluster_name" => @cluster_name || "",
       "digest"       => digest,
     }
   end

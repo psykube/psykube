@@ -38,9 +38,9 @@ Dir.cd("spec") do
       end
 
       psykube_it "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80 #{v}"
-      psykube_it "generate default"
-      psykube_it "apply default"
-      psykube_it "status default"
+      psykube_it "generate"
+      psykube_it "apply"
+      psykube_it "status"
       psykube_it "push"
 
       it "should run exec" do

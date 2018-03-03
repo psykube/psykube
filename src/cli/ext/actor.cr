@@ -1,7 +1,6 @@
 class Psykube::Actor
   def initialize(command : Admiral::Command)
     flags = command.flags
-    arguments = command.arguments
     filename = flags.file
     if File.directory? File.expand_path filename
       @dir = filename
@@ -12,11 +11,11 @@ class Psykube::Actor
     File.open(filename) do |io|
       initialize(
         io: io,
-        cluster_name: arguments.responds_to?(:cluster) ? arguments.cluster : nil,
-        context: arguments.responds_to?(:context) ? arguments.context : nil,
-        namespace: arguments.responds_to?(:namespace) ? arguments.namespace : nil,
-        basename: arguments.responds_to?(:image) ? arguments.image : nil,
-        tag: arguments.responds_to?(:tag) ? arguments.tag : nil,
+        cluster_name: flags.responds_to?(:cluster) ? flags.cluster : nil,
+        context: flags.responds_to?(:context) ? flags.context : nil,
+        namespace: flags.responds_to?(:namespace) ? flags.namespace : nil,
+        basename: flags.responds_to?(:image) ? flags.image : nil,
+        tag: flags.responds_to?(:tag) ? flags.tag : nil,
       )
     end
   end
