@@ -128,7 +128,6 @@ abstract class Psykube::V2::Manifest
         containers.each_with_object(PortMap.new) do |(container_name, container), port_map|
           container.ports.each do |port_name, port|
             port_map[port_name] ||= port
-            port_map["#{container_name}.#{port_name}"] = port
           end
         end
       end

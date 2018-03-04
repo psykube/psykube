@@ -4,8 +4,6 @@ require "uuid"
 require "../src/psykube"
 require "../src/cli/main"
 
-NAMESPACE = "psykube-test-#{UUID.random}"
-
 class Exited < Exception; end
 
 class Admiral::Command
@@ -30,25 +28,27 @@ end
 
 Dir.cd("spec") do
   ["", " --v1"].each do |v|
+    namespace = "psykube-test-#{UUID.random}"
+
     describe Psykube::CLI do
       it "should set up the environment" do
-        kubectl "delete namespace #{NAMESPACE}"
-        kubectl "create namespace #{NAMESPACE}"
-        kubectl "--namespace=#{NAMESPACE} run hello-world --image=hello-world --port=80 --expose"
+        kubectl "delete namespace #{namespace}"
+        kubectl "create namespace #{namespace}"
+        kubectl "--namespace=#{namespace} run hello-world --image=hello-world --port=80 --expose"
       end
 
-      psykube_it "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80 #{v}"
+      psykube_it "init --overwrite --namespace=#{namespace} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80 #{v}"
       psykube_it "generate"
       psykube_it "apply"
       psykube_it "status"
       psykube_it "push"
 
       it "should run exec" do
-        Process.fork { Psykube::CLI.run "exec default -- echo 'hello world'" }.wait
+        Process.fork { Psykube::CLI.run "exec -- echo 'hello world'" }.wait
       end
 
       it "should port forward" do
-        process = Process.fork { Psykube::CLI.run "port-forward default 9292:80" }
+        process = Process.fork { Psykube::CLI.run "port-forward 9292:80" }
         sleep 5
         HTTP::Client.get("http://localhost:9292").body.lines.first.strip.should eq "hello psykube"
         process.kill
@@ -56,20 +56,20 @@ Dir.cd("spec") do
       end
 
       it "should show logs" do
-        process = Process.fork { Psykube::CLI.run "logs default" }
+        process = Process.fork { Psykube::CLI.run "logs" }
         sleep 5
         process.kill
         process.wait
       end
 
-      psykube_it "copy-namespace #{NAMESPACE} #{NAMESPACE}-copy --force"
+      psykube_it "copy-namespace #{namespace} #{namespace}-copy --force"
 
       # Cleanup
-      psykube_it "delete default -y"
+      psykube_it "delete -y"
 
       it "deletes the namespace" do
-        kubectl "delete namespace #{NAMESPACE}-copy"
-        kubectl "delete namespace #{NAMESPACE}"
+        kubectl "delete namespace #{namespace}-copy"
+        kubectl "delete namespace #{namespace}"
       end
     end
   end
