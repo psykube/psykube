@@ -1,5 +1,6 @@
 module Psykube::Concerns::MetadataHelper
-  private def generate_metadata(*, name : String = self.name, labels = [] of StringMap?, annotations = [] of StringMap?, **metadata)
+  private def generate_metadata(*, name : String = self.name, name_prefix : String? = nil, name_suffix : String? = nil, labels = [] of StringMap?, annotations = [] of StringMap?, **metadata)
+    name = [name_prefix, name, name_suffix].compact.join('-')
     annotations << combined_annotations
     annotations << ANNOTATIONS
     labels << combined_labels

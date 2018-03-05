@@ -1,9 +1,7 @@
 module Psykube::Concerns::Volumes
-  private def name_from_mount_path(mount_path : String)
-    [name, mount_path.gsub(/\//, "-")].join('-').downcase
-  end
+  extend self
 
-  private def manifest_volumes
-    manifest.volumes || VolumeMap.new
+  def name_from_mount_path(mount_path : String)
+    [name, mount_path.gsub(/\//, "-")].join('-').downcase
   end
 end

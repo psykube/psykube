@@ -52,7 +52,7 @@ class Psykube::Actor
   end
 
   def manifest
-    @manifest ||= Manifest::Any.from_yaml(template_result metadata)
+    @manifest ||= Manifest.from_yaml(template_result metadata)
   rescue e : YAML::ParseException
     raise ParseException.new(template_result, e)
   end
@@ -129,7 +129,7 @@ class Psykube::Actor
   end
 
   private def raw_manifest
-    @raw_manifest ||= Manifest::Any.from_yaml(template_result)
+    @raw_manifest ||= Manifest.from_yaml(template_result)
   rescue e : YAML::ParseException
     raise ParseException.new(template_result, e)
   end

@@ -2,7 +2,7 @@ class Psykube::V2::Generator::StatefulSet < ::Psykube::Generator
   include Concerns::PodHelper
   cast_manifest Manifest::StatefulSet
 
-  protected def result
+  def result
     Pyrite::Api::Apps::V1beta1::StatefulSet.new(
       metadata: generate_metadata,
       spec: Pyrite::Api::Apps::V1beta1::StatefulSetSpec.new(

@@ -1,6 +1,5 @@
 module Psykube::V1::Generator::Concerns::PodHelper
   alias ValidationError = Psykube::Generator::ValidationError
-  include Psykube::Concerns::Volumes
 
   class InvalidHealthcheck < Exception; end
 
@@ -11,14 +10,6 @@ module Psykube::V1::Generator::Concerns::PodHelper
       metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
         labels: {"app" => name},
       )
-    )
-  end
-
-  private def generate_selector
-    Pyrite::Apimachinery::Apis::Meta::V1::LabelSelector.new(
-      match_labels: {
-        "app" => name,
-      }
     )
   end
 
@@ -49,13 +40,13 @@ module Psykube::V1::Generator::Concerns::PodHelper
 
   # Volumes
   private def generate_volumes
-    manifest_volumes.map do |mount_path, spec|
+    manifest.volumes.map do |mount_path, spec|
       generate_volume(mount_path, spec)
-    end unless manifest_volumes.empty?
+    end unless manifest.volumes.empty?
   end
 
   private def generate_volume(mount_path : String, size : String)
-    volume_name = name_from_mount_path(mount_path)
+    volume_name = Psykube::Concerns::Volumes.name_from_mount_path(mount_path)
     Pyrite::Api::Core::V1::Volume.new(
       name: volume_name,
       persistent_volume_claim: Pyrite::Api::Core::V1::PersistentVolumeClaimVolumeSource.new(
@@ -65,7 +56,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
   end
 
   private def generate_volume(mount_path : String, volume : Manifest::Volume)
-    volume_name = name_from_mount_path(mount_path)
+    volume_name = Psykube::Concerns::Volumes.name_from_mount_path(mount_path)
     volume.to_deployment_volume(name: name, volume_name: volume_name)
   end
 
@@ -233,7 +224,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
 
   private def generate_container_volume_mounts(volumes : Manifest::VolumeMap)
     volumes.map do |mount_path, volume|
-      volume_name = name_from_mount_path(mount_path)
+      volume_name = Psykube::Concerns::Volumes.name_from_mount_path(mount_path)
       Pyrite::Api::Core::V1::VolumeMount.new(
         name: volume_name,
         mount_path: mount_path
