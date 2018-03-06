@@ -33,6 +33,7 @@ class Psykube::CLI::Main < Admiral::Command
   register_sub_command scale, Commands::Scale
   register_sub_command playground, Commands::Playground
   register_sub_command validate, Commands::Validate, short: v
+  register_sub_command validate, Commands::Job, short: j
 end
 
 def Psykube::CLI.run(*args, **named_args)

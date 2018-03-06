@@ -32,9 +32,9 @@ module Psykube::V2::Generator::Concerns::JobHelper
   end
 
   private def generate_job(name : String, *, manifest, containers : ContainerMap)
-    base_36_timestamp = Time.now.epoch.to_s(36)
+    name = Psykube::NameCleaner.clean(name)
     Pyrite::Api::Batch::V1::Job.new(
-      metadata: generate_metadata(suffix: "name-#{base_36_timestamp}"),
+      metadata: generate_metadata(generate_name: [self.name, name].join('-')),
       spec: generate_job_spec(manifest, containers)
     )
   end
