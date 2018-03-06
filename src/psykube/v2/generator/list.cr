@@ -13,6 +13,7 @@ class Psykube::V2::Generator::List < ::Psykube::Generator
 
         if manifest.type.is_a?(Manifest::Jobable)
           list += primary_generator.as(Concerns::CronJobHelper).generate_cron_jobs.as(Array(Pyrite::Kubernetes::Resource))
+          # list += primary_generator.as(Concerns::JobHelper).generate_job_templates.as(Array(Pyrite::Kubernetes::Resource))
         end
 
         if manifest.type == "Deployment"
