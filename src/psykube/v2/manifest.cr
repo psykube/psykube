@@ -18,6 +18,10 @@ abstract class Psykube::V2::Manifest
       alias CronJobMap =  Hash(String, Shared::InlineCronJob | Shared::InlineCronJobRef)
       alias JobMap = Hash(String, Array(String) | String | Shared::InlineJob | Shared::InlineJobRef | Shared::Container)
       include Jobable
+    {% else %}
+      def generate_job(*args)
+        raise "{{type.id}} manifest does not support jobs"
+      end
     {% end %}
     {% if service %} include Serviceable {% end %}
 

@@ -1,5 +1,3 @@
-
-
 class Psykube::V2::Manifest::Job < ::Psykube::V2::Manifest
   declare("Job", {
     active_deadline: {type: Int32, optional: true},

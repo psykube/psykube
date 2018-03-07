@@ -39,6 +39,10 @@ class Psykube::Actor
     manifest.generate(self)
   end
 
+  def generate_job(name : String) : Pyrite::Api::Batch::V1::Job
+    manifest.generate_job(self, name)
+  end
+
   def all_build_contexts
     (build_contexts + init_build_contexts).uniq
   end

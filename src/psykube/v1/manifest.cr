@@ -139,6 +139,10 @@ class Psykube::V1::Manifest
     Generator::List.new(self, actor).result
   end
 
+  def generate_job(*args)
+    raise "V1 manifest does not support jobs"
+  end
+
   def get_cluster(name)
     clusters[name]? || Cluster.new
   end
