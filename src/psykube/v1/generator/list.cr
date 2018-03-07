@@ -1,5 +1,5 @@
 class Psykube::V1::Generator::List < ::Psykube::Generator
-  protected def result
+  def result
     Pyrite::Api::Core::V1::List.new(
       items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
         list << ConfigMap.result(self)

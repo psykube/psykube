@@ -1,5 +1,5 @@
 module Psykube::Concerns::MetadataHelper
-  private def generate_metadata(*, name : String = self.name, labels = [] of StringMap?, annotations = [] of StringMap?, **metadata)
+  private def generate_metadata(*, name : String? = self.name, labels = [] of StringMap?, annotations = [] of StringMap?, **metadata)
     annotations << combined_annotations
     annotations << ANNOTATIONS
     labels << combined_labels

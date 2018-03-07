@@ -39,6 +39,10 @@ class Psykube::Actor
     manifest.generate(self)
   end
 
+  def generate_job(name : String) : Pyrite::Api::Batch::V1::Job
+    manifest.generate_job(self, name)
+  end
+
   def all_build_contexts
     (build_contexts + init_build_contexts).uniq
   end
@@ -52,7 +56,7 @@ class Psykube::Actor
   end
 
   def manifest
-    @manifest ||= Manifest::Any.from_yaml(template_result metadata)
+    @manifest ||= Manifest.from_yaml(template_result metadata)
   rescue e : YAML::ParseException
     raise ParseException.new(template_result, e)
   end
@@ -129,7 +133,7 @@ class Psykube::Actor
   end
 
   private def raw_manifest
-    @raw_manifest ||= Manifest::Any.from_yaml(template_result)
+    @raw_manifest ||= Manifest.from_yaml(template_result)
   rescue e : YAML::ParseException
     raise ParseException.new(template_result, e)
   end

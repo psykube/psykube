@@ -9,7 +9,7 @@ class Psykube::V2::Manifest::Shared::Container
     ports:         {type: PortMap, default: PortMap.new},
     volumes:       {type: VolumeMap, default: VolumeMap.new},
     resources:     {type: V1::Manifest::Resources, optional: true},
-    env:           {type: Hash(String, V1::Manifest::Env | String), optional: true},
+    env:           {type: EnvMap, default: EnvMap.new},
     command:       {type: Array(String) | String, optional: true},
     args:          {type: Array(String), optional: true},
   })

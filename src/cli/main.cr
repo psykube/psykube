@@ -8,7 +8,7 @@ class Psykube::CLI::Main < Admiral::Command
     panic e.message
   end
 
-  rescue_from Generator::ValidationError do |e|
+  rescue_from Exception do |e|
     panic "Error: #{e.message}".colorize(:red)
   end
 
@@ -33,6 +33,7 @@ class Psykube::CLI::Main < Admiral::Command
   register_sub_command scale, Commands::Scale
   register_sub_command playground, Commands::Playground
   register_sub_command validate, Commands::Validate, short: v
+  register_sub_command job, Commands::Job, short: j
 end
 
 def Psykube::CLI.run(*args, **named_args)

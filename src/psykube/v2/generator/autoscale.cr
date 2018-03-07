@@ -3,7 +3,7 @@ class Psykube::V2::Generator::Autoscale < ::Psykube::Generator
 
   cast_manifest Manifest::Deployment
 
-  protected def result
+  def result
     return unless (cluster_autoscale = self.cluster_autoscale)
     Pyrite::Api::Autoscaling::V1::HorizontalPodAutoscaler.new(
       metadata: generate_metadata,

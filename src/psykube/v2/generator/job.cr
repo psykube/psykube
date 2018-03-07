@@ -1,10 +1,10 @@
 class Psykube::V2::Generator::Job < ::Psykube::Generator
-  include Concerns::PodHelper
+  include Concerns::JobHelper
   cast_manifest Manifest::Job
 
-  protected def result
+  def result
     Pyrite::Api::Batch::V1::Job.new(
-      metadata: generate_metadata,
+      metadata: generate_metadata(name: nil, generate_name: name),
       spec: generate_job_spec
     )
   end

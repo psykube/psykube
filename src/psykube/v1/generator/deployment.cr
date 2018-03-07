@@ -2,7 +2,7 @@ class Psykube::V1::Generator::Deployment < ::Psykube::Generator
   include Concerns::PodHelper
   cast_manifest Manifest
 
-  protected def result
+  def result
     Pyrite::Api::Extensions::V1beta1::Deployment.new(
       metadata: generate_metadata,
       spec: Pyrite::Api::Extensions::V1beta1::DeploymentSpec.new(

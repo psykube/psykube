@@ -1,4 +1,4 @@
-require "../../name_cleaner"
+
 
 class Psykube::V2::Manifest::StatefulSet < ::Psykube::V2::Manifest
   declare("StatefulSet", {

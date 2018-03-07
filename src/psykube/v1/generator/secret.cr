@@ -1,5 +1,5 @@
 class Psykube::V1::Generator::Secret < ::Psykube::Generator
-  protected def result
+  def result
     unless encoded_secrets.empty?
       Pyrite::Api::Core::V1::Secret.new(
         metadata: generate_metadata,

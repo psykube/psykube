@@ -6,6 +6,8 @@ registry_user: psykube
 ingress:
   tls: true
   host: psykube.commercialtribe.ninja
+jobs:
+  foo: echo true
 containers:
   playground:
     tag: {{git.tag}}

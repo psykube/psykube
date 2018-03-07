@@ -1,5 +1,5 @@
 class Psykube::V1::Generator::ConfigMap < ::Psykube::Generator
-  protected def result
+  def result
     unless combined_config_map.empty?
       Pyrite::Api::Core::V1::ConfigMap.new(
         metadata: generate_metadata,

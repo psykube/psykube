@@ -1,8 +1,8 @@
 class Psykube::V2::Generator::CronJob < ::Psykube::Generator
-  include Concerns::PodHelper
+  include Concerns::JobHelper
   cast_manifest Manifest::CronJob
 
-  protected def result
+  def result
     Pyrite::Api::Batch::V1beta1::CronJob.new(
       metadata: generate_metadata,
       spec: Pyrite::Api::Batch::V1beta1::CronJobSpec.new(

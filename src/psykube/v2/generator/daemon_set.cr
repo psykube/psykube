@@ -1,8 +1,9 @@
 class Psykube::V2::Generator::DaemonSet < ::Psykube::Generator
   include Concerns::PodHelper
+  include Concerns::CronJobHelper
   cast_manifest Manifest::DaemonSet
 
-  protected def result
+  def result
     Pyrite::Api::Extensions::V1beta1::DaemonSet.new(
       metadata: generate_metadata,
       spec: Pyrite::Api::Extensions::V1beta1::DaemonSetSpec.new(

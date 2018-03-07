@@ -1,7 +1,7 @@
 class Psykube::V2::Generator::Ingress < ::Psykube::Generator
   cast_manifest Manifest::Serviceable
 
-  protected def result
+  def result
     Pyrite::Api::Extensions::V1beta1::Ingress.new(
       metadata: generate_metadata(annotations: [cluster_ingress_annotations]),
       spec: Pyrite::Api::Extensions::V1beta1::IngressSpec.new(

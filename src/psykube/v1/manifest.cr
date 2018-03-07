@@ -25,7 +25,7 @@ class Psykube::V1::Manifest
     partition:              {type: Int32, optional: true},
     command:                {type: Array(String) | String, optional: true},
     args:                   {type: Array(String), optional: true},
-    env:                    {type: Hash(String, Env | String), optional: true},
+    env:                    {type: EnvMap, default: EnvMap.new},
     ingress:                {type: Ingress, optional: true},
     service:                {type: String | Service, default: "ClusterIP", optional: true},
     config_map:             {type: StringMap, optional: true},
@@ -34,7 +34,7 @@ class Psykube::V1::Manifest
     clusters:               {type: Hash(String, Cluster), optional: true},
     healthcheck:            {type: Bool | Healthcheck, optional: true, default: false},
     readycheck:             {type: Bool | Readycheck, optional: true, default: false},
-    volumes:                {type: VolumeMap, optional: true},
+    volumes:                {type: VolumeMap, default: VolumeMap.new},
     autoscale:              {type: Autoscale, optional: true},
     build_args:             {type: StringMap, default: StringMap.new},
     build_context:          {type: String, optional: true},
@@ -137,6 +137,10 @@ class Psykube::V1::Manifest
 
   def generate(actor : Actor)
     Generator::List.new(self, actor).result
+  end
+
+  def generate_job(*args)
+    raise "V1 manifest does not support jobs"
   end
 
   def get_cluster(name)

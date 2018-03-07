@@ -42,6 +42,12 @@ abstract class Psykube::Generator
 
   abstract def result
 
+  private def generate_selector
+    Pyrite::Apimachinery::Apis::Meta::V1::LabelSelector.new(
+      match_labels: {"app" => name}
+    )
+  end
+
   private def cluster_config_map
     manifest.config_map.merge cluster.config_map
   end

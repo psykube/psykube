@@ -1,75 +1,34 @@
 abstract class Psykube::V2::Manifest
-  module Serviceable; end
+  class TypeMatcher
+    YAML.mapping({type: String?})
+  end
 
   DECLARED = [] of Manifest.class
 
-  def Psykube::V2::Manifest.new(ctx : YAML::ParseContext, node : YAML::Nodes::Node)
-    if node.is_a?(YAML::Nodes::Alias)
-      DECLARED.each do |type|
-        ctx.read_alias?(node, type) do |obj|
-          return obj
-        end
-      end
-
-      node.raise("Error deserailizing alias")
-    end
-
-    DECLARED.each do |type|
-      begin
-        return type.new(ctx, node)
-      rescue YAML::ParseException
-        # Ignore
-      end
-    end
-
-    node.raise "Couldn't parse #{self}"
+  def self.new(ctx : YAML::ParseContext, node : YAML::Nodes::Node)
+    specified_type = TypeMatcher.new(ctx, node).type
+    manifest_type = DECLARED.find(&.manifest_type.== specified_type)
+    node.raise "Invalid manifest type: #{specified_type}" unless manifest_type
+    manifest_type.new(ctx, node)
   end
 
-  macro declare(type, properties = nil, *, service = true, default = false)
+  macro declare(type, properties = nil, *, service = true, default = false, jobs = true)
+    include Declaration
+    {% if jobs %}
+      alias CronJobMap =  Hash(String, Shared::InlineCronJob | Shared::InlineCronJobRef)
+      alias JobMap = Hash(String, Array(String) | String | Shared::InlineJob | Shared::InlineJobRef | Shared::Container)
+      include Jobable
+    {% else %}
+      def generate_job(*args)
+        raise "{{type.id}} manifest does not support jobs"
+      end
+    {% end %}
+    {% if service %} include Serviceable {% end %}
+
     DECLARED << self
 
-    def generate(actor : Actor)
-      Generator::List.new(self, actor).result
-    end
-
-    def get_build_contexts(cluster_name : String, basename : String, tag : String, build_context : String)
-      cluster = get_cluster cluster_name
-      containers.map do |container_name, container|
-        BuildContext.new(
-          build: !container.image,
-          image: container.image || [basename, container_name].join('.'),
-          tag: container.image ? nil : (container.tag || tag),
-          args: container.build_args.merge(cluster.container_overrides.build_args),
-          context: container.build_context || build_context,
-          dockerfile: cluster.container_overrides.dockerfile
-        )
-      end
-    end
-
-    def get_init_build_contexts(cluster_name : String, basename : String, tag : String, build_context : String)
-      cluster = get_cluster cluster_name
-      init_containers.map do |container_name, container|
-        BuildContext.new(
-          build: !container.image,
-          image: container.image || [basename, container_name].join('.'),
-          tag: container.image ? nil : (container.tag || tag),
-          args: container.build_args.merge(cluster.container_overrides.build_args),
-          context: container.build_context || build_context,
-          dockerfile: cluster.container_overrides.dockerfile
-        )
-      end
-    end
-
-    def get_cluster(name)
-      clusters[name]? || Shared::Cluster.new
-    end
-
-    def volumes
-      containers.each_with_object(VolumeMap.new) do |(container_name, container), volume_map|
-        container.volumes.each do |volume_name, volume|
-          volume_map["#{container_name}.#{volume_name}"] = volume
-        end
-      end
+    def self.manifest_type
+      {{ type }}
     end
 
     Macros.manifest(2, {{type}}, {{properties}}, {
@@ -90,58 +49,15 @@ abstract class Psykube::V2::Manifest
       init_containers:                 {type: ContainerMap, default: ContainerMap.new},
       containers:                      {type: ContainerMap},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
+      {% if jobs %}
+        jobs:                          {type: JobMap, default: JobMap.new},
+        cron_jobs:                     {type: CronJobMap, default: CronJobMap.new},
+      {% end %}
       {% if service %}
         ingress: {type: V1::Manifest::Ingress, optional: true},
         service: {type: String | V1::Manifest::Service, default: "ClusterIP", optional: true }
       {% end %}
     })
-
-    {% if service %}
-      include Serviceable
-
-      def ports?
-        !ports.empty?
-      end
-
-      def service
-        return unless ports?
-        service = @service
-        case service
-        when true, nil
-          V1::Manifest::Service.new "ClusterIP"
-        when String
-          V1::Manifest::Service.new service
-        when V1::Manifest::Service
-          service
-        end
-      end
-
-      def service?
-        !!service
-      end
-
-      def lookup_port(port : Int32)
-        port
-      end
-
-      def ports
-        containers.each_with_object(PortMap.new) do |(container_name, container), port_map|
-          container.ports.each do |port_name, port|
-            port_map[port_name] ||= port
-          end
-        end
-      end
-
-      def lookup_port(port_name : String)
-        if port_name.to_i?
-          port_name.to_i
-        elsif port_name == "default" && !ports.key?("default")
-          ports.values.first
-        else
-          ports[port_name]? || raise "Invalid port #{port_name}"
-        end
-      end
-    {% end %}
   end
 end
 
