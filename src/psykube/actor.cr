@@ -83,7 +83,7 @@ class Psykube::Actor
 
   private def escaped(hash : StringMap)
     hash.each_with_object(StringMap.new) do |(k, v), h|
-      h[k] = v.nil? || v.empty? ? "nil" : [v].to_yaml.lines[1].lchop("-").strip
+      h[k] = v.nil? || v.empty? ? "null" : [v].to_yaml.lines[1].lchop("-").strip
     end
   end
 

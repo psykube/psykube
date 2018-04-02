@@ -9,9 +9,9 @@ struct Psykube::BuildContext
   def initialize(*, image : String, tag : String?, @context, @dockerfile, @build, args)
     parts = image.split(':')
     image = parts[0]
-    tag = parts[1]? || tag || "latest"
+    tag = parts[1]? || tag || get_digest
     @image = image
-    @tag = tag || get_digest
+    @tag = tag
     @args = args.map &.join('=')
   end
 
