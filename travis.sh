@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
-PSYKUBE_VERSION=latest
+PSYKUBE_VERSION=${PSYKUBE_VERSION-latest}
 
 # Install latest docker
 sudo apt-get update
 sudo apt-get install docker-ce
+
+# Install Runtime Dependencies
+sudo apt-get install libtar
 
 # Install Psykube
 PSYKUBE_RELEASES_URL=https://api.github.com/repos/psykube/psykube/releases/tags/${PSYKUBE_VERSION}
