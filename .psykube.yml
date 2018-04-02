@@ -1,7 +1,7 @@
 name: psykube
 type: Deployment
 context: gke_commercial-tribe-staging_us-central1-a_staging
-registry_user: commercialtribe
+registry_user: psykube
 {{#git.tag}}
 image_tag: {{git.tag}}
 {{/git.tag}}
