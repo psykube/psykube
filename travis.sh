@@ -7,9 +7,6 @@ PSYKUBE_VERSION=${PSYKUBE_VERSION-latest}
 sudo apt-get update
 sudo apt-get install docker-ce
 
-# Install Runtime Dependencies
-sudo apt-get install libtar
-
 # Install Psykube
 PSYKUBE_RELEASES_URL=https://api.github.com/repos/psykube/psykube/releases/tags/${PSYKUBE_VERSION}
 PSYKUBE_RELEASE_RESULTS=`curl -sSL -H "Authorization: token ${GITHUB_API_TOKEN}" ${PSYKUBE_RELEASES_URL}`
