@@ -8,7 +8,7 @@ class Psykube::V2::Generator::Ingress < ::Psykube::Generator
         rules: generate_rules,
         tls: generate_tls
       )
-    ) if manifest.service && ingress?
+    ) if manifest.services? && ingress?
   end
 
   private def ingress?

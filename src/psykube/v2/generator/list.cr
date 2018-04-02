@@ -8,7 +8,9 @@ class Psykube::V2::Generator::List < ::Psykube::Generator
 
         case manifest.type
         when "Deployment", "Pod", "DaemonSet", "StatefulSet"
-          list << Service.result(self)
+          Service.result(self).tap do |services|
+            list.concat(services) if services
+          end
           list << Ingress.result(self)
         end
 

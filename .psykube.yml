@@ -1,11 +1,10 @@
 version: 2
 name: psykube
 type: Deployment
-context: gke_commercial-tribe-staging_us-central1-a_staging
 registry_user: psykube
 ingress:
   tls: true
-  host: psykube.commercialtribe.ninja
+  host: playground.psykube.io
 containers:
   playground:
     tag: {{git.tag}}

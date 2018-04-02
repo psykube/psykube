@@ -32,7 +32,7 @@ abstract class Psykube::V2::Manifest
       Generator::List.new(self, actor).result
     end
 
-    def get_build_contexts(cluster_name : String, basename : String, tag : String, build_context : String)
+    def get_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
       cluster = get_cluster cluster_name
       containers.map do |container_name, container|
         BuildContext.new(
@@ -46,7 +46,7 @@ abstract class Psykube::V2::Manifest
       end
     end
 
-    def get_init_build_contexts(cluster_name : String, basename : String, tag : String, build_context : String)
+    def get_init_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
       cluster = get_cluster cluster_name
       init_containers.map do |container_name, container|
         BuildContext.new(
@@ -75,12 +75,12 @@ abstract class Psykube::V2::Manifest
     Macros.manifest(2, {{type}}, {{properties}}, {
       name:                            {type: String},
       automount_service_account_token: {type: Bool, optional: true},
-      prefix:                          {type: String, optional: true},
-      suffix:                          {type: String, optional: true},
-      registry_host:                   {type: String, optional: true},
-      registry_user:                   {type: String, optional: true},
-      context:                         {type: String, optional: true},
-      namespace:                       {type: String, optional: true},
+      prefix:                          {type: String, optional: true, envvar: "PSYKUBE_PREFIX"},
+      suffix:                          {type: String, optional: true, envvar: "PSYKUBE_SUFFIX"},
+      registry_host:                   {type: String, optional: true, envvar: "PSYKUBE_REGISTRY_HOST"},
+      registry_user:                   {type: String, optional: true, envvar: "PSYKUBE_REGISTRY_USER"},
+      context:                         {type: String, optional: true, envvar: "PSYKUBE_CONTEXT"},
+      namespace:                       {type: String, optional: true, envvar: "PSYKUBE_NAMESPACE"},
       restart_policy:                  {type: String, optional: true},
       annotations:                     {type: StringMap, default: StringMap.new},
       labels:                          {type: StringMap, default: StringMap.new},
@@ -92,7 +92,7 @@ abstract class Psykube::V2::Manifest
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
       {% if service %}
         ingress: {type: V1::Manifest::Ingress, optional: true},
-        service: {type: String | V1::Manifest::Service, default: "ClusterIP", optional: true }
+        services: {type: Array(String) | Hash(String, String | V1::Manifest::Service), default: "ClusterIP", optional: true }
       {% end %}
     })
 
@@ -103,21 +103,8 @@ abstract class Psykube::V2::Manifest
         !ports.empty?
       end
 
-      def service
-        return unless ports?
-        service = @service
-        case service
-        when true, nil
-          V1::Manifest::Service.new "ClusterIP"
-        when String
-          V1::Manifest::Service.new service
-        when V1::Manifest::Service
-          service
-        end
-      end
-
-      def service?
-        !!service
+      def services?
+        services.size > 0
       end
 
       def lookup_port(port : Int32)

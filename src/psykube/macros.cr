@@ -34,8 +34,13 @@ module Psykube::Macros
 
     def initialize(ctx : YAML::ParseContext, node : ::YAML::Nodes::Node, _dummy : Nil)
       {% for key, value in properties %}
-        __{{key.id}}__value = nil
-        __{{key.id}}__found = false
+        {% if value[:envvar] %}
+          __{{key.id}}__value = ENV[{{ value[:envvar] }}]?
+          __{{key.id}}__found = !!ENV[{{ value[:envvar] }}]?
+        {% else %}
+          __{{key.id}}__value = nil
+          __{{key.id}}__found = false
+        {% end %}
       {% end %}
 
       case node
@@ -101,18 +106,20 @@ module Psykube::Macros
     case key
     {% for key, value in properties %}
       when {{value[:key] || key.id.stringify}}
-        __{{key.id}}__found = true
+        unless __{{key.id}}__found && {{ !!value[:envvar] }}
+          __{{key.id}}__found = true
 
-        __{{key.id}}__value =
-          {% if value[:optional] || value[:default] != nil %} YAML::Schema::Core.parse_null_or({{value_node}}) { {% end %}
+          __{{key.id}}__value =
+            {% if value[:optional] || value[:default] != nil %} YAML::Schema::Core.parse_null_or({{value_node}}) { {% end %}
 
-          {% if value[:type].is_a?(Path) || value[:type].is_a?(Generic) %}
-            {{value[:type]}}.new(ctx, {{value_node}})
-          {% else %}
-            ::Union({{value[:type]}}).new(ctx, {{value_node}})
-          {% end %}
+            {% if value[:type].is_a?(Path) || value[:type].is_a?(Generic) %}
+              {{value[:type]}}.new(ctx, {{value_node}})
+            {% else %}
+              ::Union({{value[:type]}}).new(ctx, {{value_node}})
+            {% end %}
 
-          {% if value[:optional] || value[:default] != nil %} } {% end %}
+            {% if value[:optional] || value[:default] != nil %} } {% end %}
+        end
     {% end %}
     else
       key_node.raise "Unknown yaml attribute: #{key}"

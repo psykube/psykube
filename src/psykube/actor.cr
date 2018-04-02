@@ -9,7 +9,7 @@ class Psykube::Actor
   @build_contexts : Array(BuildContext)?
   getter cluster_name : String?
   getter basename : String
-  getter tag : String
+  getter tag : String?
   getter context : String? = nil
   getter namespace : String = "default"
   getter dir : String = "."
@@ -20,7 +20,7 @@ class Psykube::Actor
     raw_yaml = String.build { |string_io| IO.copy(io, string_io) }
     @template = Crustache.parse raw_yaml
     @cluster_name = cluster_name
-    @tag = tag || digest
+    @tag = tag
     @basename = basename || [registry_host, registry_user, name].compact.join('/')
     @namespace = namespace || cluster.namespace || manifest.namespace || "default"
     @context = context || cluster.context || manifest.context
@@ -29,10 +29,6 @@ class Psykube::Actor
   def cluster
     raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !manifest.clusters.empty?
     manifest.get_cluster(cluster_name || "")
-  end
-
-  def digest
-    @digest ||= get_digest
   end
 
   def generate : Pyrite::Api::Core::V1::List
@@ -97,16 +93,6 @@ class Psykube::Actor
     end
   end
 
-  private def get_digest(kind : String = "sha256")
-    files = IgnoreParser.new(".dockerignore", dir).filter.reject { |f| File.directory? f }
-    hexdigest = files.each_with_object(OpenSSL::Digest.new(kind)) do |file, digest|
-      File.open(file) do |f|
-        digest.update(f)
-      end
-    end.hexdigest
-    "#{kind}-#{hexdigest}"
-  end
-
   private def git_branch
     ci_branch || `git rev-parse --abbrev-ref HEAD`.strip
   end
@@ -136,8 +122,7 @@ class Psykube::Actor
 
   private def raw_metadata
     @raw_metadata ||= {
-      "cluster_name" => @cluster_name || "",
-      "digest"       => digest,
+      "cluster_name" => @cluster_name || ""
     }
   end
 

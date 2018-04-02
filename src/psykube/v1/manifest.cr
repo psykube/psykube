@@ -143,7 +143,7 @@ class Psykube::V1::Manifest
     clusters[name]? || Cluster.new
   end
 
-  def get_build_contexts(cluster_name : String, basename : String, tag : String, build_context : String)
+  def get_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
     cluster = get_cluster cluster_name
     [BuildContext.new(
       build: !image,
@@ -155,7 +155,7 @@ class Psykube::V1::Manifest
     )]
   end
 
-  def get_init_build_contexts(cluster_name : String, basename : String, tag : String, build_context : String)
+  def get_init_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
     [] of BuildContext
   end
 end
