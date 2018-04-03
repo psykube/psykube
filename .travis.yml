@@ -24,7 +24,7 @@ before_script:
   - sudo mv ./kubectl /usr/local/bin/kubectl
   - echo ${GCLOUD_ENCODED_CREDS} | base64 -d > /tmp/gcloud.json
   - gcloud auth activate-service-account --key-file=/tmp/gcloud.json
-  - gcloud container clusters get-credentials waldrip-net --zone=central1-a --project=waldrip-net
+  - gcloud container clusters get-credentials waldrip-net --zone=us-central1-a --project=waldrip-net
 
 script: crystal spec --verbose
 before_deploy:
