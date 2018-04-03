@@ -6,12 +6,12 @@ class Psykube::V2::Manifest::Shared::Cluster
     annotations:         {type: StringMap, optional: true},
     prefix:              {type: String, optional: true},
     suffix:              {type: String, optional: true},
-    ingress:             {type: V1::Manifest::Ingress, optional: true},
+    ingress:             {type: Manifest::Ingress, optional: true},
     context:             {type: String, optional: true},
     namespace:           {type: String, optional: true},
     config_map:          {type: StringMap, default: {} of String => String},
     secrets:             {type: StringMap, default: {} of String => String},
-    autoscale:           {type: V1::Manifest::Autoscale, optional: true},
+    autoscale:           {type: Manifest::Autoscale, optional: true},
     container_overrides: {type: ContainerOverides, default: ContainerOverides.new},
   })
 

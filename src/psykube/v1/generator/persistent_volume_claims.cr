@@ -9,7 +9,7 @@ class Psykube::V1::Generator::PersistentVolumeClaims < ::Psykube::Generator
   end
 
   private def manifest_claims
-    manifest_volumes.select { |k, v| volume_is_claim? v }.compact
+    manifest.volumes.select { |k, v| volume_is_claim? v }.compact
   end
 
   private def volume_is_claim?(volume : Manifest::Volume)
@@ -18,6 +18,10 @@ class Psykube::V1::Generator::PersistentVolumeClaims < ::Psykube::Generator
 
   private def volume_is_claim?(volume : String)
     true
+  end
+
+  private def volume_is_claim?(any)
+    false
   end
 
   private def generate_persistent_volume_claim(mount_path : String, volume : Manifest::Volume)
@@ -40,9 +44,6 @@ class Psykube::V1::Generator::PersistentVolumeClaims < ::Psykube::Generator
     )
   end
 
-  private def generate_persistent_volume_claim(mount_path : String, nothing : Nil)
-  end
-
   private def generate_persistent_volume_claim(mount_path : String, size : String)
     volume_name = name_from_mount_path(mount_path)
     Pyrite::Api::Core::V1::PersistentVolumeClaim.new(
@@ -56,5 +57,8 @@ class Psykube::V1::Generator::PersistentVolumeClaims < ::Psykube::Generator
         )
       )
     )
+  end
+
+  private def generate_persistent_volume_claim(mount_path : String, any) : Nil
   end
 end

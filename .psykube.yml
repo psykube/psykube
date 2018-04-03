@@ -11,3 +11,5 @@ containers:
     args: [ "playground", "--bind=0.0.0.0" ]
     ports:
       http: 8080
+    env:
+      namespace: {{metadata.namespace}}

@@ -85,7 +85,7 @@ class Psykube::V1::Manifest::Volume::Spec
     @config_map = config_map
   end
 
-  def to_deployment_volume(name : String)
+  def to_pod_volume(name : String)
     Pyrite::Api::Core::V1::Volume.new(
       name: name,
       aws_elastic_block_store: aws_elastic_block_store,

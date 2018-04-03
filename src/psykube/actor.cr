@@ -3,7 +3,6 @@ class Psykube::Actor
   @git_data : StringMap?
   @metadata : StringMap?
   @raw_metadata : StringMap?
-  @raw_manifest : Manifest::Any?
   @manifest : Manifest::Any?
   @template : Crustache::Syntax::Template
   @build_contexts : Array(BuildContext)?
@@ -17,6 +16,7 @@ class Psykube::Actor
   delegate to_json, to: generate
 
   def initialize(io, cluster_name = nil, context = nil, namespace = nil, basename = nil, tag = nil)
+    @namespace = namespace if namespace
     raw_yaml = String.build { |string_io| IO.copy(io, string_io) }
     @template = Crustache.parse raw_yaml
     @cluster_name = cluster_name
@@ -48,16 +48,14 @@ class Psykube::Actor
   end
 
   def manifest
-    @manifest ||= Manifest::Any.from_yaml(template_result metadata)
-  rescue e : YAML::ParseException
-    raise ParseException.new(template_result, e)
+    @manifest ||= Manifest.from_yaml(template_result metadata)
   end
 
   def name
     NameCleaner.clean([prefix, manifest.name, suffix].compact.join)
   end
 
-  def template_result(metadata : StringMap = raw_metadata)
+  def template_result(metadata : StringMap = metadata)
     Crustache.render @template, {
       "metadata" => escaped(metadata),
       "git"      => escaped(git_data),
@@ -105,24 +103,14 @@ class Psykube::Actor
     ci_tag || `git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip
   end
 
-  private def metadata
-    return raw_metadata if !@manifest
-    @metadata ||= raw_metadata.merge({"namespace" => namespace})
-  end
-
   private def prefix
     cluster.prefix || manifest.prefix
   end
 
-  private def raw_manifest
-    @raw_manifest ||= Manifest::Any.from_yaml(template_result)
-  rescue e : YAML::ParseException
-    raise ParseException.new(template_result, e)
-  end
-
-  private def raw_metadata
-    @raw_metadata ||= {
+  private def metadata
+    @metadata ||= {
       "cluster_name" => @cluster_name || "",
+      "namespace"    => @namespace,
     }
   end
 

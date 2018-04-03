@@ -21,7 +21,6 @@ module Psykube
 
   alias StringMap = Hash(String, String)
   alias PortMap = Hash(String, Int32)
-  alias VolumeMap = Hash(String, V1::Manifest::Volume | String)
 end
 
 require "./psykube/concerns/*"

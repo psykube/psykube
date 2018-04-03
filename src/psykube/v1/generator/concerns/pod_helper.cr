@@ -49,9 +49,9 @@ module Psykube::V1::Generator::Concerns::PodHelper
 
   # Volumes
   private def generate_volumes
-    manifest_volumes.map do |mount_path, spec|
+    manifest.volumes.map do |mount_path, spec|
       generate_volume(mount_path, spec)
-    end unless manifest_volumes.empty?
+    end unless manifest.volumes.empty?
   end
 
   private def generate_volume(mount_path : String, size : String)
@@ -66,7 +66,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
 
   private def generate_volume(mount_path : String, volume : Manifest::Volume)
     volume_name = name_from_mount_path(mount_path)
-    volume.to_deployment_volume(name: name, volume_name: volume_name)
+    volume.to_pod_volume(name: name, volume_name: volume_name)
   end
 
   # Resources

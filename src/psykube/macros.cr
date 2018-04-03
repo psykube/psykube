@@ -157,6 +157,8 @@ module Psykube::Macros
       version_location = {0,0}
       type_location = {0,0}
 
+      # Parse out version and type
+      remaining_nodes = [] of Tuple(YAML::Nodes::Node, YAML::Nodes::Node)
       YAML::Schema::Core.each(node) do |key_node, value_node|
         ::Psykube::Macros.__check_scalar(key_node)
 
@@ -169,18 +171,25 @@ module Psykube::Macros
           type_location = key_node.location
           @type = String.new(ctx, value_node)
           next
+        else
+          remaining_nodes << {key_node, value_node}
         end
-
-        ::Psykube::Macros.__case_keys(key_node, value_node, {{properties}})
       end
 
       {% if version %}
-        {% if version %}raise YAML::ParseException.new("invalid version: #{@version.inspect}", *version_location) unless @version == {{version}}{% end %}
+        {% if version %}raise VersionException.new("invalid version: #{@version.inspect}", *version_location) unless @version == {{version}}{% end %}
       {% end %}
 
       {% if type %}
-        {% if type %}raise YAML::ParseException.new("invalid type: #{@type.inspect}", *type_location) unless @type == {{type}}{% end %}
+        {% if type %}raise TypeException.new("invalid type: #{@type.inspect}", *type_location) unless @type == {{type}}{% end %}
       {% end %}
+
+      # Parse the rest
+      remaining_nodes.each do |key_node, value_node|
+        ::Psykube::Macros.__check_scalar(key_node)
+        next if ["version", "type"].includes? key_node.value
+        ::Psykube::Macros.__case_keys(key_node, value_node, {{properties}})
+      end
     end
 
     def initialize(*,

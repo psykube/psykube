@@ -4,8 +4,9 @@ class Psykube::V2::Manifest::Deployment < ::Psykube::V2::Manifest
   declare("Deployment", {
     min_ready_seconds: {type: Int32, optional: true},
     replicas:          {type: Int32, optional: true},
+    recreate:          {type: Bool, optional: true},
     rollout:           {type: Rollout, optional: true},
-    autoscale:         {type: V1::Manifest::Autoscale, optional: true},
+    autoscale:         {type: Manifest::Autoscale, optional: true},
   })
 
   # Set as its our default

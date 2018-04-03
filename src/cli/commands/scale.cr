@@ -4,13 +4,13 @@ class Psykube::CLI::Commands::Scale < Admiral::Command
   include Kubectl
   include KubectlAll
 
-  define_help description: "Scale a deployment."
+  define_help description: "Scale an application."
 
   define_argument size : Int32, description: "Number of replicas to scale to.", required: true
 
   def run
     manifest = actor.manifest
-    types = %w(Deployment ReplicationController ReplicaSet Job)
+    types = %w(Deployment ReplicationController ReplicaSet Job StatefulSet)
     types_sentence = types[0..-2].map { |t| "`#{t}`" }.join(",") + " and #{types[1]}"
     unless types.includes? manifest.type
       panic "ERROR: #{flags.file} specified type `#{actor.manifest.type}`, scale can only be applied to #{types_sentence}.".colorize(:red)

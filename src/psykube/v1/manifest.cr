@@ -34,7 +34,7 @@ class Psykube::V1::Manifest
     clusters:               {type: Hash(String, Cluster), optional: true},
     healthcheck:            {type: Bool | Healthcheck, optional: true, default: false},
     readycheck:             {type: Bool | Readycheck, optional: true, default: false},
-    volumes:                {type: VolumeMap, optional: true},
+    volumes:                {type: VolumeMap, optional: true, default: VolumeMap.new},
     autoscale:              {type: Autoscale, optional: true},
     build_args:             {type: StringMap, default: StringMap.new},
     build_context:          {type: String, optional: true},

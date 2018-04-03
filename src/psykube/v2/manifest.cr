@@ -1,6 +1,14 @@
 abstract class Psykube::V2::Manifest
   module Serviceable; end
 
+  alias Readycheck = V1::Manifest::Readycheck
+  alias Healthcheck = V1::Manifest::Healthcheck
+  alias Env = V1::Manifest::Env
+  alias Ingress = V1::Manifest::Ingress
+  alias Service = V1::Manifest::Service
+  alias Autoscale = V1::Manifest::Autoscale
+  alias Resources = V1::Manifest::Resources
+
   DECLARED = [] of Manifest.class
 
   def Psykube::V2::Manifest.new(ctx : YAML::ParseContext, node : YAML::Nodes::Node)
@@ -11,18 +19,18 @@ abstract class Psykube::V2::Manifest
         end
       end
 
-      node.raise("Error deserailizing alias")
+      raise ParseException.new raise("Error deserailizing alias"), *node.location
     end
 
     DECLARED.each do |type|
       begin
         return type.new(ctx, node)
-      rescue YAML::ParseException
+      rescue TypeException
         # Ignore
       end
     end
 
-    node.raise "Couldn't parse #{self}"
+    raise ParseException.new "Couldn't parse #{self}", *node.location
   end
 
   macro declare(type, properties = nil, *, service = true, default = false)
@@ -64,14 +72,6 @@ abstract class Psykube::V2::Manifest
       clusters[name]? || Shared::Cluster.new
     end
 
-    def volumes
-      containers.each_with_object(VolumeMap.new) do |(container_name, container), volume_map|
-        container.volumes.each do |volume_name, volume|
-          volume_map["#{container_name}.#{volume_name}"] = volume
-        end
-      end
-    end
-
     Macros.manifest(2, {{type}}, {{properties}}, {
       name:                            {type: String},
       automount_service_account_token: {type: Bool, optional: true},
@@ -90,10 +90,11 @@ abstract class Psykube::V2::Manifest
       init_containers:                 {type: ContainerMap, default: ContainerMap.new},
       containers:                      {type: ContainerMap},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
+      volumes:                         {type: VolumeMap, default: VolumeMap.new},
       security_context: {type: Shared::SecurityContext, optional: true},
       {% if service %}
-        ingress: {type: V1::Manifest::Ingress, optional: true},
-        services: {type: Array(String) | Hash(String, String | V1::Manifest::Service), default: "ClusterIP", optional: true }
+        ingress: {type: Manifest::Ingress, optional: true},
+        services: {type: Array(String) | Hash(String, String | Manifest::Service), default: "ClusterIP", optional: true }
       {% end %}
     })
 

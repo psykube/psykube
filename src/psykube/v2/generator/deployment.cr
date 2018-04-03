@@ -11,13 +11,18 @@ class Psykube::V2::Generator::Deployment < ::Psykube::Generator
         revision_history_limit: manifest.rollout.try(&.history_limit),
         progress_deadline_seconds: manifest.rollout.try(&.progress_timeout),
         template: generate_pod_template,
-        strategy: Pyrite::Api::Extensions::V1beta1::DeploymentStrategy.new(
-          type: "RollingUpdate",
-          rolling_update: Pyrite::Api::Extensions::V1beta1::RollingUpdateDeployment.new(
-            max_unavailable: manifest.rollout.try(&.max_unavailable),
-            max_surge: manifest.rollout.try(&.max_surge),
-          )
-        ),
+        strategy: generate_strategy,
+      )
+    )
+  end
+
+  private def generate_strategy
+    return Pyrite::Api::Extensions::V1beta1::DeploymentStrategy.new(type: "Recreate") if manifest.recreate
+    Pyrite::Api::Extensions::V1beta1::DeploymentStrategy.new(
+      type: "RollingUpdate",
+      rolling_update: Pyrite::Api::Extensions::V1beta1::RollingUpdateDeployment.new(
+        max_unavailable: manifest.rollout.try(&.max_unavailable),
+        max_surge: manifest.rollout.try(&.max_surge),
       )
     )
   end

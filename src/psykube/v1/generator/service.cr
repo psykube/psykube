@@ -24,7 +24,7 @@ class Psykube::V1::Generator::Service < ::Psykube::Generator
     manifest.ports.map do |name, port|
       Pyrite::Api::Core::V1::ServicePort.new(
         name: name,
-        port: port,
+        port: lookup_port(port),
         protocol: "TCP"
       )
     end

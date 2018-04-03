@@ -2,6 +2,7 @@ module Psykube::Concerns::MetadataHelper
   private def generate_metadata(*, name : String = self.name, labels = [] of StringMap?, annotations = [] of StringMap?, **metadata)
     annotations << combined_annotations
     annotations << ANNOTATIONS
+    labels << {"app" => self.name}
     labels << combined_labels
     labels << LABELS
     Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(

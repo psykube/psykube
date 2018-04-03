@@ -87,13 +87,13 @@ module Psykube::V2::Generator::Concerns::PodHelper
 
   # Volumes
   private def generate_volumes
-    manifest_volumes.map do |mount_path, spec|
-      generate_volume(mount_path, spec)
-    end unless manifest_volumes.empty?
+    manifest.volumes.map do |name, spec|
+      volume_name = [self.name, name].join('-')
+      generate_volume(volume_name, spec)
+    end unless manifest.volumes.empty?
   end
 
-  private def generate_volume(mount_path : String, size : String)
-    volume_name = name_from_mount_path(mount_path)
+  private def generate_volume(volume_name : String, size : String)
     Pyrite::Api::Core::V1::Volume.new(
       name: volume_name,
       persistent_volume_claim: Pyrite::Api::Core::V1::PersistentVolumeClaimVolumeSource.new(
@@ -102,9 +102,91 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_volume(mount_path : String, volume : V1::Manifest::Volume)
-    volume_name = name_from_mount_path(mount_path)
-    volume.to_deployment_volume(name: name, volume_name: volume_name)
+  private def generate_volume(volume_name : String, volume_alias : Manifest::Volume::Alias)
+    Pyrite::Api::Core::V1::Volume.new(
+      name: volume_name,
+      secret: alias_to_secret(volume_alias.secret),
+      config_map: alias_to_config_map(volume_alias.config_map)
+    )
+  end
+
+  private def alias_to_secret(nil : Nil) : Nil
+  end
+
+  private def alias_to_secret(item : String)
+    alias_to_secret([item])
+  end
+
+  private def alias_to_secret(items : Array(String))
+    key_paths = items.map do |item|
+      raise Error.new("Unknown secret alias: #{item}") unless manifest.secrets[item]?
+      Pyrite::Api::Core::V1::KeyToPath.new(key: item, path: item)
+    end
+    Pyrite::Api::Core::V1::SecretVolumeSource.new(
+      secret_name: name,
+      items: key_paths
+    )
+  end
+
+  private def alias_to_config_map(nil : Nil) : Nil
+  end
+
+  private def alias_to_config_map(item : String)
+    alias_to_config_map([item])
+  end
+
+  private def alias_to_config_map(items : Array(String))
+    key_paths = items.map do |item|
+      raise Error.new("Unknown config_map alias: #{item}") unless manifest.config_map[item]?
+      Pyrite::Api::Core::V1::KeyToPath.new(key: item, path: item)
+    end
+    Pyrite::Api::Core::V1::ConfigMapVolumeSource.new(
+      name: name,
+      items: key_paths
+    )
+  end
+
+  private def generate_volume(volume_name : String, claim : Manifest::Volume::Claim)
+    Pyrite::Api::Core::V1::Volume.new(
+      name: volume_name,
+      persistent_volume_claim: Pyrite::Api::Core::V1::PersistentVolumeClaimVolumeSource.new(
+        claim_name: volume_name,
+        read_only: claim.read_only
+      )
+    )
+  end
+
+  private def generate_volume(volume_name : String, spec : Manifest::Volume::Spec)
+    Pyrite::Api::Core::V1::Volume.new(
+      name: volume_name,
+      aws_elastic_block_store: spec.aws_elastic_block_store,
+      azure_disk: spec.azure_disk,
+      azure_file: spec.azure_file,
+      cephfs: spec.cephfs,
+      cinder: spec.cinder,
+      config_map: spec.config_map,
+      downward_api: spec.downward_api,
+      empty_dir: spec.empty_dir,
+      fc: spec.fc,
+      flex_volume: spec.flex_volume,
+      flocker: spec.flocker,
+      gce_persistent_disk: spec.gce_persistent_disk,
+      git_repo: spec.git_repo,
+      glusterfs: spec.glusterfs,
+      host_path: spec.host_path,
+      iscsi: spec.iscsi,
+      nfs: spec.nfs,
+      persistent_volume_claim: spec.persistent_volume_claim,
+      photon_persistent_disk: spec.photon_persistent_disk,
+      portworx_volume: spec.portworx_volume,
+      projected: spec.projected,
+      quobyte: spec.quobyte,
+      rbd: spec.rbd,
+      scale_io: spec.scale_io,
+      secret: spec.secret,
+      storageos: spec.storageos,
+      vsphere_volume: spec.vsphere_volume
+    )
   end
 
   # Resources
@@ -145,7 +227,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_container_liveness_probe(container : Manifest::Shared::Container, healthcheck : V1::Manifest::Healthcheck | V1::Manifest::Readycheck)
+  private def generate_container_liveness_probe(container : Manifest::Shared::Container, healthcheck : Manifest::Healthcheck | Manifest::Readycheck)
     return unless healthcheck.http || healthcheck.tcp || healthcheck.exec
     raise InvalidHealthcheck.new("Cannot perform http check without specifying ports.") if !container.ports? && healthcheck.http
     raise InvalidHealthcheck.new("Cannot perform tcp check without specifying ports.") if !container.ports? && healthcheck.tcp
@@ -168,13 +250,13 @@ module Psykube::V2::Generator::Concerns::PodHelper
     generate_container_liveness_probe(container, healthcheck)
   end
 
-  private def generate_container_readiness_probe(container : Manifest::Shared::Container, healthcheck : V1::Manifest::Healthcheck)
+  private def generate_container_readiness_probe(container : Manifest::Shared::Container, healthcheck : Manifest::Healthcheck)
     if healthcheck.readiness
       generate_container_liveness_probe(container, healthcheck)
     end
   end
 
-  private def generate_container_readiness_probe(container : Manifest::Shared::Container, readycheck : V1::Manifest::Readycheck)
+  private def generate_container_readiness_probe(container : Manifest::Shared::Container, readycheck : Manifest::Readycheck)
     generate_container_liveness_probe(container, readycheck)
   end
 
@@ -194,7 +276,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_container_probe_http_get(container : Manifest::Shared::Container, http_check : V1::Manifest::Healthcheck::Http)
+  private def generate_container_probe_http_get(container : Manifest::Shared::Container, http_check : Manifest::Healthcheck::Http)
     Pyrite::Api::Core::V1::HTTPGetAction.new(
       path: http_check.path,
       port: container.lookup_port(http_check.port).not_nil!,
@@ -219,7 +301,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_container_probe_tcp_socket(container : Manifest::Shared::Container, tcp : V1::Manifest::Healthcheck::Tcp)
+  private def generate_container_probe_tcp_socket(container : Manifest::Shared::Container, tcp : Manifest::Healthcheck::Tcp)
     Pyrite::Api::Core::V1::TCPSocketAction.new(
       port: container.lookup_port tcp.port
     )
@@ -232,7 +314,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     generate_container_probe_exec container, [command]
   end
 
-  private def generate_container_probe_exec(container : Manifest::Shared::Container, exec : V1::Manifest::Healthcheck::Exec)
+  private def generate_container_probe_exec(container : Manifest::Shared::Container, exec : Manifest::Healthcheck::Exec)
     generate_container_probe_exec container, exec.command
   end
 
@@ -244,15 +326,23 @@ module Psykube::V2::Generator::Concerns::PodHelper
   private def generate_container_volume_mounts(volumes : Nil)
   end
 
-  private def generate_container_volume_mounts(volumes : VolumeMap)
-    return if volumes.empty?
-    volumes.map do |mount_path, volume|
-      volume_name = name_from_mount_path(mount_path)
-      Pyrite::Api::Core::V1::VolumeMount.new(
-        name: volume_name,
-        mount_path: mount_path
-      )
+  private def generate_container_volume_mounts(volumes : VolumeMountMap)
+    volumes.map do |name, spec|
+      raise Error.new("Invalid volume name: #{name}") unless manifest.volumes[name]?
+      volume_name = [self.name, name].join('-')
+      generate_container_volume_mount(volume_name, spec)
     end
+  end
+
+  private def generate_container_volume_mount(volume_name : String, mount_path : String)
+    Pyrite::Api::Core::V1::VolumeMount.new(
+      name: volume_name,
+      mount_path: mount_path
+    )
+  end
+
+  private def generate_container_volume_mount(volume_name : String, spec : Manifest::Shared::Container::VolumeMount)
+    spec.to_container_volume_mount(volume_name)
   end
 
   # Environment
@@ -263,7 +353,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     end
   end
 
-  private def expand_env(key : String, value : V1::Manifest::Env)
+  private def expand_env(key : String, value : Manifest::Env)
     value_from = Pyrite::Api::Core::V1::EnvVarSource.new.tap do |value_from|
       case
       when config_map = value.config_map
@@ -288,7 +378,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     Pyrite::Api::Core::V1::ConfigMapKeySelector.new(key: key, name: name)
   end
 
-  private def expand_env_config_map(key_ref : V1::Manifest::Env::KeyRef)
+  private def expand_env_config_map(key_ref : Manifest::Env::KeyRef)
     Pyrite::Api::Core::V1::ConfigMapKeySelector.new(key: key_ref.key, name: key_ref.name)
   end
 
@@ -297,7 +387,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     Pyrite::Api::Core::V1::SecretKeySelector.new(key: key, name: name)
   end
 
-  private def expand_env_secret(key_ref : V1::Manifest::Env::KeyRef)
+  private def expand_env_secret(key_ref : Manifest::Env::KeyRef)
     Pyrite::Api::Core::V1::SecretKeySelector.new(key: key_ref.key, name: key_ref.name)
   end
 
@@ -307,7 +397,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def expand_env_field(field_ref : V1::Manifest::Env::FieldRef)
+  private def expand_env_field(field_ref : Manifest::Env::FieldRef)
     Pyrite::Api::Core::V1::ObjectFieldSelector.new(
       field_path: field_ref.path,
       api_version: field_ref.api_version
@@ -320,7 +410,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def expand_env_resource_field(field_ref : V1::Manifest::Env::ResourceFieldRef)
+  private def expand_env_resource_field(field_ref : Manifest::Env::ResourceFieldRef)
     Pyrite::Api::Core::V1::ResourceFieldSelector.new(
       resource: field_ref.resource,
       container_name: field_ref.container,
