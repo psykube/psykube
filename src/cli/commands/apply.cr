@@ -1,4 +1,3 @@
-require "admiral"
 require "./concerns/*"
 
 class Psykube::CLI::Commands::Apply < Admiral::Command
@@ -9,6 +8,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   include Docker
   define_flag push : Bool, description: "Build and push the docker image.", default: true
   define_flag image, description: "Override the generated docker image."
+  define_flag wait : Bool, description: "Wait for the rollout.", default: true
   {% else %}
   define_flag image, description: "The docker image to apply.", required: true
   {% end %}
@@ -33,9 +33,9 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   def run
     kubectl_copy_namespace(flags.copy_namespace.to_s, namespace, flags.copy_resources, flags.force_copy, flags.explicit_copy) if flags.copy_namespace
     {% if env("EXCLUDE_DOCKER") != "true" %}
-    docker_build_and_push(generator.image) if !flags.tag && !flags.image && !generator.manifest.image && flags.push
+    docker_build_and_push(actor.all_build_contexts.select(&.build)) if !flags.tag && !flags.image && flags.push
     {% end %}
-    result = generator.result
+    result = actor.generate
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
     result.items.not_nil!.map do |item|
       force = flags.force
@@ -44,8 +44,8 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
       end
       kubectl_new("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
-    if deployment_generator.manifest.type == "Deployment"
-      kubectl_run("rollout", ["status", "deployment/#{deployment_generator.name}"])
+    if actor.manifest.type == "Deployment" && flags.wait
+      kubectl_run("rollout", ["status", "#{actor.manifest.type}/#{actor.manifest.name}".downcase])
     end
     kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.now.to_json}"], flags: {"--overwrite" => "true"})
   end

@@ -1,15 +1,17 @@
+version: 2
 name: psykube
 type: Deployment
-context: gke_commercial-tribe-staging_us-central1-a_staging
-registry_user: psykube
-{{#git.tag}}
-image_tag: {{git.tag}}
-{{/git.tag}}
 
+registry_user: psykube
 replicas: 5
-args: [ "playground", "--bind=0.0.0.0" ]
-ports:
-  http: 8080
+
 ingress:
   tls: true
-  host: psykube.commercialtribe.ninja
+  host: playground.psykube.io
+
+containers:
+  playground:
+    tag: {{ git.tag }}
+    args: [ "playground", "--bind=0.0.0.0" ]
+    ports:
+      http: 8080

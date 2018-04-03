@@ -1,4 +1,3 @@
-require "admiral"
 require "./concerns/*"
 
 class Psykube::CLI::Commands::CopyResource < Admiral::Command
@@ -57,6 +56,6 @@ class Psykube::CLI::Commands::CopyResource < Admiral::Command
   end
 
   private def namespace
-    generator.namespace
+    actor.namespace
   end
 end

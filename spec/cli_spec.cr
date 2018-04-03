@@ -4,8 +4,6 @@ require "uuid"
 require "../src/psykube"
 require "../src/cli/main"
 
-NAMESPACE = "psykube-test-#{UUID.random}"
-
 class Exited < Exception; end
 
 class Admiral::Command
@@ -20,7 +18,7 @@ def kubectl(args : String)
   Process.run(bin, args.split(" "))
 end
 
-macro psykube(command, timeout = 30)
+macro psykube_it(command, timeout = 30)
   command = {{command}}
   it "should run `psykube #{command}` and not fail" do
     puts ""
@@ -29,46 +27,50 @@ macro psykube(command, timeout = 30)
 end
 
 Dir.cd("spec") do
-  describe Psykube::CLI do
-    it "should set up the environment" do
-      kubectl "delete namespace #{NAMESPACE}"
-      kubectl "create namespace #{NAMESPACE}"
-      kubectl "--namespace=#{NAMESPACE} run hello-world --image=hello-world --port=80 --expose"
-    end
+  ["", " --v1"].each do |v|
+    namespace = "psykube-test-#{UUID.random}"
 
-    psykube "init --overwrite --namespace=#{NAMESPACE} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80"
-    psykube "generate default"
-    psykube "apply default"
-    psykube "status default"
-    psykube "push"
+    describe Psykube::CLI do
+      it "should set up the environment" do
+        kubectl "delete namespace #{namespace}"
+        kubectl "create namespace #{namespace}"
+        kubectl "--namespace=#{namespace} run hello-world --image=hello-world --port=80 --expose"
+      end
 
-    it "should run exec" do
-      Process.fork { Psykube::CLI.run "exec default -- echo 'hello world'" }.wait
-    end
+      psykube_it "init --overwrite --namespace=#{namespace} --name=psykube-test --registry-host=gcr.io --registry-user=waldrip-net --port http=80 #{v}"
+      psykube_it "generate"
+      psykube_it "apply"
+      psykube_it "status"
+      psykube_it "push"
 
-    it "should port forward" do
-      process = Process.fork { Psykube::CLI.run "port-forward default 9292:80" }
-      sleep 5
-      HTTP::Client.get("http://localhost:9292").body.lines.first.strip.should eq "hello psykube"
-      process.kill
-      process.wait
-    end
+      it "should run exec" do
+        Process.fork { Psykube::CLI.run "exec -- echo 'hello world'" }.wait
+      end
 
-    it "should show logs" do
-      process = Process.fork { Psykube::CLI.run "logs default" }
-      sleep 5
-      process.kill
-      process.wait
-    end
+      it "should port forward" do
+        process = Process.fork { Psykube::CLI.run "port-forward 9292:80" }
+        sleep 5
+        HTTP::Client.get("http://localhost:9292").body.lines.first.strip.should eq "hello psykube"
+        process.kill
+        process.wait
+      end
 
-    psykube "copy-namespace #{NAMESPACE} #{NAMESPACE}-copy --force"
+      it "should show logs" do
+        process = Process.fork { Psykube::CLI.run "logs" }
+        sleep 5
+        process.kill
+        process.wait
+      end
 
-    # Cleanup
-    psykube "delete default -y"
+      psykube_it "copy-namespace #{namespace} #{namespace}-copy --force"
 
-    it "deletes the namespace" do
-      kubectl "delete namespace #{NAMESPACE}-copy"
-      kubectl "delete namespace #{NAMESPACE}"
+      # Cleanup
+      psykube_it "delete -y"
+
+      it "deletes the namespace" do
+        kubectl "delete namespace #{namespace}-copy"
+        kubectl "delete namespace #{namespace}"
+      end
     end
   end
 end

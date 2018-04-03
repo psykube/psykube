@@ -1,4 +1,3 @@
-require "admiral"
 require "./concerns/*"
 
 class Psykube::CLI::Commands::Delete < Admiral::Command
@@ -14,14 +13,14 @@ class Psykube::CLI::Commands::Delete < Admiral::Command
 
   private def confirm?
     return true if flags.confirm
-    print "Are you sure you want to delete the assets for #{generator.name}? (y/n) "
+    print "Are you sure you want to delete the assets for #{actor.name}? (y/n) "
     gets("\n").to_s.strip == "y"
   end
 
   def run
     if confirm?
       puts "Deleting Kubernetes Manifests...".colorize(:yellow)
-      success = generator.result.items.not_nil!.map do |item|
+      success = actor.generate.items.not_nil!.reject(&.kind.== "PersistentVolumeClaim").map do |item|
         kubectl_new("delete", manifest: item)
       end.all?(&.wait.success?) || panic("Failed kubectl delete.".colorize(:red))
     end

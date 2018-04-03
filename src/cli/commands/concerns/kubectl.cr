@@ -1,5 +1,3 @@
-require "tempfile"
-
 module Psykube::CLI::Commands::Kubectl
   alias Flags = Hash(String, String | Bool)
 
@@ -85,7 +83,7 @@ module Psykube::CLI::Commands::Kubectl
   def kubectl_get_pods(phase : String? = "Running")
     arguments = @arguments
     flags = Flags.new
-    flags["--selector"] = deployment_generator.result.spec.try(&.selector.try(&.match_labels.try(&.map(&.join("=")).join(",")))).to_s
+    flags["--selector"] = deployment.try(&.spec.not_nil!.selector.try(&.match_labels.try(&.map(&.join("=")).join(",")))).to_s
     json = kubectl_json(resource: "pods", flags: flags, export: false)
     pods = Pyrite::Api::Core::V1::List.from_json(json).items.not_nil!.select do |pod|
       if pod.is_a?(Pyrite::Api::Core::V1::Pod)

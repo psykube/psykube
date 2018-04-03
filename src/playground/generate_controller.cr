@@ -3,7 +3,7 @@ struct Psykube::Playground::GenerateController
 
   def generate
     if (body = context.request.body)
-      gen = Generator::List.new(body)
+      gen = Actor.new(body).generate
       gen.to_json(context.response)
     end
   rescue e : Psykube::ParseException | Crustache::ParseError | Generator::ValidationError | ArgumentError

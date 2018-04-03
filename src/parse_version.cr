@@ -1,4 +1,5 @@
 require "yaml"
+
 version = YAML.parse(File.read "shard.yml")["version"].to_s
 if !ENV["TRAVIS_TAG"]?.to_s.empty? && ENV["TRAVIS_TAG"] != "v#{version}"
   raise "TRAVIS_TAG (#{ENV["TRAVIS_TAG"]}) does not match version (v#{version})"

@@ -1,5 +1,5 @@
 {% if env("EXCLUDE_DOCKER") != "true" %}
-require "admiral"
+
 require "./concerns/*"
 
 class Psykube::CLI::Commands::Push < Admiral::Command
@@ -17,8 +17,8 @@ class Psykube::CLI::Commands::Push < Admiral::Command
   getter cluster_name = ""
 
   def run
-    return docker_build_and_push(generator.image) if flags.tags.empty?
-    flags.tags.each { |tag| docker_build_and_push tag }
+    return docker_build_and_push(actor.all_build_contexts) if flags.tags.empty?
+    flags.tags.each { |tag| docker_build_and_push(actor.build_contexts, tag) }
   end
 end
 {% end %}

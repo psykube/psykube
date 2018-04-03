@@ -6,6 +6,6 @@ module Psykube::CLI::Commands::KubectlNamespaceFlag
   end
 
   private def namespace
-    generator.namespace
+    actor.namespace
   end
 end
