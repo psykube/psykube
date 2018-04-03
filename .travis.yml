@@ -25,6 +25,7 @@ before_script:
   - echo ${GCLOUD_ENCODED_CREDS} | base64 -d > /tmp/gcloud.json
   - gcloud auth activate-service-account --key-file=/tmp/gcloud.json
   - gcloud container clusters get-credentials waldrip-net --zone=us-central1-a --project=waldrip-net
+  - gcloud docker --authorize-only
 
 script: crystal spec --verbose
 before_deploy:
