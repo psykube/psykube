@@ -37,7 +37,7 @@ Dir.cd("spec") do
         kubectl "--namespace=#{namespace} run hello-world --image=hello-world --port=80 --expose"
       end
 
-      psykube_it "init --overwrite --namespace=#{namespace} --name=psykube-test --registry-host=gcr.io --registry-user=commercial-tribe --port http=80 #{v}"
+      psykube_it "init --overwrite --namespace=#{namespace} --name=psykube-test --registry-host=gcr.io --registry-user=psykube --port http=80 #{v}"
       psykube_it "generate"
       psykube_it "apply"
       psykube_it "status"
