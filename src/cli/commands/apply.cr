@@ -8,6 +8,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   include Docker
   define_flag push : Bool, description: "Build and push the docker image.", default: true
   define_flag image, description: "Override the generated docker image."
+  define_flag wait : Bool, description: "Wait for the rollout.", default: true
   {% else %}
   define_flag image, description: "The docker image to apply.", required: true
   {% end %}
@@ -43,7 +44,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
       end
       kubectl_new("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
     end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
-    if actor.manifest.responds_to?(:rollout) || actor.manifest.type == "Deployment"
+    if actor.manifest.type == "Deployment" && flags.wait
       kubectl_run("rollout", ["status", "#{actor.manifest.type}/#{actor.manifest.name}".downcase])
     end
     kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.now.to_json}"], flags: {"--overwrite" => "true"})
