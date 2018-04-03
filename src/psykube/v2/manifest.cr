@@ -90,6 +90,7 @@ abstract class Psykube::V2::Manifest
       init_containers:                 {type: ContainerMap, default: ContainerMap.new},
       containers:                      {type: ContainerMap},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
+      security_context: {type: Shared::SecurityContext, optional: true},
       {% if service %}
         ingress: {type: V1::Manifest::Ingress, optional: true},
         services: {type: Array(String) | Hash(String, String | V1::Manifest::Service), default: "ClusterIP", optional: true }

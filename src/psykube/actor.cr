@@ -122,7 +122,7 @@ class Psykube::Actor
 
   private def raw_metadata
     @raw_metadata ||= {
-      "cluster_name" => @cluster_name || ""
+      "cluster_name" => @cluster_name || "",
     }
   end
 

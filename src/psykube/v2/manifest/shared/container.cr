@@ -1,17 +1,18 @@
 class Psykube::V2::Manifest::Shared::Container
   Macros.mapping({
-    image:         {type: String, optional: true},
-    tag:           {type: String, optional: true},
-    build_context: {type: String, default: "."},
-    build_args:    {type: StringMap, default: StringMap.new},
-    healthcheck:   {type: Bool | V1::Manifest::Healthcheck, optional: true, default: false},
-    readycheck:    {type: Bool | V1::Manifest::Readycheck, optional: true, default: false},
-    ports:         {type: PortMap, default: PortMap.new},
-    volumes:       {type: VolumeMap, default: VolumeMap.new},
-    resources:     {type: V1::Manifest::Resources, optional: true},
-    env:           {type: Hash(String, V1::Manifest::Env | String), optional: true},
-    command:       {type: Array(String) | String, optional: true},
-    args:          {type: Array(String), optional: true},
+    image:            {type: String, optional: true},
+    tag:              {type: String, optional: true},
+    build_context:    {type: String, default: "."},
+    build_args:       {type: StringMap, default: StringMap.new},
+    healthcheck:      {type: Bool | V1::Manifest::Healthcheck, optional: true, default: false},
+    readycheck:       {type: Bool | V1::Manifest::Readycheck, optional: true, default: false},
+    ports:            {type: PortMap, default: PortMap.new},
+    volumes:          {type: VolumeMap, default: VolumeMap.new},
+    resources:        {type: V1::Manifest::Resources, optional: true},
+    env:              {type: Hash(String, V1::Manifest::Env | String), optional: true},
+    command:          {type: Array(String) | String, optional: true},
+    args:             {type: Array(String), optional: true},
+    security_context: {type: SecurityContext, optional: true},
   })
 
   def env
@@ -41,3 +42,5 @@ class Psykube::V2::Manifest::Shared::Container
     end
   end
 end
+
+require "./container/*"

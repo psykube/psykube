@@ -34,7 +34,7 @@ class Psykube::V2::Generator::Service < ::Psykube::Generator
 
   private def generate_service(name : String?, service : V1::Manifest::Service)
     Pyrite::Api::Core::V1::Service.new(
-      metadata: generate_metadata(labels: [{"service" => [self.name, name].compact.join('-') }], annotations: [service.annotations]),
+      metadata: generate_metadata(labels: [{"service" => [self.name, name].compact.join('-')}], annotations: [service.annotations]),
       spec: Pyrite::Api::Core::V1::ServiceSpec.new(
         selector: generate_selector.match_labels,
         type: service.type,

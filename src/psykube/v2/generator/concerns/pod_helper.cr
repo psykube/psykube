@@ -28,6 +28,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
       volumes: generate_volumes,
       containers: generate_containers,
       init_containers: generate_init_containers,
+      security_context: generate_security_context,
     )
   end
 
@@ -78,7 +79,8 @@ module Psykube::V2::Generator::Concerns::PodHelper
         readiness_probe: generate_container_readiness_probe(container, container.readycheck || container.healthcheck),
         ports: generate_container_ports(container.ports),
         command: generate_container_command(container.command),
-        args: generate_container_args(container.args)
+        args: generate_container_args(container.args),
+        security_context: generate_security_context(container.security_context),
       )
     end
   end
@@ -323,6 +325,33 @@ module Psykube::V2::Generator::Concerns::PodHelper
       resource: field_ref.resource,
       container_name: field_ref.container,
       divisor: field_ref.divisor
+    )
+  end
+
+  private def generate_security_context
+    if (security_context = manifest.security_context)
+      Pyrite::Api::Core::V1::PodSecurityContext.new(
+        fs_group: security_context.fs_group,
+        run_as_non_root: security_context.run_as_non_root,
+        run_as_user: security_context.run_as_user,
+        se_linux_options: security_context.se_linux_options,
+        supplemental_groups: security_context.supplemental_groups,
+      )
+    end
+  end
+
+  private def generate_security_context(nil : Nil) : Nil
+  end
+
+  private def generate_security_context(security_context : Manifest::Shared::Container::SecurityContext)
+    Pyrite::Api::Core::V1::SecurityContext.new(
+      allow_privilege_escalation: security_context.allow_privilege_escalation,
+      capabilities: security_context.capabilities,
+      privileged: security_context.privileged,
+      read_only_root_filesystem: security_context.read_only_root_filesystem,
+      run_as_non_root: security_context.run_as_non_root,
+      run_as_user: security_context.run_as_user,
+      se_linux_options: security_context.se_linux_options,
     )
   end
 
