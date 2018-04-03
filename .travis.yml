@@ -8,15 +8,20 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - libstdc++-4.9-dev
+      - docker-ce
 env:
   global:
     - PSYKUBE_DEBUG=true
     - CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
-install: 'shards install'
-before_script:
-  - curl -fsSL https://raw.githubusercontent.com/psykube/psykube/master/travis.sh | bash
+
 install: shards install
+
+before_script:
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - sudo mv ./kubectl /usr/local/bin/kubectl
+
 script: crystal spec --verbose
 before_deploy:
   - 'shards build --release --no-debug'
