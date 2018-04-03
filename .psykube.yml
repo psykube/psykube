@@ -1,15 +1,18 @@
 version: 2
 name: psykube
 type: Deployment
+
 registry_user: psykube
+context: gke_waldrip-net_us-central1-a_waldrip-net
+replicas: 5
+
 ingress:
   tls: true
   host: playground.psykube.io
+  
 containers:
   playground:
-    tag: {{git.tag}}
+    tag: {{ git.tag }}
     args: [ "playground", "--bind=0.0.0.0" ]
     ports:
       http: 8080
-    env:
-      namespace: {{metadata.namespace}}

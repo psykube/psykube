@@ -1,4 +1,4 @@
-<h1>Psykube&nbsp;&nbsp;<img height="50px" src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/psykube-duck.png"/>&nbsp;&nbsp;a faster way to deploy to Kubernetes!&nbsp;&nbsp;<a href="https://travis-ci.org/CommercialTribe/psykube"><img src="https://travis-ci.org/CommercialTribe/psykube.svg?branch=master" /></a></h1>
+<h1>Psykube&nbsp;&nbsp;<img height="50px" src="https://raw.githubusercontent.com/psykube/psykube/master/psykube-duck.png"/>&nbsp;&nbsp;a faster way to deploy to Kubernetes!&nbsp;&nbsp;<a href="https://travis-ci.org/psykube/psykube"><img src="https://travis-ci.org/psykube/psykube.svg?branch=master" /></a></h1>
 
 [What is Psykube?](#what-is-psykube)
 | [Installation](#installation)
@@ -36,14 +36,14 @@ ports:
 You can install `psykube` on OSX using homebrew by running:
 
 ```sh
-brew install commercialtribe/tools/psykube
+brew install psykube/tap/psykube
 ```
 
 ### Binaries
-You can also download the [pre-built binaries](https://github.com/CommercialTribe/psykube/releases/latest).
+You can also download the [pre-built binaries](https://github.com/psykube/psykube/releases/latest).
 
 ### Versions
-The Major, Minor, and Patch components of the version match the kubectl version used by Pyskube. The fourth component tracks the Psykube specific release. Click [here](https://github.com/jpbarela/psykube/releases) for a list of versions.
+The Major, Minor, and Patch components of the version match the kubectl version used by Pyskube. The fourth component tracks the Psykube specific release. Click [here](https://github.com/psykube/psykube/releases) for a list of versions.
 
 ## The Psykube YAML
 
@@ -163,9 +163,9 @@ ingress:
 Once you have generated the `.psykube.yml` you should be able to immediately be able to deploy using the [`psykube apply <cluster_name>`](#psykube-apply) command. Invoking the command will build your docker container, push it up to the specified registry, generate the kubernetes manifests and apply them to the proper Kubernetes environment.
 
 ## Playground
-Psykube's main purpose is to abstract away much of the complexity involved in deploying and managing an application on Kubernetes. A primary component to this is how the `.psykube.yml` file translates into the files we generate for kubernetes. You can boot up the playground using the [`psykube playground`](#psykube-playground) command or by visiting [psykube.commercialtribe.ninja](https://psykube.commercialtribe.ninja/#bmFtZTogcHN5a3ViZQp0eXBlOiBEZXBsb3ltZW50CnJlZ2lzdHJ5X2hvc3Q6IGdjci5pbwpyZWdpc3RyeV91c2VyOiBjb21tZXJjaWFsLXRyaWJlCgphcmdzOiBbICJwbGF5Z3JvdW5kIiwgIi0tYmluZD0wLjAuMC4wIiBdCnBvcnRzOgogIGh0dHA6IDgwODAKaW5ncmVzczoKICB0bHM6IHRydWUKICBob3N0OiBwc3lrdWJlLmNvbW1lcmNpYWx0cmliZS5uaW5qYQoKY2x1c3RlcnM6CiAgZGVmYXVsdDoKICAgIGNvbnRleHQ6IGdrZV9jb21tZXJjaWFsLXRyaWJlX3VzLWVhc3QxLWNfc3RhZ2luZw==).
+Psykube's main purpose is to abstract away much of the complexity involved in deploying and managing an application on Kubernetes. A primary component to this is how the `.psykube.yml` file translates into the files we generate for kubernetes. You can boot up the playground using the [`psykube playground`](#psykube-playground) command or by visiting [psykube.io](https://psykube.io/#bmFtZTogcHN5a3ViZQp0eXBlOiBEZXBsb3ltZW50CnJlZ2lzdHJ5X2hvc3Q6IGdjci5pbwpyZWdpc3RyeV91c2VyOiBjb21tZXJjaWFsLXRyaWJlCgphcmdzOiBbICJwbGF5Z3JvdW5kIiwgIi0tYmluZD0wLjAuMC4wIiBdCnBvcnRzOgogIGh0dHA6IDgwODAKaW5ncmVzczoKICB0bHM6IHRydWUKICBob3N0OiBwc3lrdWJlLmNvbW1lcmNpYWx0cmliZS5uaW5qYQoKY2x1c3RlcnM6CiAgZGVmYXVsdDoKICAgIGNvbnRleHQ6IGdrZV9jb21tZXJjaWFsLXRyaWJlX3VzLWVhc3QxLWNfc3RhZ2luZw==).
 
-<img width="100%" src="https://raw.githubusercontent.com/CommercialTribe/psykube/master/demo.gif"/>
+<img width="100%" src="https://raw.githubusercontent.com/psykube/psykube/master/demo.gif"/>
 
 ## Commands
 
