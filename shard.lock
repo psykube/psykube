@@ -2,7 +2,7 @@ version: 1.0
 shards:
   admiral:
     github: jwaldrip/admiral.cr
-    version: 1.3.3
+    version: 1.5.0
 
   crustache:
     github: jwaldrip/crustache
@@ -25,5 +25,6 @@ shards:
     version: 1.4.0
 
   pyrite:
-    github: jwaldrip/pyrite
-    commit: c7b302f44d7ddb3716ab079f4adb82a9b132d8d8
+    github: psykube/pyrite
+    commit: 0f9e89db7d35131e0d1d4090b28c4351a185cbb0
+
