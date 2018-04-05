@@ -6,7 +6,7 @@ struct Psykube::Playground::GenerateController
       gen = Actor.new(body).generate
       gen.to_json(context.response)
     end
-  rescue e : Psykube::ParseException | Crustache::ParseError | Generator::ValidationError | ArgumentError
+  rescue e : Psykube::Error | YAML::ParseException
     context.response.status_code = 422
     context.response << e.message
   end
