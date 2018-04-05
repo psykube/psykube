@@ -1,4 +1,4 @@
-FROM crystallang/crystal:0.24.1
+FROM crystallang/crystal:0.24.2
 
 # Deps
 ARG NPM_CONFIG_LOGLEVEL=warn
@@ -26,8 +26,8 @@ RUN rm `which shards`
 RUN mkdir /workdir
 WORKDIR /workdir
 RUN git init
-RUN git config --global user.email "engineering@commercialtribe.com"
-RUN git config --global user.name "CommercialTribe, Inc."
+RUN git config --global user.email "jason@waldrip.net"
+RUN git config --global user.name "Jason Waldrip"
 RUN touch test.text
 RUN git add -A
 RUN git commit -m "initial commit"
