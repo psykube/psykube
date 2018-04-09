@@ -11,7 +11,7 @@ class Psykube::Actor
     File.open(filename) do |io|
       initialize(
         io: io,
-        cluster_name: flags.responds_to?(:cluster) ? flags.cluster : nil,
+        cluster_name: command.cluster_name,
         context: flags.responds_to?(:context) ? flags.context : nil,
         namespace: flags.responds_to?(:namespace) ? flags.namespace : nil,
         basename: flags.responds_to?(:image) ? flags.image : nil,

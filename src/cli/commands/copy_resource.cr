@@ -4,11 +4,11 @@ class Psykube::CLI::Commands::CopyResource < Admiral::Command
   include Kubectl
   include PsykubeFileFlag
   include KubectlContextFlag
+  include KubectlClusterArg
 
   define_help description: "Copy a resource."
 
   define_flag force : Bool, "Overwrite the resource if it exists."
-  define_flag cluster, "The cluster configuration to use.", default: "default"
   define_flag source_namespace, description: "The namespace to copy the resource from"
   define_flag namespace, description: "The namespace to copy the resource to", long: "dest-namespace"
   define_flag explicit : Bool,
@@ -49,10 +49,6 @@ class Psykube::CLI::Commands::CopyResource < Admiral::Command
     else
       "#{arguments.resource_name}-copy"
     end
-  end
-
-  private def cluster_name
-    flags.cluster
   end
 
   private def namespace

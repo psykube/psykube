@@ -19,12 +19,6 @@ module Psykube::CLI::Commands::PsykubeFileFlag
     flags.tag
   end
 
-  private def namespace_flag
-    flags = @flags
-    return unless flags.responds_to? :namespace
-    flags.namespace
-  end
-
   private def actor
     Actor.new(self)
   end
