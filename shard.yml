@@ -1,9 +1,9 @@
 name: psykube
-version: 2.0.0-beta4
+version: 2.0.0-beta5
 crystal: 0.24.2
 
 authors:
-  - Jason Waldrip <jwaldrip@commercialtribe.com>
+  - Jason Waldrip <jason@waldrip.net>
   - Eric Irwin <eirwin@commercialtribe.com>
   - Jacob Caban-Tomski <jcabantomski@commercialtribe.com>
 

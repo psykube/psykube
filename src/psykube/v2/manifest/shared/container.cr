@@ -14,10 +14,6 @@ class Psykube::V2::Manifest::Shared::Container
     security_context: {type: SecurityContext, optional: true},
   })
 
-  def build
-    @build || Build.new
-  end
-
   def env
     env = @env || {} of String => Manifest::Env | String
     return env unless ports?
