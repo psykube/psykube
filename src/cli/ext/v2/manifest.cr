@@ -3,7 +3,7 @@ def Psykube::V2::Manifest.new(command : Psykube::CLI::Commands::Init)
   name = flags.name || File.basename(Dir.current)
 
   # Build container
-  container = flags.image ? Shared::Container.new(image: flags.image) : Shared::Container.new(build_context: ".")
+  container = flags.image ? Shared::Container.new(image: flags.image) : Shared::Container.new
 
   # Set Resources
   container.resources = V1::Manifest::Resources.from_flags(

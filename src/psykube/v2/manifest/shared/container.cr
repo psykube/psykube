@@ -2,8 +2,7 @@ class Psykube::V2::Manifest::Shared::Container
   Macros.mapping({
     image:            {type: String, optional: true},
     tag:              {type: String, optional: true},
-    build_context:    {type: String, default: "."},
-    build_args:       {type: StringMap, default: StringMap.new},
+    build:            {type: Build, optional: true},
     healthcheck:      {type: Bool | Manifest::Healthcheck, optional: true, default: false},
     readycheck:       {type: Bool | Manifest::Readycheck, optional: true, default: false},
     ports:            {type: PortMap, default: PortMap.new},
@@ -14,6 +13,10 @@ class Psykube::V2::Manifest::Shared::Container
     args:             {type: Array(String), optional: true},
     security_context: {type: SecurityContext, optional: true},
   })
+
+  def build
+    @build || Build.new
+  end
 
   def env
     env = @env || {} of String => Manifest::Env | String

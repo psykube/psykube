@@ -41,31 +41,27 @@ abstract class Psykube::V2::Manifest
     end
 
     def get_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
-      cluster = get_cluster cluster_name
       containers.map do |container_name, container|
-        BuildContext.new(
-          build: !container.image,
-          image: container.image || [basename, container_name].join('.'),
-          tag: container.image ? nil : (container.tag || tag),
-          args: container.build_args.merge(cluster.container_overrides.build_args),
-          context: container.build_context || build_context,
-          dockerfile: cluster.container_overrides.dockerfile
-        )
+        get_build_context(container_name, container, cluster_name, basename, tag, build_context)
       end
     end
 
     def get_init_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
-      cluster = get_cluster cluster_name
       init_containers.map do |container_name, container|
-        BuildContext.new(
-          build: !container.image,
-          image: container.image || [basename, container_name].join('.'),
-          tag: container.image ? nil : (container.tag || tag),
-          args: container.build_args.merge(cluster.container_overrides.build_args),
-          context: container.build_context || build_context,
-          dockerfile: cluster.container_overrides.dockerfile
-        )
+        get_build_context(container_name, container, cluster_name, basename, tag, build_context)
       end
+    end
+
+    def get_build_context(container_name : String, container : Shared::Container, cluster_name : String, basename : String, tag : String?, build_context : String)
+      cluster = get_cluster cluster_name
+      BuildContext.new(
+        build: !container.image || !!container.build,
+        image: container.image || [basename, container_name].join('.'),
+        tag: container.image ? nil : (container.tag || tag),
+        args: (container.build.try(&.args) || StringMap.new).merge(cluster.container_overrides.build_args),
+        context: container.build.try(&.context) || build_context,
+        dockerfile: cluster.container_overrides.dockerfile
+      )
     end
 
     def get_cluster(name)
