@@ -1,5 +1,4 @@
 class Psykube::Actor
-  @digest : String?
   @git_data : StringMap?
   @metadata : StringMap?
   @raw_metadata : StringMap?

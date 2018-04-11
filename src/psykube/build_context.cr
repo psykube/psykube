@@ -1,12 +1,13 @@
 struct Psykube::BuildContext
   @image : String
   getter build : Bool
-  getter tag : String
+  getter tag : String?
   getter context : String
   getter dockerfile : String?
   getter args : Array(String)
 
-  def initialize(*, image : String, tag : String?, @context, @dockerfile, @build, args)
+  def initialize(*, image : String, tag : String?, @context, @dockerfile, build, args)
+    @build = build
     parts = image.split(':')
     image = parts[0]
     tag = parts[1]? || tag || get_digest
@@ -16,10 +17,11 @@ struct Psykube::BuildContext
   end
 
   def image(tag = nil)
-    [@image, tag || @tag].join(':')
+    [@image, tag || @tag].compact.join(':')
   end
 
   private def get_digest(kind : String = "sha256")
+    return unless build
     files = IgnoreParser.new(".dockerignore", context).filter.reject { |f| File.directory? f }
     hexdigest = files.each_with_object(OpenSSL::Digest.new(kind)) do |file, digest|
       File.open(file) do |f|
