@@ -31,7 +31,7 @@ script: crystal spec --verbose
 before_deploy:
   - 'shards build --release --no-debug'
   - 'tar -czC ./bin psykube > ./psykube-$TRAVIS_OS_NAME-$TRAVIS_TAG.tar.gz'
-  - 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+  - 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
 deploy:
   -
     provider: releases
