@@ -3,10 +3,6 @@ set -e
 
 PSYKUBE_VERSION=${PSYKUBE_VERSION-latest}
 
-# Install latest docker
-sudo apt-get update
-sudo apt-get install docker-ce
-
 # Install Kubectl
 curl -fsSLO https://storage.googleapis.com/kubernetes-release/release/$(curl -fsSL https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 chmod +x ./kubectl
