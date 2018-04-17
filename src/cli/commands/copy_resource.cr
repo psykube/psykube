@@ -2,7 +2,9 @@ require "./concerns/*"
 
 class Psykube::CLI::Commands::CopyResource < Admiral::Command
   include Kubectl
-  include KubectlAll
+  include PsykubeFileFlag
+  include KubectlContextFlag
+  include KubectlClusterArg
 
   define_help description: "Copy a resource."
 
