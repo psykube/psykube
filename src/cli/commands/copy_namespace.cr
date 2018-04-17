@@ -5,12 +5,9 @@ class Psykube::CLI::Commands::CopyNamespace < Admiral::Command
   DESCRIPTION       = "Copy the specified namespace if the target namespace does not exist."
 
   include Kubectl
-  include PsykubeFileFlag
-  include KubectlContextFlag
+  include KubectlAll
 
   define_help description: DESCRIPTION
-
-  define_flag cluster, "The cluster configuration to use.", default: "default"
   define_flag resources : String,
     description: "The resource types to copy.",
     short: r,
@@ -24,10 +21,6 @@ class Psykube::CLI::Commands::CopyNamespace < Admiral::Command
 
   define_argument from, description: "The namespace to copy resources from", required: true
   define_argument to, description: "The namespace to copy resources to", required: true
-
-  def cluster_name
-    flags.cluster
-  end
 
   private def namespace
     arguments.from

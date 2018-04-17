@@ -1,5 +1,3 @@
-{% if env("EXCLUDE_DOCKER") != "true" %}
-
 require "./concerns/*"
 
 class Psykube::CLI::Commands::Push < Admiral::Command
@@ -21,4 +19,3 @@ class Psykube::CLI::Commands::Push < Admiral::Command
     flags.tags.each { |tag| docker_build_and_push(actor.build_contexts, tag) }
   end
 end
-{% end %}

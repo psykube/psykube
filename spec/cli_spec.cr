@@ -31,13 +31,8 @@ Dir.cd("spec") do
     namespace = "psykube-test-#{UUID.random}"
 
     describe Psykube::CLI do
-      it "should set up the environment" do
-        kubectl "delete namespace #{namespace}"
-        kubectl "create namespace #{namespace}"
-        kubectl "--namespace=#{namespace} run hello-world --image=hello-world --port=80 --expose"
-      end
-
       psykube_it "init --overwrite --namespace=#{namespace} --name=psykube-test --registry-host=gcr.io --registry-user=waldrip-net --port http=80 #{v}"
+      psykube_it "create-namespace"
       psykube_it "generate"
       psykube_it "apply"
       psykube_it "status"
@@ -66,6 +61,7 @@ Dir.cd("spec") do
 
       # Cleanup
       psykube_it "delete -y"
+      psykube_it "delete-namespace -y"
 
       it "deletes the namespace" do
         kubectl "delete namespace #{namespace}-copy"

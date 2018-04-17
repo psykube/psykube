@@ -102,6 +102,32 @@ module Psykube::CLI::Commands::Kubectl
     panic "Error: #{e.message}".colorize(:red)
   end
 
+  def kubectl_create_namespace(namespace : String)
+    namespace = NameCleaner.clean(namespace)
+    begin
+      Pyrite::Api::Core::V1::Namespace.from_json(kubectl_json(resource: "namespace", name: namespace, panic: false))
+      puts "Namespace exists, skipping create...".colorize(:light_yellow)
+    rescue
+      puts "Creating Namespace: `#{namespace}`...".colorize(:cyan)
+      kubectl_run(command: "apply", manifest: Pyrite::Api::Core::V1::Namespace.new(
+        metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
+          name: namespace,
+          labels: LABELS,
+          annotations: ANNOTATIONS
+        )
+      ))
+    end
+  end
+
+  def kubectl_delete_namespace(namespace : String, force = false)
+    puts "Deleting Namespace: `#{namespace}`...".colorize(:cyan)
+    kubectl_run(command: "delete", panic: false, manifest: Pyrite::Api::Core::V1::Namespace.new(
+      metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
+        name: NameCleaner.clean(namespace)
+      )
+    ))
+  end
+
   def kubectl_copy_namespace(from : String, to : String, resources : String, force : Bool = false, explicit : Bool = false)
     from = NameCleaner.clean(from)
     to = NameCleaner.clean(to)

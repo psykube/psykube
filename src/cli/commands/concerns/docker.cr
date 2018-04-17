@@ -1,4 +1,3 @@
-{% if env("EXCLUDE_DOCKER") != "true" %}
 module Psykube::CLI::Commands::Docker
   def self.bin
     @@bin ||= ENV["DOCKER_BIN"]? || `which docker`.strip
@@ -55,4 +54,3 @@ module Psykube::CLI::Commands::Docker
     end
   end
 end
-{% end %}
