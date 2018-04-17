@@ -4,16 +4,18 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   include Kubectl
   include KubectlAll
   include Docker
+
   define_flag push : Bool, description: "Build and push the docker image.", default: true
   define_flag image, description: "Override the generated docker image."
   define_flag wait : Bool, description: "Wait for the rollout.", default: true
   define_flag tag, description: "The docker tag to apply.", short: t
   define_flag force : Bool, description: "Force the recreation of the kubernetes resources."
-  define_flag explicit_copy : Bool, description: %(Only copy resources that have the annotation "psykube.io/allow-copy" set to "true"), default: false
+  define_flag create_namespace, description: "create the namespace before the given apply"
 
   define_help description: "Apply the kubernetes manifests."
 
   def run
+    kubectl_create_namespace(namespace) if flags.create_namespace
     docker_build_and_push(actor.all_build_contexts.select(&.build)) if !flags.tag && !flags.image && flags.push
     result = actor.generate
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
