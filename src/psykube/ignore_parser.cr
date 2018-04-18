@@ -1,7 +1,6 @@
 struct Psykube::IgnoreParser
   getter ignores : Array(Regex) = [] of Regex
   getter exceptions : Array(Regex) = [] of Regex
-  getter context : String
 
   def prepare_regexes(patterns : Array(String))
     patterns.map { |pattern| prepare_regexes pattern }
@@ -18,7 +17,7 @@ struct Psykube::IgnoreParser
   def prepare_partial_regex(pattern : String)
     patterns = pattern.split('/')
     String.build do |s|
-      s << "^#{context}/" && patterns.shift if patterns[0]? == ""
+      s << "^//" && patterns.shift if patterns[0]? == ""
       patterns.map_with_index do |item, index|
         s << '('
         s << "[\/]?(" if index > 0
@@ -30,20 +29,14 @@ struct Psykube::IgnoreParser
     end
   end
 
-  def initialize(filename : String, context : String? = nil)
-    if context
-      @context = context
-      filename = File.join(context, filename)
-    else
-      @context = File.dirname filename
-    end
+  def initialize(filename : String)
     return unless File.exists?(filename)
     File.open(filename) do |io|
-      initialize(io, @context)
+      initialize(io)
     end
   end
 
-  def initialize(io : IO, @context : String)
+  def initialize(io : IO)
     ignores = [] of String
     exceptions = [] of String
     io.each_line
@@ -58,7 +51,7 @@ struct Psykube::IgnoreParser
   end
 
   def filter
-    files = Dir.glob(File.join(context, "**/*"))
+    files = Dir.glob("./**/*")
     start = Time.now
     ignored = files.select { |file| ignores.any? { |i| file =~ i } }
     not_ignored = files.select { |file| exceptions.any? { |e| file =~ e } }

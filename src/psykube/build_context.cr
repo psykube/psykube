@@ -22,13 +22,15 @@ struct Psykube::BuildContext
 
   private def get_digest(kind : String = "sha256")
     return unless build
-    files = IgnoreParser.new(".dockerignore", context).filter.reject { |f| File.directory? f }
-    hexdigest = files.each_with_object(OpenSSL::Digest.new(kind)) do |file, digest|
-      File.open(file) do |f|
-        digest.update(f)
-      end
-    end.hexdigest
-    "#{kind}-#{hexdigest}"
+    Dir.cd(context) do
+      files = IgnoreParser.new(".dockerignore").filter.reject { |f| File.directory? f }
+      hexdigest = files.each_with_object(OpenSSL::Digest.new(kind)) do |file, digest|
+        File.open(file) do |f|
+          digest.update(f)
+        end
+      end.hexdigest
+      "#{kind}-#{hexdigest}"
+    end
   end
 
   def_equals @image, @build, @tag, @context, @dockerfile, @args

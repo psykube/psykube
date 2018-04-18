@@ -33,7 +33,12 @@ class Psykube::V2::Generator::Ingress < ::Psykube::Generator
   end
 
   private def cluster_tls
-    cluster_ingress.tls || manifest_ingress.tls
+    case cluster_ingress.tls
+    when .nil?
+      manifest_ingress.tls
+    else
+      cluster_ingress.tls
+    end
   end
 
   private def acme?
