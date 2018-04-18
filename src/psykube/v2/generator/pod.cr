@@ -4,7 +4,7 @@ class Psykube::V2::Generator::Pod < ::Psykube::Generator
 
   protected def result
     Pyrite::Api::Core::V1::Pod.new(
-      metadata: generate_metadata,
+      metadata: generate_metadata(psykube_meta: false),
       spec: generate_pod_spec
     )
   end

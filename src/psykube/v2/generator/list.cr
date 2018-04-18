@@ -6,7 +6,9 @@ class Psykube::V2::Generator::List < ::Psykube::Generator
         list << Secret.result(self)
         list << ServiceAccount.result(self)
         list.concat Role.result(self)
+        list.concat RoleBinding.result(self)
         list.concat ClusterRole.result(self)
+        list.concat ClusterRoleBinding.result(self)
         list << podable
 
         case manifest.type

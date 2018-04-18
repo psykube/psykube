@@ -26,5 +26,5 @@ shards:
 
   pyrite:
     github: psykube/pyrite
-    commit: 0f9e89db7d35131e0d1d4090b28c4351a185cbb0
+    commit: 270584bf9bb1c1ed7ff29b7607cfdde4c5b611cd
 

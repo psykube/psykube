@@ -11,29 +11,31 @@ class Psykube::V2::Generator::RoleBinding < ::Psykube::Generator
   end
 
   private def generate_role_bindings(roles : Array(Manifest::Shared::Role | String))
-    cluster_roles.keys.map do |cluster_role|
-      generate_cluster_role_binding(ClusterRole)
+    roles.map do |role|
+      generate_role_binding(role)
     end
   end
 
-  private def generate_cluster_role_binding(name : String)
-    Pyrite::Api::Rbac::V1::ClusterRoleBinding.new(
-      metadata: generate_metadata([self.name, name].join('-')),
+  private def generate_role_binding(name : String)
+    Pyrite::Api::Rbac::V1::RoleBinding.new(
+      metadata: generate_metadata(name: [self.name, name].join('-')),
       subjects: [generate_subject(manifest.service_account)],
       role_ref: Pyrite::Api::Rbac::V1::RoleRef.new(
-        kind: "ClusterRole",
-        name: name
+        kind: "Role",
+        name: name,
+        api_group: ""
       )
     )
   end
 
-  private def generate_cluster_role_binding(cluster_role : Manifest::Shared::Role)
-    Pyrite::Api::Rbac::V1::ClusterRoleBinding.new(
-      metadata: generate_metadata([self.name, name].join('-')),
+  private def generate_role_binding(role : Manifest::Shared::Role)
+    Pyrite::Api::Rbac::V1::RoleBinding.new(
+      metadata: generate_metadata(name: [self.name, name].join('-')),
       subjects: [generate_subject(manifest.service_account)],
       role_ref: Pyrite::Api::Rbac::V1::RoleRef.new(
-        kind: "ClusterRole",
-        name: [self.name, cluster_role,name].join('-')
+        kind: "Role",
+        name: [self.name, role.name].join('-'),
+        api_group: ""
       )
     )
   end
@@ -41,7 +43,8 @@ class Psykube::V2::Generator::RoleBinding < ::Psykube::Generator
   private def generate_subject(service_account_name : String)
     Pyrite::Api::Rbac::V1::Subject.new(
       kind: "ServiceAccount",
-      name: service_account_name
+      name: service_account_name,
+      namespace: namespace
     )
   end
 

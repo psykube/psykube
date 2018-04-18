@@ -27,7 +27,7 @@ class Psykube::V2::Generator::PersistentVolumeClaims < ::Psykube::Generator
   private def generate_persistent_volume_claim(name : String, claim : Manifest::Volume::Claim)
     volume_name = [self.name, name].join('-')
     Pyrite::Api::Core::V1::PersistentVolumeClaim.new(
-      metadata: generate_metadata(name: volume_name, annotations: [claim.annotations]),
+      metadata: generate_metadata(name: volume_name, annotations: [claim.annotations], psykube_meta: false),
       spec: Pyrite::Api::Core::V1::PersistentVolumeClaimSpec.new(
         storage_class_name: claim.storage_class,
         access_modes: claim.access_modes || ["ReadWriteOnce"],
