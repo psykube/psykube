@@ -150,7 +150,7 @@ class Psykube::V1::Manifest
       image: image || basename,
       tag: cluster.image_tag || image_tag || (image ? nil : tag),
       args: build_args.merge(cluster.build_args),
-      context: @build_context || build_context,
+      context: File.expand_path(@build_context || build_context, build_context),
       dockerfile: dockerfile
     )]
   end

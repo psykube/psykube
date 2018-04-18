@@ -60,7 +60,7 @@ abstract class Psykube::V2::Manifest
         image: container.image || [basename, container_name].join('.'),
         tag: container.image ? nil : (container.tag || tag),
         args: (container.build.try(&.args) || StringMap.new).merge(cluster.container_overrides.build_args),
-        context: container.build.try(&.context) || build_context,
+        context: File.expand_path(container.build.try(&.context) || build_context, build_context),
         dockerfile: cluster.container_overrides.dockerfile
       )
     end
