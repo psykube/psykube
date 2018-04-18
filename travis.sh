@@ -9,7 +9,7 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 get-release(){
   PSYKUBE_VERSION=${PSYKUBE_VERSION-latest}
   PSYKUBE_RELEASES_URL="https://api.github.com/repos/psykube/psykube/releases/${PSYKUBE_VERSION}"
-  if [ -z "${GITHUB_API_TOKEN}" ] ; then
+  if [ -n "${GITHUB_API_TOKEN}" ] ; then
     curl -fsSL -H "Authorization: token ${GITHUB_API_TOKEN}" ${PSYKUBE_RELEASES_URL}
   else
     curl -fsSL ${PSYKUBE_RELEASES_URL}
