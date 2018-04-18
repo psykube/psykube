@@ -10,7 +10,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   define_flag wait : Bool, description: "Wait for the rollout.", default: true
   define_flag tag, description: "The docker tag to apply.", short: t
   define_flag force : Bool, description: "Force the recreation of the kubernetes resources."
-  define_flag create_namespace, description: "create the namespace before the given apply"
+  define_flag create_namespace : Bool, description: "create the namespace before the given apply"
 
   define_help description: "Apply the kubernetes manifests."
 

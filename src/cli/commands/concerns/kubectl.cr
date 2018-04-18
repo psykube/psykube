@@ -105,10 +105,8 @@ module Psykube::CLI::Commands::Kubectl
   def kubectl_create_namespace(namespace : String)
     namespace = NameCleaner.clean(namespace)
     begin
-      Pyrite::Api::Core::V1::Namespace.from_json(kubectl_json(resource: "namespace", name: namespace, panic: false))
-      puts "Namespace exists, skipping create...".colorize(:light_yellow)
+      Pyrite::Api::Core::V1::Namespace.from_json(kubectl_json(resource: "namespace", error: false, name: namespace, panic: false))
     rescue
-      puts "Creating Namespace: `#{namespace}`...".colorize(:cyan)
       kubectl_run(command: "apply", manifest: Pyrite::Api::Core::V1::Namespace.new(
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           name: namespace,
@@ -120,8 +118,7 @@ module Psykube::CLI::Commands::Kubectl
   end
 
   def kubectl_delete_namespace(namespace : String, force = false)
-    puts "Deleting Namespace: `#{namespace}`...".colorize(:cyan)
-    kubectl_run(command: "delete", panic: false, manifest: Pyrite::Api::Core::V1::Namespace.new(
+    kubectl_run(command: "delete", error: false, panic: false, manifest: Pyrite::Api::Core::V1::Namespace.new(
       metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
         name: NameCleaner.clean(namespace)
       )
