@@ -29,7 +29,21 @@ module Psykube::V2::Generator::Concerns::PodHelper
       containers: generate_containers,
       init_containers: generate_init_containers,
       security_context: generate_security_context,
+      image_pull_secrets: generate_image_pull_secrets(manifest.image_pull_secrets),
+      service_account_name: generate_service_account_name(manifest.service_account)
     )
+  end
+
+  private def generate_service_account_name(name : String)
+    name
+  end
+
+  private def generate_service_account_name(service_account : Manifest::Shared::ServiceAccount)
+    self.name
+  end
+
+  private def generate_service_account_name(service_account : Nil)
+     self.name if manifest.roles || manifest.cluster_roles
   end
 
   private def generate_job_template
@@ -461,5 +475,11 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_container_args(strings : Nil) : Nil
+  end
+
+  private def generate_image_pull_secrets(nil : Nil) : Nil
+  end
+
+  private def generate_image_pull_secrets(names : Array(String))
   end
 end

@@ -4,13 +4,14 @@ class Psykube::V2::Generator::List < ::Psykube::Generator
       items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
         list << ConfigMap.result(self)
         list << Secret.result(self)
+        list << ServiceAccount.result(self)
+        list.concat Role.result(self)
+        list.concat ClusterRole.result(self)
         list << podable
 
         case manifest.type
         when "Deployment", "Pod", "DaemonSet", "StatefulSet"
-          Service.result(self).tap do |services|
-            list.concat(services) if services
-          end
+          list.concat Service.result(self)
           list << Ingress.result(self)
         end
 
@@ -20,9 +21,7 @@ class Psykube::V2::Generator::List < ::Psykube::Generator
 
         # Add PVCs
         unless manifest.type == "StatefulSet"
-          PersistentVolumeClaims.result(self).tap do |claims|
-            list.concat(claims) if claims
-          end
+          list.concat PersistentVolumeClaims.result(self)
         end
       end.compact
     )

@@ -1,5 +1,3 @@
-require "../../name_cleaner"
-
 class Psykube::V2::Manifest::CronJob < ::Psykube::V2::Manifest
   declare("CronJob", {
     completions:                   {type: Int32, optional: true},

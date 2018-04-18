@@ -1,5 +1,3 @@
-require "../../name_cleaner"
-
 class Psykube::V2::Manifest::DaemonSet < ::Psykube::V2::Manifest
   declare("DaemonSet", {
     ready_timeout: {type: Int32, optional: true},

@@ -29,6 +29,10 @@ class Psykube::V2::Generator::StatefulSet < ::Psykube::Generator
   end
 
   private def generate_volume_claim_templates
-    PersistentVolumeClaims.result(self)
+    PersistentVolumeClaims.result(self).tap do |pvcs|
+      pvcs.each do |pvc|
+        pvc.metadata.not_nil!.annotations = nil
+      end
+    end
   end
 end

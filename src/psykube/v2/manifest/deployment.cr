@@ -1,5 +1,3 @@
-require "../../name_cleaner"
-
 class Psykube::V2::Manifest::Deployment < ::Psykube::V2::Manifest
   declare("Deployment", {
     min_ready_seconds: {type: Int32, optional: true},

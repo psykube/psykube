@@ -1,11 +1,11 @@
 class Psykube::V2::Generator::PersistentVolumeClaims < ::Psykube::Generator
   include ::Psykube::Concerns::Volumes
+  cast_manifest Manifest
 
   protected def result
     result = manifest_claims.map do |name, volume|
       generate_persistent_volume_claim(name, volume)
     end.compact
-    result unless result.empty?
   end
 
   private def manifest_claims

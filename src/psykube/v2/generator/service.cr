@@ -3,9 +3,12 @@ class Psykube::V2::Generator::Service < ::Psykube::Generator
   cast_manifest Manifest::Serviceable
 
   protected def result
-    if manifest.ports? && (services = manifest.services)
-      generate_services services
-    end
+    return [] of Pyrite::Api::Core::V1::Service unless manifest.ports? && (services = manifest.services)
+    generate_services services
+  end
+
+  private def generate_services(nil : Nil)
+    [] of Pyrite::Api::Core::V1::Service
   end
 
   private def generate_services(service : String)
