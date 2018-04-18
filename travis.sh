@@ -21,4 +21,4 @@ get-download-url(){
 }
 
 # Install Psykube
-curl -fsSL `get-release | get-download-url` | sudo tar -xzC /usr/local/bin
+# curl -fsSL `get-release | get-download-url` | sudo tar -xzC /usr/local/bin
