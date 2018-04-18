@@ -21,11 +21,11 @@ class Psykube::V2::Generator::Ingress < ::Psykube::Generator
 
   private def cluster_ingress_annotations
     sets = [
-      {"kubernetes.io/tls-acme" => acme?.to_s},
+      acme? ? {"kubernetes.io/tls-acme" => "true"} : nil,
       manifest_ingress.annotations,
       cluster_ingress.annotations,
     ].compact
-    sets.reduce { |p, n| p.merge n }
+    sets.reduce { |p, n| p.merge n } unless sets.empty?
   end
 
   private def manifest_ingress
