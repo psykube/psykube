@@ -4,7 +4,7 @@ require "./ext/**"
 require "./commands/*"
 
 class Psykube::CLI::Main < Admiral::Command
-  rescue_from Psykube::ParseException do |e|
+  rescue_from Psykube::Error do |e|
     panic e.message
   end
 
