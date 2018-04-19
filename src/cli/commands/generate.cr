@@ -11,8 +11,6 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
   define_flag pretty : Bool, description: "Prettyify the output", default: true
 
   def run
-    if (io = @output_io).is_a?(IO::FileDescriptor)
-      flags.pretty ? actor.to_pretty_json(io) : actor.to_json(io)
-    end
+    actor.to_yaml(@output_io)
   end
 end

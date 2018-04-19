@@ -12,7 +12,7 @@ class Psykube::Actor
   getter namespace : String = "default"
   getter dir : String = "."
 
-  delegate to_json, to: generate
+  delegate to_yaml, to: generate
 
   def initialize(io, cluster_name = nil, context = nil, namespace = nil, basename = nil, tag = nil)
     @namespace = namespace if namespace

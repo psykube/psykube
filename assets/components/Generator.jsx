@@ -56,12 +56,6 @@ export default class Generator extends React.Component {
     f.then(
       () => this.activeFetch
     ).then(
-      text => new Promise(
-        r => r(JSON.stringify(deepSort(JSON.parse(text)), null, 2))
-      ).catch(() => {
-        throw new Error(text);
-      })
-    ).then(
       result => {
         this.setState({ result, error: "", fetching: false })
         store.set("source", source);

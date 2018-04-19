@@ -36,10 +36,6 @@ abstract class Psykube::Generator
     result.to_yaml(*args, **props)
   end
 
-  def to_json(*args, **props)
-    result.to_json(*args, **props)
-  end
-
   abstract def result
 
   private def cluster_config_map

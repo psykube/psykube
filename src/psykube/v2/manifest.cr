@@ -66,6 +66,7 @@ abstract class Psykube::V2::Manifest
     end
 
     def get_cluster(name)
+      return Shared::Cluster.new if clusters.empty?
       clusters[name]? || raise Error.new("cluster does not exist: `#{name}`")
     end
 
@@ -91,7 +92,7 @@ abstract class Psykube::V2::Manifest
       init_containers:                 {type: ContainerMap, default: ContainerMap.new},
       containers:                      {type: ContainerMap},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
-      volumes:                         {type: VolumeMap, default: VolumeMap.new},
+      volumes:                         {type: VolumeMap, optional: true},
       security_context: {type: Shared::SecurityContext, optional: true},
       {% if service %}
         ingress: {type: Manifest::Ingress, optional: true},

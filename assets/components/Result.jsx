@@ -40,7 +40,7 @@ export default class Result extends Component {
     return(
       <div style={style}>
         <div style={statusStyle} />
-        <SyntaxHighlighter language="javascript" style={ocean} customStyle={innerStyle}>
+        <SyntaxHighlighter language="yaml" style={ocean} customStyle={innerStyle}>
           {this.renderErrors() + result}
         </SyntaxHighlighter>
       </div>

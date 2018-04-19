@@ -4,7 +4,7 @@ struct Psykube::Playground::GenerateController
   def generate
     if (body = context.request.body)
       gen = Actor.new(body).generate
-      gen.to_json(context.response)
+      gen.to_yaml(context.response)
     end
   rescue e : Psykube::Error | YAML::ParseException
     context.response.status_code = 422

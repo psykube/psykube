@@ -25,7 +25,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   private def generate_pod_spec
     Pyrite::Api::Core::V1::PodSpec.new(
       restart_policy: manifest.restart_policy,
-      volumes: generate_volumes,
+      volumes: generate_volumes(manifest.volumes),
       containers: generate_containers,
       init_containers: generate_init_containers,
       security_context: generate_security_context,
@@ -100,11 +100,15 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   # Volumes
-  private def generate_volumes
-    manifest.volumes.map do |name, spec|
+  private def generate_volumes(volumes : VolumeMap)
+    volumes.map do |name, spec|
       volume_name = [self.name, name].join('-')
       generate_volume(volume_name, spec)
-    end unless manifest.volumes.empty?
+    end unless volumes.empty?
+  end
+
+  private def generate_volumes(any)
+    nil
   end
 
   private def generate_volume(volume_name : String, size : String)
@@ -337,15 +341,15 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   # Volume Mounts
-  private def generate_container_volume_mounts(volumes : Nil)
-  end
-
   private def generate_container_volume_mounts(volumes : VolumeMountMap)
     volumes.map do |name, spec|
-      raise Error.new("Invalid volume name: #{name}") unless manifest.volumes[name]?
+      raise Error.new("Invalid volume name: #{name}") unless manifest.volumes.try(&.[name]?)
       volume_name = [self.name, name].join('-')
       generate_container_volume_mount(volume_name, spec)
     end
+  end
+
+  private def generate_container_volume_mounts(any)
   end
 
   private def generate_container_volume_mount(volume_name : String, mount_path : String)

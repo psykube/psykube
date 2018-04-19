@@ -2,14 +2,17 @@ class Psykube::V1::Generator::PersistentVolumeClaims < ::Psykube::Generator
   include ::Psykube::Concerns::Volumes
 
   protected def result
-    result = manifest_claims.map do |mount_path, volume|
-      generate_persistent_volume_claim(mount_path, volume)
-    end.compact
-    result unless result.empty?
+    generate_claims(manifest.volumes)
   end
 
-  private def manifest_claims
-    manifest.volumes.select { |k, v| volume_is_claim? v }.compact
+  private def generate_claims(volumes : VolumeMap)
+    volumes.select { |k, v| volume_is_claim? v }.map do |mount_path, volume|
+      generate_persistent_volume_claim(mount_path, volume)
+    end.compact
+  end
+
+  private def generate_claims(any)
+    [] of Pyrite::Api::Core::V1::PersistentVolumeClaim
   end
 
   private def volume_is_claim?(volume : Manifest::Volume)

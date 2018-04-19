@@ -58,7 +58,7 @@ module Psykube::CLI::Commands::Kubectl
     # Generate manifests and assign to --filename
     if manifest
       file = Tempfile.new(manifest.kind)
-      file.print manifest.to_json
+      file.print manifest.to_yaml
       file.flush
       flags["--filename"] = file.path
     end
