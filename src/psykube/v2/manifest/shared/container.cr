@@ -6,7 +6,7 @@ class Psykube::V2::Manifest::Shared::Container
     healthcheck:      {type: Bool | Manifest::Healthcheck, optional: true, default: false},
     readycheck:       {type: Bool | Manifest::Readycheck, optional: true, default: false},
     ports:            {type: PortMap, default: PortMap.new},
-    volumes:          {type: Hash(String, String), default: {} of String => String},
+    volumes:          {type: Hash(String, String), optional: true},
     resources:        {type: Manifest::Resources, optional: true},
     env:              {type: Hash(String, Manifest::Env | String), optional: true},
     command:          {type: Array(String) | String, optional: true},

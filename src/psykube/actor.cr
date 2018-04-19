@@ -5,7 +5,7 @@ class Psykube::Actor
   @manifest : Manifest::Any?
   @template : Crustache::Syntax::Template
   @build_contexts : Array(BuildContext)?
-  getter cluster_name : String?
+  property cluster_name : String?
   getter basename : String
   getter tag : String?
   getter context : String? = nil
@@ -13,6 +13,7 @@ class Psykube::Actor
   getter dir : String = "."
 
   delegate to_yaml, to: generate
+  delegate clusters, to: manifest
 
   def initialize(io, cluster_name = nil, context = nil, namespace = nil, basename = nil, tag = nil)
     @namespace = namespace if namespace
@@ -26,11 +27,12 @@ class Psykube::Actor
   end
 
   def cluster
-    raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !manifest.clusters.empty?
     manifest.get_cluster(cluster_name || "")
   end
 
   def generate : Pyrite::Api::Core::V1::List
+    raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !manifest.clusters.empty?
+    raise Generator::ValidationError.new("cluster does not exist: #{cluster_name}") if cluster.initialized? && !manifest.clusters.empty?
     manifest.generate(self)
   end
 

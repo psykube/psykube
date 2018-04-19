@@ -3,7 +3,7 @@ require "file_utils"
 require "./manifest"
 
 abstract class Psykube::Generator
-  class ValidationError < Exception; end
+  class ValidationError < Error; end
 
   alias TemplateData = StringMap
 

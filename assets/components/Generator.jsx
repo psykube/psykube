@@ -1,5 +1,4 @@
 import React from 'react';
-import deepSort from 'deep-sort-object';
 import store from "store"
 import Source from './Source';
 import Result from './Result';
@@ -7,9 +6,13 @@ import Result from './Result';
 const outerStyle = {
   position: "relative",
   margin: 0,
+  flexDirection: "column",
+  display: "flex",
+  alignItems: "stretch",
+  alignContent: "stretch",
+  justifyContent: "space-between",
+  maxHeight: "100%",
   width: "50%",
-  height: "100%",
-  float: "left",
   overflow: "scroll",
 }
 
@@ -17,6 +20,9 @@ export default class Generator extends React.Component {
   constructor(...props){
     super(...props)
     this.state = {
+      error: null,
+      clusters: [],
+      cluster: null,
       source: "",
       result: "",
       fetching: false,
@@ -27,10 +33,20 @@ export default class Generator extends React.Component {
     this.setSource(e.target.value);
   }
 
+  handleClusterChange = e => {
+    this.setCluster(e.target.value);
+  }
+
   setSource = source => {
     clearTimeout(this.submitTimeout);
     this.submitTimeout = setTimeout(this.submit, 500);
     this.setState({ source })
+  }
+
+  setCluster = cluster => {
+    clearTimeout(this.submitTimeout);
+    this.submitTimeout = setTimeout(this.submit, 500);
+    this.setState({ cluster })
   }
 
   handleNewHash = () => {
@@ -42,28 +58,26 @@ export default class Generator extends React.Component {
   }
 
   submit = () => {
-    const { source } = this.state;
+    const { source, cluster } = this.state;
     clearTimeout(this.submitTimeout)
     this.setState({ fetching: true })
-    this.activeFetch = fetch('/generate', {
-      method: 'POST',
-      body: this.state.source,
-      headers: new Headers({
-        'Content-Type': 'application/yaml'
+    this.activeFetch =
+      fetch(`/generate${cluster ? `?cluster=${cluster}` : ''}`, {
+        method: 'POST',
+        body: this.state.source,
+        headers: new Headers({
+          'Content-Type': 'application/yaml'
+        })
       })
-    }).then(r => r.text())
-    const f = this.activeFetch;
-    f.then(
-      () => this.activeFetch
-    ).then(
-      result => {
-        this.setState({ result, error: "", fetching: false })
+      .then(r => r.json())
+      .then(({ result = "", clusters = [], current_cluster = null, error = null }) => {
+        this.setState({ result, clusters, cluster: current_cluster, error, fetching: false })
         store.set("source", source);
         window.location.hash = source ? btoa(source) : '';
-      }
-    ).catch(
-      ({ message: error }) => this.setState({ error, fetching: false })
-    );
+      })
+      .catch(
+        ({ message: error }) => this.setState({ error, fetching: false })
+      );
   }
 
   componentDidMount(){
@@ -73,6 +87,6 @@ export default class Generator extends React.Component {
   render = () =>
     <div {...this.props}>
       <Source style={{ ...outerStyle, backgroundColor: "#ddd" }} source={this.state.source} onChange={this.handleSourceChange} />
-      <Result style={outerStyle} fetching={this.state.fetching} result={this.state.result} error={this.state.error} />
+      <Result style={outerStyle} {...this.state} onClusterChange={this.handleClusterChange} />
     </div>
 }

@@ -1,4 +1,6 @@
 class Psykube::V2::Manifest::Shared::Cluster
+  getter? initialized : Bool = false
+
   Macros.mapping({
     registry_host:       {type: String, optional: true},
     registry_user:       {type: String, optional: true},
@@ -16,6 +18,7 @@ class Psykube::V2::Manifest::Shared::Cluster
   })
 
   def initialize(@context : String? = nil)
+    @initialized = true
   end
 end
 

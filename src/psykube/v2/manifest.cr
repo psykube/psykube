@@ -66,8 +66,7 @@ abstract class Psykube::V2::Manifest
     end
 
     def get_cluster(name)
-      return Shared::Cluster.new if clusters.empty?
-      clusters[name]? || raise Error.new("cluster does not exist: `#{name}`")
+      clusters[name]? || Shared::Cluster.new
     end
 
     Macros.manifest(2, {{type}}, {{properties}}, {

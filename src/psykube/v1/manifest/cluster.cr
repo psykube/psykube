@@ -1,4 +1,6 @@
 class Psykube::V1::Manifest::Cluster
+  getter? initialized : Bool = false
+
   Macros.mapping({
     image_tag:     {type: String, optional: true},
     registry_host: {type: String, optional: true},
@@ -17,6 +19,7 @@ class Psykube::V1::Manifest::Cluster
   })
 
   def initialize(@context : String? = nil)
+    @initialized = true
   end
 
   def config_map

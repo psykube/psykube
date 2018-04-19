@@ -2,7 +2,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
   alias ValidationError = Psykube::Generator::ValidationError
   include Psykube::Concerns::Volumes
 
-  class InvalidHealthcheck < Exception; end
+  class InvalidHealthcheck < Error; end
 
   # Templates and specs
   private def generate_pod_template
