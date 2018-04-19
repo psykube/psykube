@@ -64,6 +64,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
 
   # Containers
   private def generate_containers
+    puts @actor.build_contexts
     manifest.containers.map_with_index do |(container_name, container), index|
       Pyrite::Api::Core::V1::Container.new(
         name: container_name,

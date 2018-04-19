@@ -5,7 +5,7 @@ struct Psykube::Playground::GenerateController
     data = begin
       body = context.request.body || IO::Memory.new
       actor = Actor.new(body)
-      actor.cluster_name = context.request.query_params["cluster"]? || actor.clusters.keys.first
+      actor.cluster_name = context.request.query_params["cluster"]? || actor.clusters.keys.first?
       {
         result: actor.generate.to_yaml,
         clusters: actor.clusters.keys,
