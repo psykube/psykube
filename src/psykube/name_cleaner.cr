@@ -8,4 +8,7 @@ module Psykube::NameCleaner
       /[^-a-z0-9]/i, "-"
     ).downcase
   end
+
+  def self.clean(nil : Nil) : Nil
+  end
 end

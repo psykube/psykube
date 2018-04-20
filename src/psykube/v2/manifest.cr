@@ -53,16 +53,32 @@ abstract class Psykube::V2::Manifest
     end
 
     def get_build_context(container_name : String, container : Shared::Container, cluster_name : String, basename : String, tag : String?, build_context : String)
+      image = container.image || [basename, container_name].join('-')
       build = container.image.nil? || !container.build.nil?
       cluster = get_cluster cluster_name
       BuildContext.new(
         build: build,
-        image: container.image || [basename, container_name].join('.'),
+        image: image,
         tag: container.image ? nil : (container.tag || tag),
         args: (container.build.try(&.args) || StringMap.new).merge(cluster.container_overrides.build_args),
         context: File.expand_path(container.build.try(&.context) || build_context, build_context),
-        dockerfile: cluster.container_overrides.dockerfile
+        dockerfile: cluster.container_overrides.dockerfile,
+        login: get_login(image, image_pull_secrets)
       )
+    end
+
+    def get_login(image : String, nil : Nil)
+    end
+
+    def get_login(image : String, creds : Array(String | Shared::PullSecretCredentials))
+      case (cred = creds.find(&.is_a? Shared::PullSecretCredentials))
+      when Shared::PullSecretCredentials
+        BuildContext::Login.new(
+          server: cred.server,
+          username: cred.username,
+          password: cred.password
+        )
+      end
     end
 
     def get_cluster(name)
@@ -75,7 +91,7 @@ abstract class Psykube::V2::Manifest
       service_account:                 {type: String | Shared::ServiceAccount, optional: true},
       roles:                           {type: Array(String | Shared::Role), optional: true},
       cluster_roles:                   {type: Array(String | Shared::Role), optional: true},
-      image_pull_secrets:              {type: Array(String), optional: true},
+      image_pull_secrets:              {type: Array(String | Shared::PullSecretCredentials), optional: true},
       prefix:                          {type: String, optional: true, envvar: "PSYKUBE_PREFIX"},
       suffix:                          {type: String, optional: true, envvar: "PSYKUBE_SUFFIX"},
       registry_host:                   {type: String, optional: true, envvar: "PSYKUBE_REGISTRY_HOST"},

@@ -40,13 +40,13 @@ class Psykube::V2::Generator::ServiceAccount < ::Psykube::Generator
 
   private def generate_secret_ref(ref : Manifest::Shared::ObjectReference)
     Pyrite::Api::Core::V1::ObjectReference.new(
-      api_version:      ref.api_version,
-      field_path:       ref.field_path,
-      kind:             ref.kind,
-      name:             ref.name,
-      namespace:        ref.namespace,
+      api_version: ref.api_version,
+      field_path: ref.field_path,
+      kind: ref.kind,
+      name: ref.name,
+      namespace: ref.namespace,
       resource_version: ref.resource_version,
-      uid:              ref.uid,
+      uid: ref.uid,
     )
   end
 end

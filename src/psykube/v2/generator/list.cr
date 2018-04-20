@@ -5,6 +5,7 @@ class Psykube::V2::Generator::List < ::Psykube::Generator
         list << ConfigMap.result(self)
         list << Secret.result(self)
         list << ServiceAccount.result(self)
+        list.concat ImagePullSecret.result(self)
         list.concat Role.result(self)
         list.concat RoleBinding.result(self)
         list.concat ClusterRole.result(self)
