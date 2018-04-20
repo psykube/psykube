@@ -47,6 +47,12 @@ def Psykube::V2::Manifest.new(command : Psykube::CLI::Commands::Init)
       raise "Unsupported type #{type}"
     end
 
+  # Set Docker Info
+  if !flags.image
+    manifest.registry_host = flags.registry_host
+    manifest.registry_user = flags.registry_user || "[dockerhub username]"
+  end
+
   # Set Namespace
   manifest.namespace = flags.namespace
 
