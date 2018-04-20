@@ -7,10 +7,23 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
 
   define_help description: "Generate the kubernetes manifests."
   define_flag image, description: "Override the docker image."
+  define_flag output, description: "Write the raw kubernetes files to a folder.", short: o
   define_flag tag, description: "The docker tag to apply.", short: t
-  define_flag pretty : Bool, description: "Prettyify the output", default: true
 
   def run
-    actor.to_yaml(@output_io)
+    if (output = flags.output)
+      list_manifest = actor.generate
+      Dir.cd(output) do
+        list_manifest.items.not_nil!.each do |item|
+          kind = item.kind.downcase
+          name = item.metadata.not_nil!.name.to_s
+          File.open("#{name}.#{kind}.yaml", "w+") do |io|
+            item.to_yaml(io)
+          end
+        end
+      end
+    else
+      actor.to_yaml(@output_io)
+    end
   end
 end

@@ -1,7 +1,6 @@
 module Psykube::Concerns::MetadataHelper
   private def generate_metadata(*, name : String = self.name, labels = [] of StringMap?, annotations = [] of StringMap?, psykube_meta = true, **metadata)
     annotations << combined_annotations
-    annotations << ANNOTATIONS if psykube_meta
     labels << {"app" => self.name}
     labels << combined_labels
     labels << LABELS if psykube_meta

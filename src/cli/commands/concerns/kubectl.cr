@@ -110,8 +110,7 @@ module Psykube::CLI::Commands::Kubectl
       kubectl_run(command: "apply", manifest: Pyrite::Api::Core::V1::Namespace.new(
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           name: namespace,
-          labels: LABELS,
-          annotations: ANNOTATIONS
+          labels: LABELS
         )
       ))
     end
@@ -171,8 +170,7 @@ module Psykube::CLI::Commands::Kubectl
       namespace = Pyrite::Api::Core::V1::Namespace.new(
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           name: to,
-          labels: LABELS,
-          annotations: ANNOTATIONS
+          labels: LABELS
         )
       )
       items.unshift namespace

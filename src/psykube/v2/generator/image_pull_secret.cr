@@ -16,7 +16,7 @@ class Psykube::V2::Generator::ImagePullSecret < ::Psykube::Generator
     [] of Pyrite::Api::Core::V1::Secret
   end
 
-  private def generate_image_pull_secret(cred : Manifest::Shared::PullSecretCredentials) : Nil
+  private def generate_image_pull_secret(cred : Manifest::Shared::PullSecretCredentials)
     Pyrite::Api::Core::V1::Secret.new(
       metadata: generate_metadata(name: [name, NameCleaner.clean(cred.server)].compact.join('-')),
       type: "kubernetes.io/dockerconfigjson",
