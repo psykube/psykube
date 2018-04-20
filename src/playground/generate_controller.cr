@@ -7,13 +7,13 @@ struct Psykube::Playground::GenerateController
       actor = Actor.new(body)
       actor.cluster_name = context.request.query_params["cluster"]? || actor.clusters.keys.first?
       {
-        result: actor.generate.to_yaml,
-        clusters: actor.clusters.keys,
-        current_cluster: actor.cluster_name
+        result:          actor.generate.to_yaml,
+        clusters:        actor.clusters.keys,
+        current_cluster: actor.cluster_name,
       }
     rescue e : Psykube::Error | YAML::ParseException
       context.response.status_code = 422
-      { error: e.message }
+      {error: e.message}
     end
 
     data.to_json(context.response)

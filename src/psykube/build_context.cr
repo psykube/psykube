@@ -1,12 +1,15 @@
 struct Psykube::BuildContext
+  record Login, server : String?, username : String, password : String
+
   @image : String
   getter build : Bool
   getter tag : String?
   getter context : String
   getter dockerfile : String?
   getter args : Array(String)
+  getter login : Login?
 
-  def initialize(*, image : String, tag : String?, @context, @dockerfile, build, args)
+  def initialize(*, image : String, tag : String?, @context, @dockerfile, build, args, @login = nil)
     @build = build
     parts = image.split(':')
     image = parts[0]

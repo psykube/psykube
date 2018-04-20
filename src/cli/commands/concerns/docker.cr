@@ -43,13 +43,17 @@ module Psykube::CLI::Commands::Docker
 
   def docker_push(build_context : BuildContext, tag : String? = nil)
     image = tag && tag.includes?(":") ? tag : build_context.image(tag)
+    if (login = build_context.login)
+      password = IO::Memory.new.tap(&.puts login.password).tap(&.rewind)
+      docker_run ["login", login.server, "-u=#{login.username}", "--password-stdin"].compact, input: password
+    end
     docker_run ["push", image]
   end
 
-  def docker_run(args : Array(String))
+  def docker_run(args : Array(String), *, input = Process::Redirect::Close)
     File.exists?(Docker.bin) || panic("docker not found")
     puts (["DEBUG:", Docker.bin] + args).join(" ").colorize(:dark_gray) if ENV["PSYKUBE_DEBUG"]? == "true"
-    Process.run(Docker.bin, args, output: @output_io, error: @error_io).tap do |process|
+    Process.run(Docker.bin, args, input: input, output: @output_io, error: @error_io).tap do |process|
       panic "Process: `#{Docker.bin} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
     end
   end

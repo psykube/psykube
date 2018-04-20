@@ -43,7 +43,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_service_account_name(service_account : Nil)
-     self.name if manifest.roles || manifest.cluster_roles
+    self.name if manifest.roles || manifest.cluster_roles
   end
 
   private def generate_job_template
@@ -485,6 +485,17 @@ module Psykube::V2::Generator::Concerns::PodHelper
   private def generate_image_pull_secrets(nil : Nil) : Nil
   end
 
-  private def generate_image_pull_secrets(names : Array(String))
+  private def generate_image_pull_secrets(creds : Array(String | Manifest::Shared::PullSecretCredentials))
+    creds.map do |cred|
+      generate_image_pull_secret cred
+    end
+  end
+
+  private def generate_image_pull_secret(name : String)
+    Pyrite::Api::Core::V1::LocalObjectReference.new name: name
+  end
+
+  private def generate_image_pull_secret(cred : Manifest::Shared::PullSecretCredentials)
+    generate_image_pull_secret [name, NameCleaner.clean(cred.server)].compact.join('-')
   end
 end
