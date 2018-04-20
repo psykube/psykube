@@ -71,8 +71,15 @@ abstract class Psykube::V2::Manifest
     end
 
     def get_login(image : String, creds : Array(String | Shared::PullSecretCredentials))
-      case (cred = creds.find(&.is_a? Shared::PullSecretCredentials))
-      when Shared::PullSecretCredentials
+      cred = creds.find do |cred|
+        case cred
+        when Shared::PullSecretCredentials
+          parts = image.split('/')
+          parts.size < 3 || cred.server == parts[0]
+        end
+      end
+
+      if cred.is_a? Shared::PullSecretCredentials
         BuildContext::Login.new(
           server: cred.server,
           username: cred.username,
