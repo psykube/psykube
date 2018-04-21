@@ -1,5 +1,5 @@
 struct Psykube::BuildContext
-  record Login, server : String?, username : String, password : String
+  record Login, server : String, username : String, password : String
 
   @image : String
   getter build : Bool

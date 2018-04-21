@@ -7,6 +7,7 @@ module Psykube::CLI::Commands::Docker
     define_flag build_args : Set(String),
       description: "The build args to add to docker build.",
       default: Set(String).new
+    define_flag login : Bool, default: false, description: "Login with the specified image pull secrets before pushing."
   end
 
   def build_args
@@ -43,9 +44,9 @@ module Psykube::CLI::Commands::Docker
 
   def docker_push(build_context : BuildContext, tag : String? = nil)
     image = tag && tag.includes?(":") ? tag : build_context.image(tag)
-    if (login = build_context.login)
+    if flags.login && (login = build_context.login)
       password = IO::Memory.new.tap(&.puts login.password).tap(&.rewind)
-      docker_run ["login", login.server, "-u=#{login.username}", "--password-stdin"].compact, input: password
+      docker_run ["login", login.server, "-u=#{login.username}", "--password-stdin"], input: password
     end
     docker_run ["push", image]
   end
