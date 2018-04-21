@@ -7,7 +7,7 @@ module Psykube::CLI::Commands::Docker
     define_flag build_args : Set(String),
       description: "The build args to add to docker build.",
       default: Set(String).new
-    define_flag login : Bool, default: false, description: "Login with the specified image pull secrets before pushing."
+    define_flag login : Bool, default: true, description: "Don't login with the specified image pull secrets before pushing."
   end
 
   def build_args

@@ -2,7 +2,7 @@ version: 1.0
 shards:
   admiral:
     github: jwaldrip/admiral.cr
-    version: 1.6.0
+    version: 1.6.1
 
   crustache:
     github: jwaldrip/crustache
