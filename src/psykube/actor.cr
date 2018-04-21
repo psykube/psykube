@@ -41,11 +41,11 @@ class Psykube::Actor
   end
 
   def build_contexts
-    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, build_context: @dir).uniq
+    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, build_context: @dir)
   end
 
   def init_build_contexts
-    @build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, build_context: @dir).uniq
+    @build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, build_context: @dir)
   end
 
   def manifest

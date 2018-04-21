@@ -52,9 +52,28 @@ abstract class Psykube::V2::Manifest
       end
     end
 
+    def unique_contexts
+      (init_containers.values + containers.values).map do |container|
+        container.build.try(&.context)
+      end.uniq
+    end
+
+    def get_container_image(container : Shared::Container, basename : String) : String
+      if (image = container.image)
+        image
+      elsif unique_contexts.size > 1
+        [basename, NameCleaner.clean(container.build.try(&.context))].compact.join('-')
+      else
+        basename
+      end
+    end
+
+    def get_context_path(container : Shared::Container, fallback : String)
+      container.build.try(&.context) || fallback
+    end
+
     def get_build_context(container_name : String, container : Shared::Container, cluster_name : String, basename : String, tag : String?, build_context : String)
-      prefix = (init_containers.size + containers.size) > 1
-      image = container.image || (!prefix || build_context == "." ? basename : [basename, NameCleaner.clean(context)].join('-'))
+      image = get_container_image(container, basename)
       build = container.image.nil? || !container.build.nil?
       cluster = get_cluster cluster_name
       BuildContext.new(
@@ -62,8 +81,8 @@ abstract class Psykube::V2::Manifest
         image: image,
         tag: container.image ? nil : (container.tag || tag),
         args: (container.build.try(&.args) || StringMap.new).merge(cluster.container_overrides.build_args),
-        context: File.expand_path(container.build.try(&.context) || build_context, build_context),
-        dockerfile: cluster.container_overrides.dockerfile,
+        context: get_context_path(container, build_context),
+        dockerfile: container.build.try(&.dockerfile) || cluster.container_overrides.dockerfile,
         login: get_login(image, image_pull_secrets)
       )
     end
