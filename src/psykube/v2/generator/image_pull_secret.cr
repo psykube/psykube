@@ -21,7 +21,7 @@ class Psykube::V2::Generator::ImagePullSecret < ::Psykube::Generator
       metadata: generate_metadata(name: [name, NameCleaner.clean(cred.server)].compact.join('-')),
       type: "kubernetes.io/dockerconfigjson",
       data: {
-        ".dockerconfigjson" => generate_cred(cred).to_json
+        ".dockerconfigjson" => Base64.urlsafe_encode(generate_cred(cred).to_json)
       }
     )
   end
@@ -36,7 +36,7 @@ class Psykube::V2::Generator::ImagePullSecret < ::Psykube::Generator
           "username" => cred.username,
           "password" => cred.password,
           "email" => cred.email,
-          "auth" => Base64.encode([cred.username, cred.password].join(':'))
+          "auth" => Base64.urlsafe_encode([cred.username, cred.password].join(':'))
         }
       }
     }

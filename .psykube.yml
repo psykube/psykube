@@ -6,7 +6,6 @@ image_pull_secrets:
   - server: quay.io
     username: {{ env.DOCKER_USERNAME }}
     password: {{ env.DOCKER_PASSWORD }}
-    email: {{ env.DOCKER_EMAIL }}
 
 registry_host: quay.io
 registry_user: psykube
