@@ -53,7 +53,8 @@ abstract class Psykube::V2::Manifest
     end
 
     def get_build_context(container_name : String, container : Shared::Container, cluster_name : String, basename : String, tag : String?, build_context : String)
-      image = container.image || [basename, container_name].join('-')
+      prefix = (init_containers.size + containers.size) > 1
+      image = container.image || (!prefix || build_context == "." ? basename : [basename, NameCleaner.clean(context)].join('-'))
       build = container.image.nil? || !container.build.nil?
       cluster = get_cluster cluster_name
       BuildContext.new(
