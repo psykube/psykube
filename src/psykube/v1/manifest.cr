@@ -143,19 +143,19 @@ class Psykube::V1::Manifest
     clusters[name]? || Cluster.new
   end
 
-  def get_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
+  def get_build_contexts(cluster_name : String, basename : String, tag : String?, working_directory : String)
     cluster = get_cluster cluster_name
     [BuildContext.new(
       build: !image,
       image: image || basename,
       tag: cluster.image_tag || image_tag || (image ? nil : tag),
       args: build_args.merge(cluster.build_args),
-      context: File.expand_path(@build_context || build_context, build_context),
+      context: File.expand_path(@build_context || ".", working_directory),
       dockerfile: dockerfile
     )]
   end
 
-  def get_init_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
+  def get_init_build_contexts(cluster_name : String, basename : String, tag : String?, working_directory : String)
     [] of BuildContext
   end
 end

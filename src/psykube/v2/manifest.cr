@@ -40,40 +40,40 @@ abstract class Psykube::V2::Manifest
       Generator::List.new(self, actor).result
     end
 
-    def get_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
+    def get_build_contexts(cluster_name : String, basename : String, tag : String?, working_directory : String)
       containers.map do |container_name, container|
-        get_build_context(container_name, container, cluster_name, basename, tag, build_context)
+        get_build_context(container_name, container, cluster_name, basename, tag, working_directory)
       end
     end
 
-    def get_init_build_contexts(cluster_name : String, basename : String, tag : String?, build_context : String)
+    def get_init_build_contexts(cluster_name : String, basename : String, tag : String?, working_directory : String)
       init_containers.map do |container_name, container|
-        get_build_context(container_name, container, cluster_name, basename, tag, build_context)
+        get_build_context(container_name, container, cluster_name, basename, tag, working_directory)
       end
     end
 
     def unique_contexts
       (init_containers.values + containers.values).map do |container|
-        container.build.try(&.context)
+        container.build
       end.uniq
     end
 
-    def get_container_image(container : Shared::Container, basename : String) : String
+    def get_container_image(container_name : String, container : Shared::Container, basename : String) : String
       if (image = container.image)
         image
       elsif unique_contexts.size > 1
-        [basename, NameCleaner.clean(container.build.try(&.context))].compact.join('-')
+        [basename, container_name].compact.join('-')
       else
         basename
       end
     end
 
-    def get_context_path(container : Shared::Container, fallback : String)
-      container.build.try(&.context) || fallback
+    def get_context_path(container : Shared::Container, working_directory : String)
+      File.expand_path(container.build.try(&.context) || ".", working_directory)
     end
 
-    def get_build_context(container_name : String, container : Shared::Container, cluster_name : String, basename : String, tag : String?, build_context : String)
-      image = get_container_image(container, basename)
+    def get_build_context(container_name : String, container : Shared::Container, cluster_name : String, basename : String, tag : String?, working_directory : String)
+      image = get_container_image(container_name, container, basename)
       build = container.image.nil? || !container.build.nil?
       cluster = get_cluster cluster_name
       BuildContext.new(
@@ -81,7 +81,7 @@ abstract class Psykube::V2::Manifest
         image: image,
         tag: container.image ? nil : (container.tag || tag),
         args: (container.build.try(&.args) || StringMap.new).merge(cluster.container_overrides.build_args),
-        context: get_context_path(container, build_context),
+        context: get_context_path(container, working_directory),
         dockerfile: container.build.try(&.dockerfile) || cluster.container_overrides.dockerfile,
         login: get_login(image, image_pull_secrets)
       )
