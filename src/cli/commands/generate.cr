@@ -12,14 +12,13 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
 
   def run
     if (output = flags.output)
-      list_manifest = actor.generate
-      Dir.cd(output) do
-        list_manifest.items.not_nil!.each do |item|
-          kind = item.kind.downcase
-          name = item.metadata.not_nil!.name.to_s
-          File.open("#{name}.#{kind}.yaml", "w+") do |io|
-            item.to_yaml(io)
-          end
+      output_dir = File.expand_path(output)
+      actor.generate.items.not_nil!.each do |item|
+        kind = item.kind.downcase
+        name = item.metadata.not_nil!.name.to_s
+        filename = File.join(output_dir, "#{name}.#{kind}.yaml")
+        File.open(filename, "w+") do |io|
+          item.to_yaml(io)
         end
       end
     else

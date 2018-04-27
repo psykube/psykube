@@ -3,10 +3,10 @@ class Psykube::Actor
     flags = command.flags
     filename = flags.file
     if File.directory? File.expand_path filename
-      @dir = filename
+      @working_directory = filename
       filename = File.join(filename, ".psykube.yml")
     else
-      @dir = File.dirname filename
+      @working_directory = File.dirname filename
     end
     File.open(filename) do |io|
       initialize(

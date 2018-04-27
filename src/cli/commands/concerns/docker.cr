@@ -24,18 +24,20 @@ module Psykube::CLI::Commands::Docker
   end
 
   def docker_build(build_context : BuildContext, tag : String? = nil)
-    args = ["build"]
-    build_args.each do |arg|
-      args << "--build-arg=#{arg}"
+    Dir.cd actor.working_directory do
+      args = ["build"]
+      build_args.each do |arg|
+        args << "--build-arg=#{arg}"
+      end
+      build_context.args.each do |arg|
+        args << "--build-arg=#{arg}"
+      end
+      image = tag && tag.includes?(":") ? tag : build_context.image(tag)
+      args << "--tag=#{image}"
+      args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
+      args << build_context.context
+      docker_run args
     end
-    build_context.args.each do |arg|
-      args << "--build-arg=#{arg}"
-    end
-    image = tag && tag.includes?(":") ? tag : build_context.image(tag)
-    args << "--tag=#{image}"
-    args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
-    args << build_context.context
-    docker_run args
   end
 
   def docker_push(build_contexts : Array(BuildContext), tag : String? = nil)

@@ -10,7 +10,7 @@ class Psykube::Actor
   getter tag : String?
   getter context : String? = nil
   getter namespace : String = "default"
-  getter dir : String = "."
+  getter working_directory : String = File.expand_path(".")
 
   delegate to_yaml, to: generate
   delegate clusters, to: manifest
@@ -41,11 +41,11 @@ class Psykube::Actor
   end
 
   def build_contexts
-    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, working_directory: @dir)
+    @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, working_directory: @working_directory)
   end
 
   def init_build_contexts
-    @build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, working_directory: @dir)
+    @build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, working_directory: @working_directory)
   end
 
   def manifest
@@ -87,7 +87,7 @@ class Psykube::Actor
   end
 
   private def git_data
-    @git_data ||= Dir.cd(dir) do
+    @git_data ||= Dir.cd(working_directory) do
       {"sha" => git_sha, "branch" => git_branch, "tag": git_tag}
     end
   end
