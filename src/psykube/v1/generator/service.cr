@@ -14,17 +14,30 @@ class Psykube::V1::Generator::Service < ::Psykube::Generator
           load_balancer_source_ranges: service.load_balancer_source_ranges,
           session_affinity: service.session_affinity,
           external_ips: service.external_ips,
-          ports: generate_ports
+          ports: generate_ports(service.ports)
         )
       )
     end
   end
 
-  private def generate_ports
-    manifest.ports.map do |name, port|
+  private def generate_ports(nil : Nil) : Nil
+  end
+
+  private def generate_ports(ports : Hash(String, Int32 | String))
+    ports.map do |name, port|
       Pyrite::Api::Core::V1::ServicePort.new(
         name: name,
         port: lookup_port(port),
+        protocol: "TCP"
+      )
+    end
+  end
+
+  private def generate_ports(ports : Array(String))
+    ports.map do |name|
+      Pyrite::Api::Core::V1::ServicePort.new(
+        name: name,
+        port: lookup_port(name),
         protocol: "TCP"
       )
     end

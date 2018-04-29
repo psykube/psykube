@@ -71,4 +71,14 @@ class Psykube::V2::Generator::Service < ::Psykube::Generator
       )
     end
   end
+
+  private def generate_ports(ports : Array(String))
+    ports.map do |name|
+      Pyrite::Api::Core::V1::ServicePort.new(
+        name: name,
+        port: lookup_port(name),
+        protocol: "TCP"
+      )
+    end
+  end
 end

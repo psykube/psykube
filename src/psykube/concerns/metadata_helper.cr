@@ -4,12 +4,14 @@ module Psykube::Concerns::MetadataHelper
     labels << {"app" => self.name}
     labels << combined_labels
     labels << LABELS if psykube_meta
+    final_annotations = annotations.compact.reduce { |p, n| p.merge(n) }
+    final_labels = labels.compact.reduce { |p, n| p.merge(n) }
     Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
       **metadata,
       name: name,
       namespace: namespace,
-      annotations: annotations.compact.reduce { |p, n| p.merge(n) },
-      labels: labels.compact.reduce { |p, n| p.merge(n) }
+      annotations: final_annotations.empty? ? nil : final_annotations,
+      labels: final_labels.empty? ? nil : final_labels
     )
   end
 
