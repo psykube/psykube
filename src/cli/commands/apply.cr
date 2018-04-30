@@ -19,13 +19,13 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
     docker_build_and_push(actor.all_build_contexts.select(&.build)) if !flags.tag && !flags.image && flags.push
     result = actor.generate
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
-    result.items.not_nil!.map do |item|
+    result.items.not_nil!.each do |item|
       force = flags.force
       if item.is_a?(Pyrite::Api::Core::V1::Service) && (service = Pyrite::Api::Core::V1::Service.from_json(kubectl_json(manifest: item, panic: false, error: false)) rescue nil)
         item.metadata.not_nil!.resource_version = service.metadata.not_nil!.resource_version
       end
-      kubectl_new("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
-    end.all?(&.wait.success?) || panic("Failed kubectl apply.".colorize(:red))
+      kubectl_run("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
+    end
     if actor.manifest.type == "Deployment" && flags.wait
       kubectl_run("rollout", ["status", "#{actor.manifest.type}/#{actor.manifest.name}".downcase])
     end
