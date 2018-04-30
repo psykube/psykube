@@ -40,6 +40,10 @@ class Psykube::Actor
     (build_contexts + init_build_contexts).uniq
   end
 
+  def buildable_contexts
+    all_build_contexts.select(&.build)
+  end
+
   def build_contexts
     @build_contexts ||= manifest.get_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, working_directory: @working_directory)
   end

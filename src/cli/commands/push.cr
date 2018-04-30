@@ -4,6 +4,7 @@ class Psykube::CLI::Commands::Push < Admiral::Command
   include Docker
 
   include PsykubeFileFlag
+  include KubectlClusterArg
   define_help description: "Build and push the docker image."
 
   define_flag tags : Set(String),
@@ -12,10 +13,13 @@ class Psykube::CLI::Commands::Push < Admiral::Command
     short: t,
     default: Set(String).new
 
-  getter cluster_name = ""
-
   def run
-    return docker_build_and_push(actor.all_build_contexts) if flags.tags.empty?
-    flags.tags.each { |tag| docker_build_and_push(actor.build_contexts, tag) }
+    if flags.tags.empty?
+      docker_build_and_push(actor.buildable_contexts)
+    else
+      flags.tags.each do |tag|
+        docker_build_and_push(actor.buildable_contexts, tag)
+      end
+    end
   end
 end

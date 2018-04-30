@@ -16,7 +16,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
 
   def run
     kubectl_create_namespace(namespace) if flags.create_namespace
-    docker_build_and_push(actor.all_build_contexts.select(&.build)) if !flags.tag && !flags.image && flags.push
+    docker_build_and_push(actor.buildable_contexts) if !flags.tag && !flags.image && flags.push
     result = actor.generate
     puts "Applying Kubernetes Manifests...".colorize(:cyan)
     result.items.not_nil!.each do |item|
