@@ -47,19 +47,9 @@ class Psykube::V2::Generator::Service < ::Psykube::Generator
         load_balancer_source_ranges: service.load_balancer_source_ranges,
         session_affinity: service.session_affinity,
         external_ips: service.external_ips,
-        ports: generate_ports(service.ports)
+        ports: generate_ports(service.ports || manifest.ports)
       )
     )
-  end
-
-  private def generate_ports(ports : Nil)
-    manifest.ports.map do |name, port|
-      Pyrite::Api::Core::V1::ServicePort.new(
-        name: name,
-        port: port,
-        protocol: "TCP"
-      )
-    end
   end
 
   private def generate_ports(ports : Hash(String, Int32 | String))
