@@ -34,7 +34,7 @@ class Psykube::V2::Generator::ClusterRoleBinding < ::Psykube::Generator
       subjects: [generate_subject(manifest.service_account)],
       role_ref: Pyrite::Api::Rbac::V1::RoleRef.new(
         kind: "ClusterRole",
-        name: [self.name, cluster_role, name].join('-'),
+        name: [self.name, cluster_role.name].join('-'),
         api_group: ""
       )
     )
