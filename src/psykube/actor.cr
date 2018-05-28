@@ -31,8 +31,8 @@ class Psykube::Actor
   end
 
   def generate : Pyrite::Api::Core::V1::List
-    raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !manifest.clusters.empty?
-    raise Generator::ValidationError.new("cluster does not exist: #{cluster_name}") if cluster.initialized? && !manifest.clusters.empty?
+    raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !clusters.empty?
+    raise Generator::ValidationError.new("cluster does not exist: #{cluster_name}") if cluster.initialized? && !clusters.empty?
     manifest.generate(self)
   end
 
