@@ -27,7 +27,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
       restart_policy: manifest.restart_policy,
       volumes: generate_volumes(manifest.volumes),
       containers: generate_containers,
-      init_containers: generate_init_containers,
+      init_containers: generate_init_containers(manifest.init_containers),
       security_context: generate_security_context,
       image_pull_secrets: generate_image_pull_secrets(manifest.image_pull_secrets),
       service_account_name: generate_service_account_name(manifest.service_account)
@@ -46,13 +46,13 @@ module Psykube::V2::Generator::Concerns::PodHelper
     self.name if manifest.roles || manifest.cluster_roles
   end
 
-  private def generate_job_template
+  private def generate_job_template(manifest = self.manifest)
     Pyrite::Api::Batch::V1beta1::JobTemplateSpec.new(
-      spec: generate_job_spec
+      spec: generate_job_spec(manifest)
     )
   end
 
-  private def generate_job_spec
+  private def generate_job_spec(manifest = self.manifest)
     Pyrite::Api::Batch::V1::JobSpec.new(
       active_deadline_seconds: manifest.active_deadline,
       completions: manifest.completions,
@@ -62,40 +62,53 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
+  private def generate_job_spec(_nil : Nil)
+    Pyrite::Api::Batch::V1::JobSpec.new(
+      template: generate_pod_template
+    )
+  end
+
   # Containers
+  private def generate_container(container_name, container, image)
+    Pyrite::Api::Core::V1::Container.new(
+      name: container_name,
+      image: image,
+      resources: generate_container_resources(container),
+      env: generate_container_env(container),
+      volume_mounts: generate_container_volume_mounts(container.volumes),
+      liveness_probe: generate_container_liveness_probe(container, container.healthcheck),
+      readiness_probe: generate_container_readiness_probe(container, container.readycheck || container.healthcheck),
+      ports: generate_container_ports(container.ports),
+      command: generate_container_command(container.command),
+      args: generate_container_args(container.args)
+    )
+  end
+
   private def generate_containers
     manifest.containers.map_with_index do |(container_name, container), index|
-      Pyrite::Api::Core::V1::Container.new(
-        name: container_name,
-        image: @actor.build_contexts[index].image,
-        resources: generate_container_resources(container),
-        env: generate_container_env(container),
-        volume_mounts: generate_container_volume_mounts(container.volumes),
-        liveness_probe: generate_container_liveness_probe(container, container.healthcheck),
-        readiness_probe: generate_container_readiness_probe(container, container.readycheck || container.healthcheck),
-        ports: generate_container_ports(container.ports),
-        command: generate_container_command(container.command),
-        args: generate_container_args(container.args)
-      )
+      generate_container(container_name, container, @actor.build_contexts[index].image)
     end
   end
 
-  private def generate_init_containers
+  private def generate_init_container(container_name, init_container : Manifest::Shared::Container, index)
+    generate_container(container_name, init_container, @actor.init_build_contexts[index].image)
+  end
+
+  private def generate_init_container(container_name, command : Array(String) | String, _index)
+    generate_container(container_name, manifest.containers.values.first, @actor.build_contexts.first.image).tap do |container|
+      container.liveness_probe = nil
+      container.readiness_probe = nil
+      container.ports = nil
+      container.args = nil
+      container.resources = nil
+      container.command = generate_container_command(command)
+    end
+  end
+
+  private def generate_init_containers(init_containers : Hash)
     return if manifest.init_containers.empty?
     manifest.init_containers.map_with_index do |(container_name, container), index|
-      Pyrite::Api::Core::V1::Container.new(
-        name: container_name,
-        image: @actor.init_build_contexts[index].image,
-        resources: generate_container_resources(container),
-        env: generate_container_env(container),
-        volume_mounts: generate_container_volume_mounts(container.volumes),
-        liveness_probe: generate_container_liveness_probe(container, container.healthcheck),
-        readiness_probe: generate_container_readiness_probe(container, container.readycheck || container.healthcheck),
-        ports: generate_container_ports(container.ports),
-        command: generate_container_command(container.command),
-        args: generate_container_args(container.args),
-        security_context: generate_security_context(container.security_context),
-      )
+      generate_init_container(container_name, container, index)
     end
   end
 
@@ -128,7 +141,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def alias_to_secret(nil : Nil) : Nil
+  private def alias_to_secret(_nil : Nil) : Nil
   end
 
   private def alias_to_secret(item : String)
@@ -146,7 +159,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def alias_to_config_map(nil : Nil) : Nil
+  private def alias_to_config_map(_nil : Nil) : Nil
   end
 
   private def alias_to_config_map(item : String)
@@ -448,7 +461,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     end
   end
 
-  private def generate_security_context(nil : Nil) : Nil
+  private def generate_security_context(_nil : Nil) : Nil
   end
 
   private def generate_security_context(security_context : Manifest::Shared::Container::SecurityContext)
@@ -464,7 +477,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_container_command(string : String)
-    generate_container_command [string]
+    generate_container_command string.split(" ")
   end
 
   private def generate_container_command(strings : Array(String))
@@ -481,7 +494,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   private def generate_container_args(strings : Nil) : Nil
   end
 
-  private def generate_image_pull_secrets(nil : Nil) : Nil
+  private def generate_image_pull_secrets(_nil : Nil) : Nil
   end
 
   private def generate_image_pull_secrets(creds : Array(String | Manifest::Shared::PullSecretCredentials))
@@ -495,6 +508,6 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_image_pull_secret(cred : Manifest::Shared::PullSecretCredentials)
-    generate_image_pull_secret [name, NameCleaner.clean(cred.server)].compact.join('-')
+    generate_image_pull_secret [name, cred.server].compact.join('-')
   end
 end

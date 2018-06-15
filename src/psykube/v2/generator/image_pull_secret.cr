@@ -12,16 +12,16 @@ class Psykube::V2::Generator::ImagePullSecret < ::Psykube::Generator
     end.compact
   end
 
-  private def generate_image_pull_secrets(nil : Nil)
+  private def generate_image_pull_secrets(_nil : Nil)
     [] of Pyrite::Api::Core::V1::Secret
   end
 
   private def generate_image_pull_secret(cred : Manifest::Shared::PullSecretCredentials)
     Pyrite::Api::Core::V1::Secret.new(
-      metadata: generate_metadata(name: [name, NameCleaner.clean(cred.server)].compact.join('-')),
+      metadata: generate_metadata(name: [name, cred.server].compact.join('-')),
       type: "kubernetes.io/dockerconfigjson",
       data: {
-        ".dockerconfigjson" => Base64.urlsafe_encode(generate_cred(cred).to_json)
+        ".dockerconfigjson" => Base64.urlsafe_encode(generate_cred(cred).to_json),
       }
     )
   end
@@ -32,13 +32,13 @@ class Psykube::V2::Generator::ImagePullSecret < ::Psykube::Generator
   private def generate_cred(cred : Manifest::Shared::PullSecretCredentials)
     {
       "auths": {
-        cred.server =>  {
+        cred.server => {
           "username" => cred.username,
           "password" => cred.password,
-          "email" => cred.email,
-          "auth" => Base64.urlsafe_encode([cred.username, cred.password].join(':'))
-        }
-      }
+          "email"    => cred.email,
+          "auth"     => Base64.urlsafe_encode([cred.username, cred.password].join(':')),
+        },
+      },
     }
   end
 end

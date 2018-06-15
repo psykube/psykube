@@ -31,7 +31,9 @@ class Psykube::CLI::Main < Admiral::Command
   register_sub_command "history", Commands::History, short: "h"
   register_sub_command "rollback", Commands::Rollback, short: "rb"
   register_sub_command "scale", Commands::Scale
-  register_sub_command "playground", Commands::Playground
+  register_sub_command "run-job", Commands::RunJob
+  register_sub_command "generate-job", Commands::GenerateJob
+  # register_sub_command "playground", Commands::Playground
   register_sub_command "validate", Commands::Validate, short: "v"
 end
 

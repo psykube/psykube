@@ -5,7 +5,7 @@ class Psykube::V2::Manifest::Deployment < ::Psykube::V2::Manifest
     recreate:          {type: Bool, optional: true},
     rollout:           {type: Rollout, optional: true},
     autoscale:         {type: Manifest::Autoscale, optional: true},
-  })
+  }, jobable: true)
 
   # Set as its our default
   @type = "Deployment"

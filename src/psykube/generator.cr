@@ -21,8 +21,8 @@ abstract class Psykube::Generator
   delegate name, cluster, tag, namespace, cluster_name, to: @actor
   delegate lookup_port, to: manifest
 
-  def self.result(*args, **params)
-    new(*args, **params).result
+  def self.result(parent, *args, **params)
+    new(parent).result(*args, **params)
   end
 
   def initialize(generator : Generator)
@@ -36,7 +36,7 @@ abstract class Psykube::Generator
     result.to_yaml(*args, **props)
   end
 
-  abstract def result
+  abstract def result(*args, **params)
 
   private def cluster_config_map
     manifest.config_map.merge cluster.config_map

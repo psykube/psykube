@@ -4,7 +4,7 @@ class Psykube::V2::Manifest::DaemonSet < ::Psykube::V2::Manifest
     replicas:      {type: Int32, optional: true},
     recreate:      {type: Bool, optional: true},
     rollout:       {type: Rollout, optional: true},
-  })
+  }, jobable: true)
 
   def rollout
     case @rollout

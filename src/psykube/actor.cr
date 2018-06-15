@@ -36,6 +36,12 @@ class Psykube::Actor
     manifest.generate(self)
   end
 
+  def get_job(name) : Pyrite::Api::Batch::V1::Job
+    raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !clusters.empty?
+    raise Generator::ValidationError.new("cluster does not exist: #{cluster_name}") if cluster.initialized? && !clusters.empty?
+    manifest.get_job(self, name)
+  end
+
   def all_build_contexts
     (build_contexts + init_build_contexts).uniq
   end
@@ -57,7 +63,7 @@ class Psykube::Actor
   end
 
   def name
-    NameCleaner.clean([prefix, manifest.name, suffix].compact.join)
+    [prefix, manifest.name, suffix].compact.join
   end
 
   def template_result(metadata : StringMap = metadata)

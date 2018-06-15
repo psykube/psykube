@@ -6,7 +6,7 @@ class Psykube::V2::Generator::Role < ::Psykube::Generator
     generate_roles(manifest.roles)
   end
 
-  private def generate_roles(nil : Nil)
+  private def generate_roles(_nil : Nil)
     return [] of Pyrite::Api::Rbac::V1::Role
   end
 

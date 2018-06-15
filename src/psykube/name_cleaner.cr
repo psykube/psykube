@@ -9,6 +9,6 @@ module Psykube::NameCleaner
     ).downcase
   end
 
-  def self.clean(nil : Nil) : Nil
+  def self.clean(_nil : Nil) : Nil
   end
 end

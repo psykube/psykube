@@ -6,7 +6,7 @@ class Psykube::V2::Generator::RoleBinding < ::Psykube::Generator
     generate_role_bindings(manifest.roles)
   end
 
-  private def generate_role_bindings(nil : Nil)
+  private def generate_role_bindings(_nil : Nil)
     return [] of Pyrite::Api::Rbac::V1::RoleBinding
   end
 

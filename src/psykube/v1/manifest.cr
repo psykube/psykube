@@ -104,7 +104,7 @@ class Psykube::V1::Manifest
   def lookup_port(port_name : String)
     if port_name.to_i?
       port_name.to_i
-    elsif port_name == "default" && !ports.key?("default")
+    elsif port_name == "default" && !ports.has_key?("default")
       ports.values.first
     else
       ports[port_name]? || raise "Invalid port #{port_name}"
@@ -137,6 +137,10 @@ class Psykube::V1::Manifest
 
   def generate(actor : Actor)
     Generator::List.new(self, actor).result
+  end
+
+  def get_job(_actor, _name)
+    raise Error.new("Jobs are not supported with this version of the manifest, use v2")
   end
 
   def get_cluster(name)

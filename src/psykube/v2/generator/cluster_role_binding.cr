@@ -6,7 +6,7 @@ class Psykube::V2::Generator::ClusterRoleBinding < ::Psykube::Generator
     generate_cluster_role_bindings(manifest.cluster_roles)
   end
 
-  private def generate_cluster_role_bindings(nil : Nil)
+  private def generate_cluster_role_bindings(_nil : Nil)
     return [] of Pyrite::Api::Rbac::V1::ClusterRoleBinding
   end
 

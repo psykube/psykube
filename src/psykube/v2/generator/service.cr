@@ -7,7 +7,7 @@ class Psykube::V2::Generator::Service < ::Psykube::Generator
     generate_services services
   end
 
-  private def generate_services(nil : Nil)
+  private def generate_services(_nil : Nil)
     [] of Pyrite::Api::Core::V1::Service
   end
 

@@ -1,5 +1,6 @@
 abstract class Psykube::V2::Manifest
   module Serviceable; end
+  module Jobable; end
 
   alias Readycheck = V1::Manifest::Readycheck
   alias Healthcheck = V1::Manifest::Healthcheck
@@ -33,7 +34,7 @@ abstract class Psykube::V2::Manifest
     raise ParseException.new "Couldn't parse #{self}", *node.location
   end
 
-  macro declare(type, properties = nil, *, service = true, default = false)
+  macro declare(type, properties = nil, *, service = true, default = false, jobable = false)
     DECLARED << self
 
     def generate(actor : Actor)
@@ -48,14 +49,18 @@ abstract class Psykube::V2::Manifest
 
     def get_init_build_contexts(cluster_name : String, basename : String, tag : String?, working_directory : String)
       init_containers.map do |container_name, container|
-        get_build_context(container_name, container, cluster_name, basename, tag, working_directory)
+        if container.is_a? Shared::Container
+          get_build_context(container_name, container, cluster_name, basename, tag, working_directory)
+        else
+          get_build_contexts(cluster_name, basename, tag, working_directory)[0]
+        end
       end
     end
 
     def unique_contexts
       (init_containers.values + containers.values).map do |container|
-        container.build
-      end.uniq
+        container.build if container.is_a? Shared::Container
+      end.compact.uniq
     end
 
     def get_container_image(container_name : String, container : Shared::Container, basename : String) : String
@@ -87,7 +92,10 @@ abstract class Psykube::V2::Manifest
       )
     end
 
-    def get_login(image : String, nil : Nil)
+    def get_build_context(container_name : String, container : String | Array(String), cluster_name : String, basename : String, tag : String?, working_directory : String)
+    end
+
+    def get_login(image : String, _nil : Nil)
     end
 
     def get_login(image : String, creds : Array(String | Shared::PullSecretCredentials))
@@ -131,14 +139,18 @@ abstract class Psykube::V2::Manifest
       config_map:                      {type: StringMap, default: StringMap.new},
       secrets:                         {type: StringMap, default: StringMap.new},
       affinity:                        {type: Pyrite::Api::Core::V1::Affinity, optional: true},
-      init_containers:                 {type: ContainerMap, default: ContainerMap.new},
+      init_containers:                 {type: ContainerMap | Hash(String, Array(String) | String), default: ContainerMap.new},
       containers:                      {type: ContainerMap},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
       volumes:                         {type: VolumeMap, optional: true},
       security_context: {type: Shared::SecurityContext, optional: true},
       {% if service %}
         ingress: {type: Manifest::Ingress, optional: true},
-        services: {type: Array(String) | Hash(String, String | Manifest::Service), default: "ClusterIP", optional: true }
+        services: {type: Array(String) | Hash(String, String | Manifest::Service), default: "ClusterIP", optional: true },
+      {% end %}
+      {% if jobable %}
+        jobs:          {type: Hash(String, Shared::InlineJob | String | Array(String)), optional: true},
+        cron_jobs:     {type: Hash(String, Shared::InlineCronJob), optional: true}
       {% end %}
     })
 
@@ -168,11 +180,22 @@ abstract class Psykube::V2::Manifest
       def lookup_port(port_name : String)
         if port_name.to_i?
           port_name.to_i
-        elsif port_name == "default" && !ports.key?("default")
+        elsif port_name == "default" && !ports.has_key?("default")
           ports.values.first
         else
           ports[port_name]? || raise "Invalid port #{port_name}"
         end
+      end
+    {% end %}
+
+    {% if jobable %}
+      include Jobable
+      def get_job(actor, name)
+        Generator::InlineJob.new(self, actor).result(name)
+      end
+    {% else %}
+      def get_job(actor, name)
+        raise Error.new("Jobs are not supported for this manifest type")
       end
     {% end %}
   end

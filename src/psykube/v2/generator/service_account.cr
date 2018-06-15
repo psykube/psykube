@@ -9,7 +9,7 @@ class Psykube::V2::Generator::ServiceAccount < ::Psykube::Generator
   private def generate_service_account(name : String) : Nil
   end
 
-  private def generate_service_account(nil : Nil)
+  private def generate_service_account(_nil : Nil)
     return unless manifest.roles || manifest.cluster_roles
     Pyrite::Api::Core::V1::ServiceAccount.new(
       metadata: generate_metadata
@@ -25,7 +25,7 @@ class Psykube::V2::Generator::ServiceAccount < ::Psykube::Generator
     )
   end
 
-  private def generate_secret_refs(nil : Nil) : Nil
+  private def generate_secret_refs(_nil : Nil) : Nil
   end
 
   private def generate_secret_refs(names : Array(Manifest::Shared::ObjectReference | String))

@@ -1,5 +1,5 @@
 module Psykube::Concerns::MetadataHelper
-  private def generate_metadata(*, name : String = self.name, labels = [] of StringMap?, annotations = [] of StringMap?, psykube_meta = true, **metadata)
+  private def generate_metadata(*, name : String = self.name, labels = [] of StringMap?, annotations = [] of StringMap?, psykube_meta = true, generate_name : String? = nil, **metadata)
     annotations << combined_annotations
     labels << {"app" => self.name}
     labels << combined_labels
@@ -8,8 +8,9 @@ module Psykube::Concerns::MetadataHelper
     final_labels = labels.compact.reduce { |p, n| p.merge(n) }
     Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
       **metadata,
-      name: name,
-      namespace: namespace,
+      generate_name: NameCleaner.clean(generate_name),
+      name: generate_name ? nil : NameCleaner.clean(name),
+      namespace: NameCleaner.clean(namespace),
       annotations: final_annotations.empty? ? nil : final_annotations,
       labels: final_labels.empty? ? nil : final_labels
     )

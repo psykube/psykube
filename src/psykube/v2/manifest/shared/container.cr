@@ -34,7 +34,7 @@ class Psykube::V2::Manifest::Shared::Container
   def lookup_port(port_name : String)
     if port_name.to_i?
       port_name.to_i
-    elsif port_name == "default" && !ports.key?("default")
+    elsif port_name == "default" && !ports.has_key?("default")
       ports.values.first
     else
       ports[port_name]? || raise "Invalid port #{port_name}"
