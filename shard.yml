@@ -14,8 +14,7 @@ dependencies:
   crustache:
     github: jwaldrip/crustache
   admiral:
-    # github: jwaldrip/admiral.cr
-    path: "../../jwaldrip/admiral.cr"
+    github: jwaldrip/admiral.cr
   orion:
     github: obsidian/orion
   pyrite:
