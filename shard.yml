@@ -14,7 +14,8 @@ dependencies:
   crustache:
     github: jwaldrip/crustache
   admiral:
-    github: jwaldrip/admiral.cr
+    # github: jwaldrip/admiral.cr
+    path: "../../jwaldrip/admiral.cr"
   orion:
     github: obsidian/orion
   pyrite:
@@ -25,5 +26,3 @@ license: MIT
 targets:
   psykube:
     main: src/cli.cr
-  psykube-playground:
-    main: src/playground-standalone.cr
