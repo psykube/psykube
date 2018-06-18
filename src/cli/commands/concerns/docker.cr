@@ -33,10 +33,10 @@ module Psykube::CLI::Commands::Docker
         args << "--build-arg=#{arg}"
       end
       image = tag && tag.includes?(":") ? tag : build_context.image(tag)
-      args << "--tag=#{image}"
+      # args << "--tag=#{image}"
       args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
-      args << build_context.context
-      docker_run args
+      # args << build_context.context
+      docker_run args + [build_context.context]
     end
   end
 
@@ -53,10 +53,10 @@ module Psykube::CLI::Commands::Docker
     docker_run ["push", image]
   end
 
-  def docker_run(args : Array(String), *, input = Process::Redirect::Close)
+  def docker_run(args : Array(String), *, input = Process::Redirect::Close, output = @output_io)
     File.exists?(Docker.bin) || panic("docker not found")
     puts (["DEBUG:", Docker.bin] + args).join(" ").colorize(:dark_gray) if ENV["PSYKUBE_DEBUG"]? == "true"
-    Process.run(Docker.bin, args, input: input, output: @output_io, error: @error_io).tap do |process|
+    Process.run(Docker.bin, args, input: input, output: output, error: @error_io).tap do |process|
       panic "Process: `#{Docker.bin} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
     end
   end
