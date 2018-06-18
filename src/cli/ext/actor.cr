@@ -1,7 +1,7 @@
 class Psykube::Actor
   def initialize(command : Admiral::Command)
     flags = command.flags
-    filename = flags.file
+    filename = command.parent.flags.file || flags.file
     if File.directory? File.expand_path filename
       @working_directory = filename
       filename = File.join(filename, ".psykube.yml")
@@ -18,5 +18,7 @@ class Psykube::Actor
         tag: flags.responds_to?(:tag) ? flags.tag : nil,
       )
     end
+  rescue e : Errno
+    raise Error.new e.message
   end
 end

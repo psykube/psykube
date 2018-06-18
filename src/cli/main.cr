@@ -5,12 +5,16 @@ require "./commands/*"
 
 class Psykube::CLI::Main < Admiral::Command
   rescue_from Psykube::Error do |e|
-    panic e.message
+    panic e.message.colorize(:red)
   end
 
   rescue_from Generator::ValidationError do |e|
     panic "Error: #{e.message}".colorize(:red)
   end
+
+  define_flag file,
+    description: "The location of the psykube manifest yml file.",
+    short: f
 
   define_version VERSION
   define_help
