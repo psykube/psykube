@@ -41,17 +41,3 @@ deploy:
     on:
       repo: psykube/psykube
       tags: true
-  -
-    provider: script
-    skip_cleanup: true
-    script: './bin/psykube apply'
-    on:
-      repo: psykube/psykube
-      tags: true
-  -
-    provider: script
-    skip_cleanup: true
-    script: './bin/psykube push -t $TRAVIS_TAG -t latest'
-    on:
-      repo: psykube/psykube
-      tags: true
