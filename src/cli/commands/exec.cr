@@ -22,6 +22,7 @@ class Psykube::CLI::Commands::Exec < Admiral::Command
     args = [pod.metadata.not_nil!.name.not_nil!]
     args << "-i" if flags.stdin
     args << "-t" if flags.tty
+    args << "--"
     args << arguments.command
     args.concat(arguments[0..-1])
     kubectl_exec(command: "exec", args: args, input: flags.stdin)
