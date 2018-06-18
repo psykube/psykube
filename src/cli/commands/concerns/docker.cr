@@ -23,7 +23,7 @@ module Psykube::CLI::Commands::Docker
     build_contexts.each { |c| docker_build c }
   end
 
-  def docker_build(build_context : BuildContext, tag : String? = nil)
+  def docker_build(build_context : BuildContext, tag : String? = nil, output = @output_io, extra_args = [] of String)
     Dir.cd actor.working_directory do
       args = ["build"]
       build_args.each do |arg|
@@ -32,11 +32,8 @@ module Psykube::CLI::Commands::Docker
       build_context.args.each do |arg|
         args << "--build-arg=#{arg}"
       end
-      image = tag && tag.includes?(":") ? tag : build_context.image(tag)
-      # args << "--tag=#{image}"
       args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
-      # args << build_context.context
-      docker_run args + [build_context.context]
+      docker_run args + extra_args + [build_context.context], output: output
     end
   end
 
@@ -50,7 +47,13 @@ module Psykube::CLI::Commands::Docker
       password = IO::Memory.new.tap(&.puts login.password).tap(&.rewind)
       docker_run ["login", login.server, "-u=#{login.username}", "--password-stdin"], input: password
     end
-    docker_run ["push", image]
+    io = IO::Memory.new
+    docker_build(build_context, output: io, extra_args: ["-q"])
+    sha = io.rewind.gets_to_end.strip
+    build_context.image, build_context.tag = tag if tag && tag.includes?(":")
+    build_context.tag ||= sha.sub(':', '-')
+    docker_run ["tag", sha, build_context.image]
+    docker_run ["push", build_context.image]
   end
 
   def docker_run(args : Array(String), *, input = Process::Redirect::Close, output = @output_io)

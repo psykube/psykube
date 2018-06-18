@@ -150,6 +150,7 @@ class Psykube::V1::Manifest
   def get_build_contexts(cluster_name : String, basename : String, tag : String?, working_directory : String)
     cluster = get_cluster cluster_name
     [BuildContext.new(
+      container_name: name,
       build: !image,
       image: image || basename,
       tag: cluster.image_tag || image_tag || (image ? nil : tag),

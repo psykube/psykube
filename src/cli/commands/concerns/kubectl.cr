@@ -5,10 +5,18 @@ module Psykube::CLI::Commands::Kubectl
     @@bin ||= ENV["KUBECTL_BIN"]? || `which kubectl`.strip
   end
 
+  def set_images_from_current!
+    Pyrite::Api::Extensions::V1beta1::Deployment.from_json(kubectl_json(manifest: deployment, panic: false, error: false)).spec.not_nil!.template.not_nil!.spec.not_nil!.containers.each do |container|
+      if context = actor.build_contexts.find { |c| c.container_name == container.name }
+        context.image, context.tag = container.image.to_s.split(':')
+      end
+    end
+  end
+
   def kubectl_json(resource : String? = nil,
                    name : String? = nil,
                    flags : Flags = Flags.new,
-                   manifest : Pyrite::Kubernetes::Resource? = nil,
+                   manifest : Pyrite::Kubernetes::Resource | Pyrite::Api::Core::V1::List | Nil = nil,
                    export : Bool = true,
                    namespace : String? = namespace,
                    error : Bool | IO = true,

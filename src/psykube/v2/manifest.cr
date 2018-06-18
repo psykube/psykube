@@ -82,6 +82,7 @@ abstract class Psykube::V2::Manifest
       build = container.image.nil? || !container.build.nil?
       cluster = get_cluster cluster_name
       BuildContext.new(
+        container_name: container_name,
         build: build,
         image: image,
         tag: container.image ? nil : (container.tag || tag),

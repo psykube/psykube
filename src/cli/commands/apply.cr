@@ -18,8 +18,12 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   def run
     if (actor.clusters.empty? || !actor.cluster.initialized?)
       kubectl_create_namespace(namespace) if flags.create_namespace
-      docker_build_and_push(actor.buildable_contexts) if !flags.tag && !flags.image && flags.push
-      result = actor.generate
+      if !flags.tag && !flags.image && flags.push
+        docker_build_and_push(actor.buildable_contexts)
+      else
+        set_images_from_current!
+      end
+      result = actor.generate.as(Pyrite::Api::Core::V1::List)
       puts "Applying Kubernetes Manifests...".colorize(:cyan)
       result.items.not_nil!.each do |item|
         force = flags.force
