@@ -38,24 +38,24 @@ Dir.cd("spec") do
       psykube_it "status"
       psykube_it "push"
 
-      it "should run exec" do
-        Process.fork { Psykube::CLI.run "exec -- echo 'hello world'" }.wait
-      end
-
-      it "should port forward" do
-        process = Process.fork { Psykube::CLI.run "port-forward 9292:80" }
-        sleep 5
-        HTTP::Client.get("http://localhost:9292").body.lines.first.strip.should eq "hello psykube"
-        process.kill
-        process.wait
-      end
-
-      it "should show logs" do
-        process = Process.fork { Psykube::CLI.run "logs" }
-        sleep 5
-        process.kill
-        process.wait
-      end
+      # it "should run exec" do
+      #   Process.fork { Psykube::CLI.run "exec -- echo 'hello world'" }.wait
+      # end
+      #
+      # it "should port forward" do
+      #   process = Process.fork { Psykube::CLI.run "port-forward 9292:80" }
+      #   sleep 5
+      #   HTTP::Client.get("http://localhost:9292").body.lines.first.strip.should eq "hello psykube"
+      #   process.kill
+      #   process.wait
+      # end
+      #
+      # it "should show logs" do
+      #   process = Process.fork { Psykube::CLI.run "logs" }
+      #   sleep 5
+      #   process.kill
+      #   process.wait
+      # end
 
       psykube_it "copy-namespace #{namespace} #{namespace}-copy --force"
 
