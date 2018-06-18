@@ -48,7 +48,7 @@ class Psykube::V2::Generator::RoleBinding < ::Psykube::Generator
     )
   end
 
-  private def generate_subject(service_account : Manifest::Shared::ServiceAccount | Nil)
+  private def generate_subject(service_account : Manifest::Shared::ServiceAccount | Nil | Bool)
     generate_subject(self.name)
   end
 end

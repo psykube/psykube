@@ -16,11 +16,18 @@ class Psykube::V2::Generator::ServiceAccount < ::Psykube::Generator
     )
   end
 
+  private def generate_service_account(service_account : Bool)
+    Pyrite::Api::Core::V1::ServiceAccount.new(
+      metadata: generate_metadata,
+      image_pull_secrets: generate_image_pull_secrets(manifest.image_pull_secrets),
+    ) if service_account || manifest.roles || manifest.cluster_roles
+  end
+
   private def generate_service_account(service_account : Manifest::Shared::ServiceAccount)
     Pyrite::Api::Core::V1::ServiceAccount.new(
       metadata: generate_metadata,
       automount_service_account_token: service_account.automount_token,
-      image_pull_secrets: generate_image_pull_secrets(service_account.image_pull_secrets),
+      image_pull_secrets: generate_image_pull_secrets(service_account.image_pull_secrets || manifest.image_pull_secrets),
       secrets: generate_secret_refs(service_account.secrets)
     )
   end

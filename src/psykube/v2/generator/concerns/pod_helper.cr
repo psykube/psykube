@@ -46,6 +46,10 @@ module Psykube::V2::Generator::Concerns::PodHelper
     self.name if manifest.roles || manifest.cluster_roles
   end
 
+  private def generate_service_account_name(service_account : Bool)
+    self.name if service_account || manifest.roles || manifest.cluster_roles
+  end
+
   private def generate_job_template(manifest = self.manifest)
     Pyrite::Api::Batch::V1beta1::JobTemplateSpec.new(
       spec: generate_job_spec(manifest)
