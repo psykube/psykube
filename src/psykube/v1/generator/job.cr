@@ -4,7 +4,7 @@ class Psykube::V1::Generator::Job < ::Psykube::Generator
 
   protected def result
     Pyrite::Api::Batch::V1::Job.new(
-      metadata: generate_metadata,
+      metadata: generate_metadata(generate_name: self.name),
       spec: Pyrite::Api::Batch::V1::JobSpec.new(
         parallelism: manifest.parallelism,
         completions: manifest.completions,
