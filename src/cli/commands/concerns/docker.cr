@@ -23,7 +23,7 @@ module Psykube::CLI::Commands::Docker
     build_contexts.each { |c| docker_build c }
   end
 
-  def docker_build(build_context : BuildContext, tag : String? = nil, output = @output_io, extra_args = [] of String)
+  def docker_build(build_context : BuildContext, output = @output_io, extra_args = [] of String)
     Dir.cd actor.working_directory do
       args = ["build"]
       build_args.each do |arg|
@@ -38,7 +38,7 @@ module Psykube::CLI::Commands::Docker
   end
 
   def docker_push(build_contexts : Array(BuildContext), tag : String? = nil)
-    build_contexts.each { |c| docker_push c }
+    build_contexts.each { |c| docker_push c, tag }
   end
 
   def docker_push(build_context : BuildContext, tag : String? = nil)
@@ -50,10 +50,10 @@ module Psykube::CLI::Commands::Docker
     io = IO::Memory.new
     docker_build(build_context, output: io, extra_args: ["-q"])
     sha = io.rewind.gets_to_end.strip
-    build_context.image, build_context.tag = tag if tag && tag.includes?(":")
+    build_context.image, build_context.tag = tag.split(':') if tag && tag.includes?(":")
     build_context.tag ||= sha.sub(':', '-')
-    docker_run ["tag", sha, build_context.image]
-    docker_run ["push", build_context.image]
+    docker_run ["tag", sha, build_context.image(tag)]
+    docker_run ["push", build_context.image(tag)]
   end
 
   def docker_run(args : Array(String), *, input = Process::Redirect::Close, output = @output_io)

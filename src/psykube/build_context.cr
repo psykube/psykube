@@ -1,10 +1,10 @@
-struct Psykube::BuildContext
+class Psykube::BuildContext
   record Login, server : String, username : String, password : String
 
-  getter container_name : String
-  setter image : String
-  getter build : Bool
   property tag : String?
+  setter image : String
+  getter container_name : String
+  getter build : Bool
   getter context : String
   getter dockerfile : String?
   getter args : Array(String)

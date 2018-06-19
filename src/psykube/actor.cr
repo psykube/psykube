@@ -44,7 +44,7 @@ class Psykube::Actor
   end
 
   def all_build_contexts
-    (build_contexts + init_build_contexts).uniq
+    (build_contexts + init_build_contexts)
   end
 
   def buildable_contexts

@@ -23,7 +23,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
       else
         set_images_from_current!
       end
-      result = actor.generate.as(Pyrite::Api::Core::V1::List)
+      result = actor.generate
       puts "Applying Kubernetes Manifests...".colorize(:cyan)
       result.items.not_nil!.each do |item|
         force = flags.force
