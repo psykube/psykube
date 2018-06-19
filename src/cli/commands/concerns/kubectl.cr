@@ -5,10 +5,24 @@ module Psykube::CLI::Commands::Kubectl
     @@bin ||= ENV["KUBECTL_BIN"]? || `which kubectl`.strip
   end
 
+  def context
+    actor.context
+  end
+
   def set_images_from_current!
-    Pyrite::Api::Extensions::V1beta1::Deployment.from_json(kubectl_json(manifest: deployment, panic: false, error: false)).spec.not_nil!.template.not_nil!.spec.not_nil!.containers.each do |container|
-      if context = actor.build_contexts.find { |c| c.container_name == container.name }
-        context.image, context.tag = container.image.to_s.split(':')
+    spec = Pyrite::Api::Extensions::V1beta1::Deployment.from_json(kubectl_json(manifest: deployment, panic: false, error: false)).spec.not_nil!.template.not_nil!.spec.not_nil!
+    actor.build_contexts = actor.build_contexts.map do |build_context|
+      if (container = spec.containers.find { |c| build_context.container_name == c.name })
+        build_context.image, build_context.tag = container.image.to_s.split(':')
+      end
+      build_context
+    end
+    if (init_containers = spec.init_containers)
+      actor.init_build_contexts = actor.init_build_contexts.map do |build_context|
+        if (container = init_containers.find { |c| build_context.container_name == c.name })
+          build_context.image, build_context.tag = container.image.to_s.split(':')
+        end
+        build_context
       end
     end
   end

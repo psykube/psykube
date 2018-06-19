@@ -1,4 +1,6 @@
 module Psykube::CLI::Commands::PsykubeFileFlag
+  @actor : Actor?
+
   private macro included
     # Flags
     define_flag file,
@@ -20,7 +22,7 @@ module Psykube::CLI::Commands::PsykubeFileFlag
   end
 
   private def actor
-    Actor.new(self)
+    @actor ||= Actor.new(self)
   end
 
   private def deployment

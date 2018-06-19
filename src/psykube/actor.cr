@@ -4,7 +4,8 @@ class Psykube::Actor
   @raw_metadata : StringMap?
   @manifest : Manifest::Any?
   @template : Crustache::Syntax::Template
-  @build_contexts : Array(BuildContext)?
+  setter build_contexts : Array(BuildContext)?
+  setter init_build_contexts : Array(BuildContext)?
   property cluster_name : String?
   getter basename : String
   getter tag : String?
@@ -55,7 +56,7 @@ class Psykube::Actor
   end
 
   def init_build_contexts
-    @build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, working_directory: @working_directory)
+    @init_build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, working_directory: @working_directory)
   end
 
   def manifest

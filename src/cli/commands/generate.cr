@@ -4,6 +4,7 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
   include PsykubeFileFlag
   include KubectlClusterArg
   include KubectlNamespaceFlag
+  include Kubectl
 
   define_help description: "Generate the kubernetes manifests."
   define_flag image, description: "Override the docker image."
@@ -11,6 +12,7 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
   define_flag tag, description: "The docker tag to apply.", short: t
 
   def run
+    set_images_from_current!
     if (output = flags.output)
       output_dir = File.expand_path(output)
       actor.generate.items.not_nil!.each do |item|
