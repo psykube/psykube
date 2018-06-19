@@ -8,14 +8,14 @@ class Psykube::V2::Manifest::Shared::Container
     ports:            {type: PortMap, default: PortMap.new},
     volumes:          {type: Hash(String, String), optional: true},
     resources:        {type: Manifest::Resources, optional: true},
-    env:              {type: Hash(String, Manifest::Env | String), optional: true},
+    env:              {type: Hash(String, Manifest::Env | String | Int32 | Bool | Float64 | Nil), optional: true},
     command:          {type: Array(String) | String, optional: true},
     args:             {type: Array(String), optional: true},
     security_context: {type: SecurityContext, optional: true},
   })
 
   def env
-    env = @env || {} of String => Manifest::Env | String
+    env = @env || {} of String => Manifest::Env | String | Int32 | Bool | Float64 | Nil
     return env unless ports?
     env["PORT"] = lookup_port("default").to_s
     ports.each_with_object(env) do |(name, port), env|

@@ -1,5 +1,6 @@
 abstract class Psykube::V2::Manifest
   module Serviceable; end
+
   module Jobable; end
 
   alias Readycheck = V1::Manifest::Readycheck
@@ -150,8 +151,8 @@ abstract class Psykube::V2::Manifest
         services: {type: Array(String) | Hash(String, String | Manifest::Service), default: "ClusterIP", optional: true },
       {% end %}
       {% if jobable %}
-        jobs:          {type: Hash(String, Shared::InlineJob | String | Array(String)), optional: true},
-        cron_jobs:     {type: Hash(String, Shared::InlineCronJob), optional: true}
+        jobs:           {type: Hash(String, Shared::InlineJob | String | Array(String)), optional: true},
+        cron_jobs:      {type: Hash(String, Shared::InlineCronJob), optional: true},
       {% end %}
     })
 

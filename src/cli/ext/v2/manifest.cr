@@ -14,7 +14,7 @@ def Psykube::V2::Manifest.new(command : Psykube::CLI::Commands::Init)
   )
 
   # Set container ENV
-  container.env = flags.env.map(&.split('=')).each_with_object(Hash(String, V1::Manifest::Env | String).new) do |(k, v), memo|
+  container.env = flags.env.map(&.split('=')).each_with_object(Hash(String, Manifest::Env | String | Int32 | Bool | Float64 | Nil).new) do |(k, v), memo|
     memo[k] = v
   end unless flags.env.empty?
 
