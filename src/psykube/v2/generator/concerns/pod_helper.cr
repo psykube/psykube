@@ -404,8 +404,8 @@ module Psykube::V2::Generator::Concerns::PodHelper
     Pyrite::Api::Core::V1::EnvVar.new(name: key, value_from: value_from)
   end
 
-  private def expand_env(key : String, value : String)
-    Pyrite::Api::Core::V1::EnvVar.new(name: key, value: value)
+  private def expand_env(key : String, value)
+    Pyrite::Api::Core::V1::EnvVar.new(name: key, value: value.to_s)
   end
 
   private def expand_env_config_map(key : String)
@@ -508,7 +508,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_image_pull_secret(name : String)
-    Pyrite::Api::Core::V1::LocalObjectReference.new name: name
+    Pyrite::Api::Core::V1::LocalObjectReference.new name: NameCleaner.clean(name)
   end
 
   private def generate_image_pull_secret(cred : Manifest::Shared::PullSecretCredentials)
