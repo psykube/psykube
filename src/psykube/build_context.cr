@@ -21,7 +21,9 @@ class Psykube::BuildContext
   end
 
   def image(tag = nil)
-    [[@image, container_name].join('-'), tag || @tag].compact.join(':')
+    base_image = build ? [@image, container_name].join('-') : @image
+    tag ||= @tag
+    [base_image, tag].compact.join(':')
   end
 
   def_equals @image, @build, @tag, @context, @dockerfile, @args

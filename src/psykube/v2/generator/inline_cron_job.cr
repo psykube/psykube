@@ -19,8 +19,9 @@ class Psykube::V2::Generator::InlineCronJob < ::Psykube::Generator
         successful_jobs_history_limit: manifest.successful_jobs_history_limit,
         concurrency_policy: manifest.concurrency_policy,
         job_template: generate_job_template(manifest).tap do |job_template|
-          job_template.tap do |template|
-            spec = template.not_nil!.spec.not_nil!.template.not_nil!.spec.not_nil!
+          job_template.not_nil!.tap do |template|
+            spec = template.spec.not_nil!.template.not_nil!.spec.not_nil!
+            template.spec.not_nil!.template.metadata.not_nil!.labels.not_nil!["role"] = "cron"
             spec.init_containers = nil
             spec.containers = [spec.containers.first.tap do |container|
               container.liveness_probe = nil
