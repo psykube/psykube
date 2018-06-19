@@ -124,7 +124,7 @@ abstract class Psykube::V2::Manifest
     Macros.manifest(2, {{type}}, {{properties}}, {
       name:                            {type: String},
       automount_service_account_token: {type: Bool, optional: true},
-      service_account:                 {type: String | Shared::ServiceAccount, optional: true},
+      service_account:                 {type: Bool | String | Shared::ServiceAccount, optional: true},
       roles:                           {type: Array(String | Shared::Role), optional: true},
       cluster_roles:                   {type: Array(String | Shared::Role), optional: true},
       image_pull_secrets:              {type: Array(String | Shared::PullSecretCredentials), optional: true},
