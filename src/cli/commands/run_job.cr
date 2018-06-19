@@ -6,7 +6,8 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
   include Docker
   include Kubectl
 
-  define_flag push : Bool, description: "Don't build and push the docker image."
+  define_flag build : Bool, description: "Don't build the docker image.", default: true
+  define_flag push : Bool, description: "Don't push the docker image.", default: true
   define_flag create_namespace : Bool, description: "create the namespace before the given apply."
   define_flag skip_if_no_cluster : Bool, description: "dont fail, just skip the apply if the cluster does not exist."
   define_argument job_name, description: "the name of the job you wish to run"
@@ -16,11 +17,19 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
   def run
     if (actor.clusters.empty? || !actor.cluster.initialized?)
       kubectl_create_namespace(namespace) if flags.create_namespace
-      if flags.push
-        docker_build_and_push(actor.buildable_contexts)
+
+      # Build the image
+      if flags.build
+        docker_build(actor.buildable_contexts)
       else
         set_images_from_current!
       end
+
+      # Push the image
+      if flags.build && flags.push
+        docker_push(actor.buildable_contexts)
+      end
+
       job_manifest = actor.get_job(arguments.job_name)
       puts "Starting Job: #{arguments.job_name}...".colorize(:cyan)
       kubectl_run("apply", manifest: job_manifest)

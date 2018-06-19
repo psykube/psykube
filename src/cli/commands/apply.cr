@@ -5,7 +5,8 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   include KubectlAll
   include Docker
 
-  define_flag push : Bool, description: "Don't build and push the docker image.", default: true
+  define_flag build : Bool, description: "Don't build the docker image.", default: true
+  define_flag push : Bool, description: "Don't push the docker image.", default: true
   define_flag image, description: "Override the generated docker image."
   define_flag wait : Bool, description: "Don't wait for the rollout.", default: true
   define_flag tag, description: "The docker tag to apply.", short: t
@@ -18,11 +19,19 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   def run
     if (actor.clusters.empty? || !actor.cluster.initialized?)
       kubectl_create_namespace(namespace) if flags.create_namespace
-      if !flags.tag && !flags.image && flags.push
-        docker_build_and_push(actor.buildable_contexts)
+
+      # Build the image
+      if !flags.tag && !flags.image && flags.build
+        docker_build(actor.buildable_contexts)
       else
         set_images_from_current!
       end
+
+      # Push the image
+      if !flags.tag && !flags.image && flags.build && flags.push
+        docker_push(actor.buildable_contexts)
+      end
+
       result = actor.generate
       puts "Applying Kubernetes Manifests...".colorize(:cyan)
       result.items.not_nil!.each do |item|
