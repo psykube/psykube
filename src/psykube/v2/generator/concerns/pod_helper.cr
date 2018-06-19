@@ -75,7 +75,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   # Containers
   private def generate_container(container_name, container, image)
     Pyrite::Api::Core::V1::Container.new(
-      name: container_name,
+      name: [name, container_name].join('-'),
       image: image,
       resources: generate_container_resources(container),
       env: generate_container_env(container),
