@@ -9,6 +9,7 @@ class Psykube::V2::Manifest::Shared::InlineCronJob
     successful_jobs_history_limit: {type: Int32, optional: true},
     suspend:                       {type: Bool, optional: true},
     starting_deadline:             {type: Int32, optional: true},
+    restart_policy:                {type: String, default: "OnFailure"},
     schedule:                      {type: String},
     command:                       {type: Array(String) | String},
   })

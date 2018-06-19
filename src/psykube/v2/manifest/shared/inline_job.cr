@@ -4,6 +4,7 @@ class Psykube::V2::Manifest::Shared::InlineJob
     backoff_limit:   {type: Int32, optional: true},
     completions:     {type: Int32, optional: true},
     parallelism:     {type: Int32, optional: true},
+    restart_policy:  {type: String, default: "OnFailure"},
     command:         {type: Array(String) | String},
   })
 end

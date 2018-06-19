@@ -62,13 +62,13 @@ module Psykube::V2::Generator::Concerns::PodHelper
       completions: manifest.completions,
       backoff_limit: manifest.backoff_limit,
       parallelism: manifest.parallelism,
-      template: generate_pod_template
+      template: generate_pod_template.tap { |t| t.spec.not_nil!.restart_policy = manifest.restart_policy || "OnFailure" }
     )
   end
 
   private def generate_job_spec(_nil : Nil)
     Pyrite::Api::Batch::V1::JobSpec.new(
-      template: generate_pod_template
+      template: generate_pod_template.tap { |t| t.spec.not_nil!.restart_policy = "OnFailure" }
     )
   end
 
