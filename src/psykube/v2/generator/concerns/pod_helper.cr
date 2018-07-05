@@ -84,7 +84,8 @@ module Psykube::V2::Generator::Concerns::PodHelper
       readiness_probe: generate_container_readiness_probe(container, container.readycheck || container.healthcheck),
       ports: generate_container_ports(container.ports),
       command: generate_container_command(container.command),
-      args: generate_container_args(container.args)
+      args: generate_container_args(container.args),
+      security_context: generate_security_context(container.security_context)
     )
   end
 
