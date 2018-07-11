@@ -18,11 +18,11 @@ shards:
 
   oak:
     github: obsidian/oak
-    version: 1.0.2
+    version: 2.0.1
 
   orion:
     github: obsidian/orion
-    version: 1.4.2
+    version: 1.5.0
 
   pyrite:
     github: psykube/pyrite
