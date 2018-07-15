@@ -1,4 +1,4 @@
-## psykube apply
+# psykube apply
 
 Apply the kubernetes manifests.
 
