@@ -1,0 +1,15 @@
+# Deployment
+
+Create a deployment based application.
+
+## Configuration
+
+```yaml
+version: 2
+type: Deployment
+name: sample-app
+# The containers
+containers:
+  server:
+
+```

@@ -79,7 +79,7 @@ shards build psykube
 ### Initialize and Configure the Project
 
 To get started, run `psykube init` inside your project. For details on how to
-configure the manifest, see link:./docs/configuration[docs/configuration].
+configure the manifest, see link:./documentation/configuration[documentation/configuration].
 
 ### Apply Changes
 

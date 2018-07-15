@@ -1,0 +1,26 @@
+# psykube copy-namespace
+
+Copy the specified namespace if the target namespace does not exist.
+
+## Usage
+  psykube copy-namespace [flags...] <from> <to> [arg...]
+
+## Flags
+|===
+| Flag | Description
+| --cluster                                     | The cluster to use when invoking commands.
+| --context, -c                                 | The context to use when invoking kubectl.
+| --explicit                                    | Only copy resources that have the annotation "psykube.io/allow-copy" set to "true"
+| --file, -f (default: "./.psykube.yml")        | The location of the psykube manifest yml file.
+| --force                                       | Copy the namespace even the destination already exists.
+| --help                                        | Displays help for the current command.
+| --namespace, -n                               | The namespace to use when invoking kubectl.
+| --resources, -r (default: DEFAULT_RESOURCES)  | The resource types to copy.
+|===
+
+## Arguments
+|===
+| Flag | Description
+| from (required)                               | The namespace to copy resources from
+| to (required)                                 | The namespace to copy resources to
+|===

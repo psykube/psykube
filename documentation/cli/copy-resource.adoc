@@ -1,0 +1,27 @@
+# psykube copy-resource
+
+Copy a resource.
+
+## Usage
+  psykube copy-resource [flags...] <resource_type> <resource_name> <new_resource_name> [arg...]
+
+## Flags
+|===
+| Flag                                    | Description
+| --cluster                               | The cluster to use when invoking commands.
+| --context, -c                           | The context to use when invoking kubectl.
+| --dest-namespace                        | The namespace to copy the resource to.
+| --explicit                              | Only copy resources that have the annotation "psykube.io/allow-copy" set to "true".
+| --file, -f (default: "./.psykube.yml")  | The location of the psykube manifest yml file.
+| --force                                 | Overwrite the resource if it exists.
+| --help                                  | Displays help for the current command.
+| --source-namespace                      | The namespace to copy the resource from.
+|===
+
+## Arguments
+|===
+| Flag | Description
+| resource_type (required)                | The type of the resource.
+| resource_name (required)                | The name of the resource.
+| new_resource_name                       | The name of the new resource.
+|===

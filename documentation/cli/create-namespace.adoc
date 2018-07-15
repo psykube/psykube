@@ -1,0 +1,16 @@
+# psykube create-namespace
+
+Create the namespace for the specified configuration
+
+## Usage
+  psykube create-namespace [flags...] [arg...]
+
+## Flags
+|===
+| Flag                                    | Description
+| --cluster                               | The cluster to use when invoking commands.
+| --context, -c                           | The context to use when invoking kubectl.
+| --file, -f (default: "./.psykube.yml")  | The location of the psykube manifest yml file.
+| --help                                  | Displays help for the current command.
+| --namespace, -n                         | The namespace to use when invoking kubectl.
+|===

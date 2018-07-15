@@ -1,0 +1,26 @@
+## psykube apply
+
+Apply the kubernetes manifests.
+
+## Usage
+  psykube apply [flags...] [arg...]
+
+## Flags
+|===
+| Flag | Description
+| --build                                  | Don't build the docker image.
+| --build-args                             | The build args to add to docker build.
+| --cluster                                | The cluster to use when invoking commands.
+| --context, -c                            | The context to use when invoking kubectl.
+| --create-namespace                       | create the namespace before the given apply.
+| --file, -f (default: "./.psykube.yml")   | The location of the psykube manifest yml file.
+| --force                                  | Force the recreation of the kubernetes resources.
+| --help                                   | Displays help for the current command.
+| --image                                  | Override the generated docker image.
+| --login                                  | Don't login with the specified image pull secrets before pushing.
+| --namespace, -n                          | The namespace to use when invoking kubectl.
+| --push                                   | Don't push the docker image.
+| --skip-if-no-cluster                     | dont fail, just skip the apply if the cluster does not exist.
+| --tag, -t                                | The docker tag to apply.
+| --wait                                   | Don't wait for the rollout.
+|===
