@@ -1,0 +1,99 @@
+# Psykube
+:toc: macro
+
+image:https://img.shields.io/github/release/psykube/psykube.svg["Releases", link="https://github.com/psykube/psykube/releases"] image:https://img.shields.io/github/license/psykube/psykube.svg["License", link="https://github.com/psykube/psykube/blob/master/LICENSE"] image:https://img.shields.io/travis/psykube/psykube.svg["Travis", link="https://travis-ci.org/psykube/psykube"]
+
+Kubernetes is a powerful tool, but configuring with it and working with the
+various commands can be complex and tedious. Psykube aims to make your application
+configuration more concise and to make interacting with your application more
+simple and PaaS-like.
+
+'''
+toc::[]
+'''
+
+## Functionality Overview
+
+* Combine configuration of various files into one simplified manifest.
+* Easily assign schedule `CronJobs` for your application.
+* Easily specify different pieces of configuration for different clusters.
+* Build, Push, and Apply in a single command.
+
+  psykube apply
+
+* `exec` into an application pod without looking up a `Pod` name.
+
+  psykube exec
+
+* `port-forward` a port without looking up a `Pod` name.
+
+  psykube port-forward
+
+* Specify `Jobs` for your application and run them easily from the command line.
+
+  psykube run-job migrate
+
+* Easily understand the status of your application.
+
+  psykube status
+
+* Tail the logs of all the running pods in your application.
+
+  psykube logs
+
+## Installation
+
+### Mac OSX via Homebrew
+
+```sh
+brew tap psykube/homebrew
+brew install psykube
+```
+
+### CI and Linux Environments
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/psykube/psykube/master/travis.sh | bash
+```
+
+### From source
+
+#### Prerequisites
+
+```sh
+brew install crystal-lang
+```
+
+#### Compiling
+
+You can follow the steps below to clone and compile psykube. Once compiled you
+can find the binary at `./bin/psykube`.
+
+```sh
+git clone git@github:psykube/psykube.git
+shards build psykube
+```
+
+## Getting Started
+
+### Initialize and Configure the Project
+
+To get started, run `psykube init` inside your project. For details on how to
+configure the manifest, see link:./docs/configuration[docs/configuration].
+
+### Apply Changes
+
+Use `psykube apply` to build the docker image, push it to the specified registry,
+and apply the generated kubernetes manifests. Psykube will ensure that the generated
+manifests are properly linked together. A typical application may include:
+
+* A link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment[Deployment] for the application.
+* A link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap[ConfigMap] to hold configuration.
+* A link:https://kubernetes.io/docs/concepts/configuration/secret[Secret] to hold sensitive information.
+* A link:https://kubernetes.io/docs/concepts/services-networking/service[Service] to expose the application to the cluster.
+* An link:https://kubernetes.io/docs/concepts/services-networking/ingress[Ingress] to expose the application to the internet.
+
+## More Reading
+
+Psykube makes things simple, but due to the sheer amount of use cases it covers,
+you can read more in the documentation section in link:./docs[docs].
