@@ -10,7 +10,7 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
   define_flag push : Bool, description: "Don't push the docker image.", default: true
   define_flag create_namespace : Bool, description: "create the namespace before the given apply."
   define_flag skip_if_no_cluster : Bool, description: "dont fail, just skip the apply if the cluster does not exist."
-  define_argument job_name, description: "the name of the job you wish to run"
+  define_argument job_name, description: "the name of the job you wish to run."
 
   define_help description: "Run a named job."
 

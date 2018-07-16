@@ -18,6 +18,7 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
       actor.generate.items.not_nil!.each do |item|
         kind = item.kind.downcase
         name = item.metadata.not_nil!.name.to_s
+        FileUtils.mkdir_p(output_dir)
         filename = File.join(output_dir, "#{name}.#{kind}.yaml")
         File.open(filename, "w+") do |io|
           item.to_yaml(io)

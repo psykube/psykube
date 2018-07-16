@@ -5,7 +5,7 @@ class Psykube::CLI::Commands::Init < Admiral::Command
 
   define_help description: "Generate a .psykube.yml in the current directory."
 
-  define_flag overwrite : Bool, "Overwrite the file if it exists", short: 'o'
+  define_flag overwrite : Bool, "Overwrite the file if it exists.", short: 'o'
   define_flag v1 : Bool, default: false
   define_flag type, "Set the type of pyskube manifest.", short: 't', default: "Deployment"
   define_flag name, "Set the name of the application.", short: 'N'
@@ -21,7 +21,7 @@ class Psykube::CLI::Commands::Init < Admiral::Command
   define_flag memory_request, "Set the requested memory resources."
   define_flag cpu_limit, "Set the cpu limit."
   define_flag memory_limit, "Set the memory limit."
-  define_flag preview : Bool, "Don't write the file, just preview it"
+  define_flag preview : Bool, "Don't write the file, just preview it."
 
   def overwrite?
     return true if flags.overwrite

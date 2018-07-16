@@ -16,11 +16,11 @@ class Psykube::CLI::Commands::CopyNamespace < Admiral::Command
   define_flag force : Bool,
     description: "Copy the namespace even the destination already exists."
   define_flag explicit : Bool,
-    description: %(Only copy resources that have the annotation "psykube.io/allow-copy" set to "true"),
+    description: %(Only copy resources that have the annotation "psykube.io/allow-copy" set to "true".),
     default: false
 
-  define_argument from, description: "The namespace to copy resources from", required: true
-  define_argument to, description: "The namespace to copy resources to", required: true
+  define_argument from, description: "The namespace to copy resources from.", required: true
+  define_argument to, description: "The namespace to copy resources to.", required: true
 
   private def namespace
     arguments.from

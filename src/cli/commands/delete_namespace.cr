@@ -4,7 +4,7 @@ class Psykube::CLI::Commands::DeleteNamespace < Admiral::Command
   include Kubectl
   include KubectlAll
 
-  define_help description: "Delete the namespace for the specified configuration"
+  define_help description: "Delete the namespace for the specified configuration."
 
   define_flag confirm : Bool,
     description: "Don't ask for confirmation.",

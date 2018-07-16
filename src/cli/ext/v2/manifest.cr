@@ -23,8 +23,8 @@ def Psykube::V2::Manifest.new(command : Psykube::CLI::Commands::Init)
     flags.ports.each_with_index do |spec, index|
       parts = spec.split("=", 2).reverse
       port = parts[0].to_i? || raise "Invalid port format."
-      name = parts[1]? || (index == 0 ? "default" : "port_#{index}")
-      hash[name] = port
+      port_name = parts[1]? || (index == 0 ? "default" : "port_#{index}")
+      hash[port_name] = port
     end
   end unless flags.ports.empty?
 

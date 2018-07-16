@@ -14,7 +14,7 @@ class Psykube::CLI::Commands::Exec < Admiral::Command
     short: t
 
   define_argument command,
-    description: "The command to run in the container",
+    description: "The command to run in the container.",
     required: true
 
   def run

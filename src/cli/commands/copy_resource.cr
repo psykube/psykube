@@ -9,15 +9,15 @@ class Psykube::CLI::Commands::CopyResource < Admiral::Command
   define_help description: "Copy a resource."
 
   define_flag force : Bool, "Overwrite the resource if it exists."
-  define_flag source_namespace, description: "The namespace to copy the resource from"
-  define_flag namespace, description: "The namespace to copy the resource to", long: "dest-namespace"
+  define_flag source_namespace, description: "The namespace to copy the resource from."
+  define_flag namespace, description: "The namespace to copy the resource to.", long: "dest-namespace"
   define_flag explicit : Bool,
-    description: %(Only copy resources that have the annotation "psykube.io/allow-copy" set to "true"),
+    description: %(Only copy resources that have the annotation "psykube.io/allow-copy" set to "true".),
     default: false
 
-  define_argument resource_type, required: true
-  define_argument resource_name, required: true
-  define_argument new_resource_name
+  define_argument resource_type, required: true, description: "The resource type to copy."
+  define_argument resource_name, required: true, description: "The name of the resource to copy."
+  define_argument new_resource_name, description: "The name of the new resource."
 
   def run
     if source_namespace = flags.source_namespace
