@@ -10,7 +10,7 @@ abstract class Psykube::Generator
   include Concerns::MetadataHelper
 
   macro cast_manifest(type)
-    def manifest
+    def manifest : {{type}}
       @manifest.as({{type}})
     end
   end

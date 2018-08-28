@@ -13,4 +13,12 @@ class Psykube::V2::Manifest::CronJob < ::Psykube::V2::Manifest
   }, service: false)
 
   @schedule = "0 0 5 31 2 ?" # A cron that will NEVER execute
+
+  def jobs
+    nil
+  end
+
+  def cron_jobs
+    nil
+  end
 end
