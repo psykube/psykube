@@ -28,7 +28,6 @@ class Psykube::V2::Generator::List < ::Psykube::Generator
           list.concat Service.result(self)
           list << Ingress.result(self)
           list.concat InlineCronJob.result(self)
-          # list.concat InlineJob.inline_result(self)
         end
 
         # Apply Autoscaling

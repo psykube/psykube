@@ -25,16 +25,13 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
         set_images_from_current!
       end
 
-      # Push the image
-      if flags.build && flags.push
-        docker_push(actor.buildable_contexts)
+      result = actor.get_job(arguments.job_name)
+      puts "Applying Kubernetes Manifests...".colorize(:cyan)
+      result.items.not_nil!.each do |item|
+        kubectl_run("apply", manifest: item)
       end
-
-      job_manifest = actor.get_job(arguments.job_name)
-      puts "Starting Job: #{arguments.job_name}...".colorize(:cyan)
-      kubectl_run("apply", manifest: job_manifest)
     elsif flags.skip_if_no_cluster
-      STDERR.puts "cluster not defined: `#{actor.cluster_name}`, skipping...".colorize(:yellow)
+      @error_io.puts "cluster not defined: `#{actor.cluster_name}`, skipping...".colorize(:yellow)
     else
       raise Error.new "cluster not defined: `#{actor.cluster_name}`"
     end

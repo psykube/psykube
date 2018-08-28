@@ -12,18 +12,20 @@ class Psykube::CLI::Commands::GenerateJob < Admiral::Command
 
   def run
     set_images_from_current!
-    job = actor.get_job(arguments.job_name)
+    manifest = actor.get_job(arguments.job_name)
     if (output = flags.output)
       output_dir = File.expand_path(output)
-      kind = job.kind.downcase
-      name = job.metadata.not_nil!.name.to_s
-      FileUtils.mkdir_p(output_dir)
-      filename = File.join(output_dir, "#{name}.#{kind}.yaml")
-      File.open(filename, "w+") do |io|
-        actor.get_job(arguments.job_name).to_yaml(io)
+      manifest.items.not_nil!.each do |item|
+        kind = item.kind.downcase
+        name = item.metadata.not_nil!.name.to_s
+        FileUtils.mkdir_p(output_dir)
+        filename = File.join(output_dir, "#{name}.#{kind}.yaml")
+        File.open(filename, "w+") do |io|
+          item.to_yaml(io)
+        end
       end
     else
-      job.to_yaml(@output_io)
+      manifest.to_yaml(@output_io)
     end
   end
 end

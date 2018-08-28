@@ -46,7 +46,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
       end
       kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.now.to_json}"], flags: {"--overwrite" => "true"})
     elsif flags.skip_if_no_cluster
-      STDERR.puts "cluster not defined: `#{actor.cluster_name}`, skipping...".colorize(:yellow)
+      @error_io.puts "cluster not defined: `#{actor.cluster_name}`, skipping...".colorize(:yellow)
     else
       raise Error.new "cluster not defined: `#{actor.cluster_name}`"
     end

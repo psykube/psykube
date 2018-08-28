@@ -37,7 +37,7 @@ class Psykube::Actor
     manifest.generate(self)
   end
 
-  def get_job(name) : Pyrite::Api::Batch::V1::Job
+  def get_job(name) : Pyrite::Api::Core::V1::List
     raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !clusters.empty?
     raise Generator::ValidationError.new("cluster does not exist: #{cluster_name}") if cluster.initialized? && !clusters.empty?
     manifest.get_job(self, name)

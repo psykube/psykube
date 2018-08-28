@@ -1,12 +1,36 @@
+require "uuid"
+
 class Psykube::V2::Generator::InlineJob < ::Psykube::Generator
   include Concerns::PodHelper
   cast_manifest Manifest::Deployment | Manifest::StatefulSet | Manifest::DaemonSet | Manifest::Pod
 
   protected def result(name)
     raise Error.new("unknown job: #{name}") unless job = manifest.jobs.try(&.[name]?)
-    Pyrite::Api::Batch::V1::Job.new(
-      metadata: generate_metadata(generate_name: "#{self.name}-#{name}"),
-      spec: generate_job(job)
+    Pyrite::Api::Core::V1::List.new(
+      items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
+        # Prepare RBAC
+        list << ServiceAccount.result(self)
+        list.concat Role.result(self)
+        list.concat RoleBinding.result(self)
+        list.concat ClusterRole.result(self)
+        list.concat ClusterRoleBinding.result(self)
+
+        # Set Config details
+        list << ConfigMap.result(self)
+        list << Secret.result(self)
+        list.concat ImagePullSecret.result(self)
+
+        # Add Volumes
+        unless manifest.type == "StatefulSet"
+          list.concat PersistentVolumeClaims.result(self)
+        end
+
+        # Add podable object
+        list << Pyrite::Api::Batch::V1::Job.new(
+          metadata: generate_metadata(name: "#{self.name}-#{name}-#{UUID.random}"),
+          spec: generate_job(job)
+        )
+      end.compact
     )
   end
 
