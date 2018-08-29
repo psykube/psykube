@@ -35,10 +35,11 @@ class Psykube::V2::Generator::InlineJob < ::Psykube::Generator
   end
 
   private def generate_job(job : Manifest::Shared::InlineJob)
-    generate_job_spec(job).tap do |job_spec|
+    generate_job_spec(job, "InlineJob").tap do |job_spec|
+      job_spec.not_nil!.active_deadline_seconds = job.active_deadline
       job_spec.not_nil!.template.not_nil!.tap do |template|
         spec = template.not_nil!.spec.not_nil!
-        template.metadata.not_nil!.labels.not_nil!["role"] = "job"
+        spec.restart_policy = "Never"
         spec.init_containers = nil
         spec.containers = [spec.containers.first.tap do |container|
           container.liveness_probe = nil
@@ -53,9 +54,11 @@ class Psykube::V2::Generator::InlineJob < ::Psykube::Generator
   end
 
   private def generate_job(command : String | Array(String))
-    generate_job_spec(nil).tap do |job_spec|
+    generate_job_spec(nil, "InlineJob").tap do |job_spec|
+      job_spec.not_nil!.active_deadline_seconds = 300
       job_spec.not_nil!.template.not_nil!.tap do |template|
         spec = template.spec.not_nil!
+        spec.restart_policy = "Never"
         template.metadata.not_nil!.labels.not_nil!["role"] = "job"
         spec.init_containers = nil
         spec.containers = [spec.containers.first.tap do |container|

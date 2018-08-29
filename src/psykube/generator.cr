@@ -1,7 +1,5 @@
 require "file_utils"
 
-require "./manifest"
-
 abstract class Psykube::Generator
   class ValidationError < Error; end
 
@@ -15,6 +13,7 @@ abstract class Psykube::Generator
     end
   end
 
+  @role : String
   @actor : Actor
   getter manifest : Manifest::Any
 
@@ -26,11 +25,14 @@ abstract class Psykube::Generator
   end
 
   def initialize(generator : Generator)
+    @role = generator.@role
     @manifest = generator.@manifest
     @actor = generator.@actor
   end
 
-  def initialize(@manifest : Manifest::Any, @actor : Actor); end
+  def initialize(@manifest : Manifest::Any, @actor : Actor)
+    @role = @manifest.type.not_nil!
+  end
 
   def to_yaml(*args, **props)
     result.to_yaml(*args, **props)

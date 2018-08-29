@@ -1,5 +1,6 @@
 class Psykube::V2::Generator::List < ::Psykube::Generator
   protected def result
+    @role = @manifest.type.not_nil!
     Pyrite::Api::Core::V1::List.new(
       items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
         # Prepare RBAC

@@ -5,19 +5,23 @@ module Psykube::V2::Generator::Concerns::PodHelper
   class InvalidHealthcheck < Error; end
 
   # Templates and specs
-  private def generate_pod_template
+  private def generate_pod_template(role = @role)
     Pyrite::Api::Core::V1::PodTemplateSpec.new(
       spec: generate_pod_spec,
       metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
-        labels: {"app" => name}
+        labels: {
+          "app" => name,
+          "psykube.io/type" => role
+        }
       )
     )
   end
 
-  private def generate_selector
+  private def generate_selector(role = @role)
     Pyrite::Apimachinery::Apis::Meta::V1::LabelSelector.new(
       match_labels: {
         "app" => name,
+        "psykube.io/type" => role
       }
     )
   end
@@ -50,25 +54,25 @@ module Psykube::V2::Generator::Concerns::PodHelper
     self.name if service_account || manifest.roles || manifest.cluster_roles
   end
 
-  private def generate_job_template(manifest = self.manifest)
+  private def generate_job_template(manifest = self.manifest, role = @role)
     Pyrite::Api::Batch::V1beta1::JobTemplateSpec.new(
-      spec: generate_job_spec(manifest)
+      spec: generate_job_spec(manifest, role)
     )
   end
 
-  private def generate_job_spec(manifest = self.manifest)
+  private def generate_job_spec(manifest = self.manifest, role = @role)
     Pyrite::Api::Batch::V1::JobSpec.new(
       active_deadline_seconds: manifest.active_deadline,
       completions: manifest.completions,
       backoff_limit: manifest.backoff_limit,
       parallelism: manifest.parallelism,
-      template: generate_pod_template.tap { |t| t.spec.not_nil!.restart_policy = manifest.restart_policy || "OnFailure" }
+      template: generate_pod_template(role).tap { |t| t.spec.not_nil!.restart_policy = manifest.restart_policy || "OnFailure" }
     )
   end
 
-  private def generate_job_spec(_nil : Nil)
+  private def generate_job_spec(_nil : Nil, role = @role)
     Pyrite::Api::Batch::V1::JobSpec.new(
-      template: generate_pod_template.tap { |t| t.spec.not_nil!.restart_policy = "OnFailure" }
+      template: generate_pod_template(role).tap { |t| t.spec.not_nil!.restart_policy = "OnFailure" }
     )
   end
 

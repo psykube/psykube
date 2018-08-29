@@ -1,7 +1,18 @@
+version: 2
 name: test-app
-registry_user: commercial-tribe
-ports:
-  http: 80
+registry_user: jwaldrip
+context: gke_waldrip-net_us-central1-a_waldrip-net
+containers:
+  app:
+    ports:
+      http: 80
+
+cron_jobs:
+  hourly:
+    schedule: 0 * * * *
+    command: [echo, "its the top of the hour"]
+jobs:
+  migrate: echo "migrate"
 ingress:
   tls: true
   annotations:
@@ -9,9 +20,9 @@ ingress:
 clusters:
   staging:
     ingress:
-      host: psykube-simple.{{metadata.namespace}}.commercialtribe.ninja
+      host: psykube-simple.{{metadata.namespace}}.waldrip.net
   production:
     ingress:
-      host: psykube-simple.commercialtribe.net
+      host: psykube-simple.waldrip.net
     config_map:
       some.value: "tada"

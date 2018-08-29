@@ -3,6 +3,7 @@ class Psykube::V2::Generator::InlineCronJob < ::Psykube::Generator
   cast_manifest Manifest::Deployment | Manifest::StatefulSet | Manifest::DaemonSet | Manifest::Pod
 
   protected def result
+    @role = "InlineCronJob"
     return [] of Pyrite::Api::Batch::V1beta1::CronJob if manifest.cron_jobs.nil?
     manifest.cron_jobs.not_nil!.map do |name, manifest|
       generate_cron_job(name, manifest)
@@ -18,7 +19,7 @@ class Psykube::V2::Generator::InlineCronJob < ::Psykube::Generator
         failed_jobs_history_limit: manifest.failed_jobs_history_limit,
         successful_jobs_history_limit: manifest.successful_jobs_history_limit,
         concurrency_policy: manifest.concurrency_policy,
-        job_template: generate_job_template(manifest).tap do |job_template|
+        job_template: generate_job_template(manifest, "InlineCronJob").tap do |job_template|
           job_template.not_nil!.tap do |template|
             spec = template.spec.not_nil!.template.not_nil!.spec.not_nil!
             template.spec.not_nil!.template.metadata.not_nil!.labels.not_nil!["role"] = "cron"
