@@ -101,12 +101,25 @@ class Psykube::V2::Generator::Ingress < ::Psykube::Generator
           Pyrite::Api::Extensions::V1beta1::HTTPIngressPath.new(
             path: path,
             backend: Pyrite::Api::Extensions::V1beta1::IngressBackend.new(
-              service_name: name,
+              service_name: generate_service_name(manifest.services),
               service_port: lookup_port(path_spec.port)
             )
           )
         end
       )
     )
+  end
+
+  private def generate_service_name(type : Nil | String)
+    name
+  end
+
+  private def generate_service_name(types : Array(String))
+    [name, types.first.downcase].compact.join("-")
+  end
+
+  private def generate_service_name(services : Hash(String, Manifest::Service | String))
+    name = nil if services.keys.first == "default"
+    [name, services.keys.first].compact.join("-")
   end
 end
