@@ -119,7 +119,7 @@ class Psykube::V2::Generator::Ingress < ::Psykube::Generator
   end
 
   private def generate_service_name(services : Hash(String, Manifest::Service | String))
-    name = nil if services.keys.first == "default"
-    [name, services.keys.first].compact.join("-")
+    service_name = services.keys.first == "default" ? nil : services.keys.first
+    [name, service_name].compact.join("-")
   end
 end
