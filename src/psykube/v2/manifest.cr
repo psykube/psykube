@@ -126,7 +126,7 @@ abstract class Psykube::V2::Manifest
       name:                            {type: String},
       automount_service_account_token: {type: Bool, optional: true},
       service_account:                 {type: Bool | String | Shared::ServiceAccount, optional: true},
-      roles:                           {type: Array(String | Shared::Role), optional: true},
+      roles:                           {type: Array(String | Shared::Role | Shared::ClusterRoleType), optional: true},
       cluster_roles:                   {type: Array(String | Shared::Role), optional: true},
       image_pull_secrets:              {type: Array(String | Shared::PullSecretCredentials), optional: true},
       prefix:                          {type: String, optional: true, envvar: "PSYKUBE_PREFIX"},

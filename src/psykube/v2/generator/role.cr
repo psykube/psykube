@@ -10,13 +10,13 @@ class Psykube::V2::Generator::Role < ::Psykube::Generator
     return [] of Pyrite::Api::Rbac::V1::Role
   end
 
-  private def generate_roles(roles : Array(Manifest::Shared::Role | String))
+  private def generate_roles(roles : Array)
     roles.map do |role|
       generate_role(role)
     end.compact
   end
 
-  private def generate_role(name : String) : Nil
+  private def generate_role(name : String | Manifest::Shared::ClusterRoleType) : Nil
   end
 
   private def generate_role(role : Manifest::Shared::Role)
