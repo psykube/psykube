@@ -21,6 +21,7 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
       # Build the image
       if flags.build
         docker_build(actor.buildable_contexts)
+        docker_push(actor.buildable_contexts) if flags.push
       else
         set_images_from_current!
       end
