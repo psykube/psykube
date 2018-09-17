@@ -83,7 +83,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
       image: image,
       resources: generate_container_resources(container),
       env: generate_container_env(container),
-      volume_mounts: generate_container_volume_mounts(container.volumes),
+      volume_mounts: generate_container_volume_mounts(container.volume_mounts || container.volumes),
       liveness_probe: generate_container_liveness_probe(container, container.healthcheck),
       readiness_probe: generate_container_readiness_probe(container, container.readycheck || container.healthcheck),
       ports: generate_container_ports(container.ports),
@@ -382,7 +382,13 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_container_volume_mount(volume_name : String, spec : Manifest::Shared::Container::VolumeMount)
-    spec.to_container_volume_mount(volume_name)
+    Pyrite::Api::Core::V1::VolumeMount.new(
+      name: volume_name,
+      mount_path: spec.mount_path,
+      mount_propagation: spec.mount_propagation,
+      read_only: spec.read_only,
+      sub_path: spec.sub_path
+    )
   end
 
   # Environment
