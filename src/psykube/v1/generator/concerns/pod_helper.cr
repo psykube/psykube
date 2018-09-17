@@ -165,7 +165,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
     end
   end
 
-  private def generate_container_probe_http_get(http_check : Manifest::Healthcheck::Http)
+  private def generate_container_probe_http_get(http_check : Manifest::Handler::Http)
     return unless manifest.ports?
     Pyrite::Api::Core::V1::HTTPGetAction.new(
       path: http_check.path,
@@ -206,7 +206,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_container_probe_tcp_socket(tcp : Manifest::Healthcheck::Tcp)
+  private def generate_container_probe_tcp_socket(tcp : Manifest::Handler::Tcp)
     Pyrite::Api::Core::V1::TCPSocketAction.new(
       port: lookup_port tcp.port
     )
@@ -219,7 +219,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
     generate_container_probe_exec [command]
   end
 
-  private def generate_container_probe_exec(exec : Manifest::Healthcheck::Exec)
+  private def generate_container_probe_exec(exec : Manifest::Handler::Exec)
     generate_container_probe_exec exec.command
   end
 

@@ -89,7 +89,8 @@ module Psykube::V2::Generator::Concerns::PodHelper
       ports: generate_container_ports(container.ports),
       command: generate_container_command(container.command),
       args: generate_container_args(container.args),
-      security_context: generate_security_context(container.security_context)
+      security_context: generate_security_context(container.security_context),
+      lifecycle: generate_container_lifecycle(container, container.lifecycle)
     )
   end
 
@@ -316,7 +317,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_container_probe_http_get(container : Manifest::Shared::Container, http_check : Manifest::Healthcheck::Http)
+  private def generate_container_probe_http_get(container : Manifest::Shared::Container, http_check : Manifest::Handler::Http)
     Pyrite::Api::Core::V1::HTTPGetAction.new(
       path: http_check.path,
       port: container.lookup_port(http_check.port).not_nil!,
@@ -341,7 +342,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_container_probe_tcp_socket(container : Manifest::Shared::Container, tcp : Manifest::Healthcheck::Tcp)
+  private def generate_container_probe_tcp_socket(container : Manifest::Shared::Container, tcp : Manifest::Handler::Tcp)
     Pyrite::Api::Core::V1::TCPSocketAction.new(
       port: container.lookup_port tcp.port
     )
@@ -351,10 +352,10 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_container_probe_exec(container : Manifest::Shared::Container, command : String)
-    generate_container_probe_exec container, [command]
+    generate_container_probe_exec container, command.split(" ")
   end
 
-  private def generate_container_probe_exec(container : Manifest::Shared::Container, exec : Manifest::Healthcheck::Exec)
+  private def generate_container_probe_exec(container : Manifest::Shared::Container, exec : Manifest::Handler::Exec)
     generate_container_probe_exec container, exec.command
   end
 
@@ -500,6 +501,27 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_container_command(strings : Nil) : Nil
+  end
+
+  private def generate_container_lifecycle(container : Manifest::Shared::Container, spec : Manifest::Shared::Container::Lifecycle)
+    Pyrite::Api::Core::V1::Lifecycle.new(
+      post_start: generate_container_lifecycle_hook(container, spec.post_start),
+      pre_stop: generate_container_lifecycle_hook(container, spec.pre_stop)
+    )
+  end
+
+  private def generate_container_lifecycle(container : Manifest::Shared::Container, spec : Nil) : Nil
+  end
+
+  private def generate_container_lifecycle_hook(container : Manifest::Shared::Container, handler : Manifest::Handler)
+    Pyrite::Api::Core::V1::Handler.new(
+      exec: generate_container_probe_exec(container, handler.exec),
+      http_get: generate_container_probe_http_get(container, handler.http),
+      tcp_socket: generate_container_probe_tcp_socket(container, handler.tcp)
+    )
+  end
+
+  private def generate_container_lifecycle_hook(container : Manifest::Shared::Container, spec : Nil) : Nil
   end
 
   private def generate_container_args(strings : Array(String))

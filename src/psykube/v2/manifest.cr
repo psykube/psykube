@@ -5,6 +5,7 @@ abstract class Psykube::V2::Manifest
 
   alias Readycheck = V1::Manifest::Readycheck
   alias Healthcheck = V1::Manifest::Healthcheck
+  alias Handler = V1::Manifest::Handler
   alias Env = V1::Manifest::Env
   alias Ingress = V1::Manifest::Ingress
   alias Service = V1::Manifest::Service

@@ -13,6 +13,7 @@ class Psykube::V2::Manifest::Shared::Container
     command:          {type: Array(String) | String, optional: true},
     args:             {type: Array(String), optional: true},
     security_context: {type: SecurityContext, optional: true},
+    lifecycle:         {type: Lifecycle, optional: true}
   })
 
   def env

@@ -1,8 +1,8 @@
 class Psykube::V1::Manifest::Readycheck
   Macros.mapping({
-    http:                  {type: Healthcheck::Http | String, optional: true},
-    tcp:                   {type: Healthcheck::Tcp | String | Int32, optional: true},
-    exec:                  {type: Healthcheck::Exec | String | Array(String), optional: true},
+    http:                  {type: Handler::Http | String, optional: true},
+    tcp:                   {type: Handler::Tcp | String | Int32, optional: true},
+    exec:                  {type: Handler::Exec | String | Array(String), optional: true},
     initial_delay_seconds: {type: Int32, optional: true},
     timeout_seconds:       {type: Int32, optional: true},
     period_seconds:        {type: Int32, optional: true},
@@ -11,4 +11,4 @@ class Psykube::V1::Manifest::Readycheck
   })
 end
 
-require "./healthcheck/*"
+require "./handler/*"
