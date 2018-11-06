@@ -37,6 +37,7 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
         puts "Waiting for job to complete...".colorize(:yellow)
         job_manifest = result.items.not_nil!.find { |item| item.kind == "Job" }
         kubectl_run("wait", manifest: job_manifest, flags: {"--for" => "condition=complete", "--timeout" => "#{flags.timeout}s"})
+        kubectl_run("delete", manifest: job_manifest)
         puts "Done!".colorize(:green)
       end
     elsif flags.skip_if_no_cluster
