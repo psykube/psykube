@@ -40,7 +40,7 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
         puts "Done!".colorize(:green)
       end
     elsif flags.skip_if_no_cluster
-      @error_io.puts "cluster not defined: `#{actor.cluster_name}`, skipping...".colorize(:yellow)
+      error "cluster not defined: `#{actor.cluster_name}`, skipping...".colorize(:yellow)
     else
       raise Error.new "cluster not defined: `#{actor.cluster_name}`"
     end

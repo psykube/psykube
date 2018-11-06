@@ -2,7 +2,7 @@ version: 1.0
 shards:
   admiral:
     github: jwaldrip/admiral.cr
-    version: 1.7.2
+    version: 1.8.0
 
   crustache:
     github: jwaldrip/crustache
@@ -22,7 +22,7 @@ shards:
 
   orion:
     github: obsidian/orion
-    version: 1.5.0
+    version: 1.6.0
 
   pyrite:
     github: psykube/pyrite

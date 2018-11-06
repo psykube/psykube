@@ -1,4 +1,4 @@
-class Psykube::CLI::Commands::LabeledIO < IO
+class Psykube::CLI::Commands::LabeledIO < IO::FileDescriptor
   Colors = %i(
     light_red
     light_green
@@ -17,11 +17,15 @@ class Psykube::CLI::Commands::LabeledIO < IO
 
   delegate read, to: @io
 
-  def initialize(@io : IO, @label : String?, color : Symbol? = nil)
+  def initialize(@io : IO::FileDescriptor, @label : String?, color : Symbol? = nil)
+    @fd = @io.@fd
+    @closed = @io.@closed
     @color = color || Colors.sample
   end
 
-  def initialize(@io : IO, @label : String?, index : Int)
+  def initialize(@io : IO::FileDescriptor, @label : String?, index : Int)
+    @fd = @io.@fd
+    @closed = @io.@closed
     @color = Colors[index % Colors.size]
   end
 

@@ -36,29 +36,29 @@ module Psykube::CLI::Commands::Kubectl
                    namespace : String? = namespace,
                    error : Bool | IO = true,
                    panic : Bool = true)
-    io = IO::Memory.new
-    args = [] of String
-    args << resource if resource
-    args << name if name
-    flags = Flags.new.merge(flags)
-    flags.merge!({"--export" => export, "--output" => "json"})
-    kubectl_run(
-      command: "get",
-      args: args,
-      flags: flags,
-      manifest: manifest,
-      namespace: namespace,
-      output: io,
-      input: false,
-      error: error,
-      panic: panic
-    )
-    io.rewind
-    io.gets_to_end
+    tempfile = File.tempfile do |io|
+      args = [] of String
+      args << resource if resource
+      args << name if name
+      flags = Flags.new.merge(flags)
+      flags.merge!({"--export" => export, "--output" => "json"})
+      kubectl_run(
+        command: "get",
+        args: args,
+        flags: flags,
+        manifest: manifest,
+        namespace: namespace,
+        output: io,
+        input: false,
+        error: error,
+        panic: panic
+      )
+    end
+    return File.read(tempfile.path)
   end
 
   {% for m in %w(run exec new) %}
-  def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest = nil, namespace : String? = namespace, input : Bool | IO = false, output : Bool | IO = true, error : Bool | IO = true{% if m == "run" %}, panic : Bool = true{% end %})
+  def kubectl_{{m.id}}(command : String, args = [] of String, flags : Flags = Flags.new, manifest = nil, namespace : String? = namespace, input : Bool | Process::ExecStdio = false, output : Bool | Process::ExecStdio = true, error : Bool | Process::ExecStdio = true{% if m == "run" %}, panic : Bool = true{% end %})
     File.exists?(Kubectl.bin) || self.panic("kubectl not found")
     flags = Flags.new.merge(flags)
     {% for io in %w(input output error) %}
@@ -80,7 +80,7 @@ module Psykube::CLI::Commands::Kubectl
 
     # Generate manifests and assign to --filename
     if manifest
-      file = Tempfile.new(manifest.kind)
+      file = File.tempfile(manifest.kind)
       file.print manifest.to_yaml
       file.flush
       flags["--filename"] = file.path

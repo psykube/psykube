@@ -1,5 +1,4 @@
 require "pyrite/versions/v1.9"
-require "tempfile"
 require "colorize"
 require "digest"
 require "yaml"
