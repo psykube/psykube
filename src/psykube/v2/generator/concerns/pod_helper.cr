@@ -426,7 +426,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def expand_env_config_map(key_ref : Manifest::Env::KeyRef)
-    Pyrite::Api::Core::V1::ConfigMapKeySelector.new(key: key_ref.key, name: key_ref.name)
+    Pyrite::Api::Core::V1::ConfigMapKeySelector.new(key: key_ref.key, name: key_ref.name, optional: key_ref.optional)
   end
 
   private def expand_env_secret(key : String)
@@ -435,7 +435,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def expand_env_secret(key_ref : Manifest::Env::KeyRef)
-    Pyrite::Api::Core::V1::SecretKeySelector.new(key: key_ref.key, name: key_ref.name)
+    Pyrite::Api::Core::V1::SecretKeySelector.new(key: key_ref.key, name: key_ref.name, optional: key_ref.optional)
   end
 
   private def expand_env_field(field : String)

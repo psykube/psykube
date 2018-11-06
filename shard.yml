@@ -15,7 +15,7 @@ dependencies:
     github: jwaldrip/crustache
   admiral:
     github: jwaldrip/admiral.cr
-    version: 1.8.0
+    version: 1.8.1
   orion:
     github: obsidian/orion
   pyrite:
