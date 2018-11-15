@@ -43,7 +43,7 @@ module Psykube::CLI::Commands::Kubectl
                    namespace : String? = namespace,
                    error : Bool | IO = true,
                    panic : Bool = true)
-      tempfile = {% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}
+    tempfile = {% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}
         Tempfile.open("kubectl") do |io|
           args = [] of String
           args << resource if resource

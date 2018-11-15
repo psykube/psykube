@@ -34,7 +34,12 @@ module Psykube::V2::Generator::Concerns::PodHelper
       init_containers: generate_init_containers(manifest.init_containers),
       security_context: generate_security_context,
       image_pull_secrets: generate_image_pull_secrets(manifest.image_pull_secrets),
-      service_account_name: generate_service_account_name(manifest.service_account)
+      service_account_name: generate_service_account_name(manifest.service_account),
+      host_pid: manifest.host_pid,
+      host_network: manifest.host_network,
+      dns_policy: manifest.dns_policy,
+      termination_grace_period_seconds: manifest.termination_grace_period,
+      tolerations: manifest.tolerations
     )
   end
 
@@ -81,6 +86,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
     Pyrite::Api::Core::V1::Container.new(
       name: [name, container_name].join('-'),
       image: image,
+      image_pull_policy: container.image_pull_policy,
       resources: generate_container_resources(container),
       env: generate_container_env(container),
       volume_mounts: generate_container_volume_mounts(container.volume_mounts || container.volumes),
