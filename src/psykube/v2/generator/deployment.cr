@@ -7,7 +7,7 @@ class Psykube::V2::Generator::Deployment < ::Psykube::Generator
       metadata: generate_metadata,
       spec: Pyrite::Api::Extensions::V1beta1::DeploymentSpec.new(
         selector: generate_selector,
-        replicas: manifest.replicas || cluster.replicas,
+        replicas: cluster.replicas || manifest.replicas,
         revision_history_limit: manifest.rollout.try(&.history_limit),
         progress_deadline_seconds: manifest.rollout.try(&.progress_timeout),
         template: generate_pod_template,
