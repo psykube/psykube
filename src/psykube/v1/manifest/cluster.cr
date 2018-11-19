@@ -3,6 +3,7 @@ class Psykube::V1::Manifest::Cluster
 
   Macros.mapping({
     image_tag:     {type: String, optional: true},
+    replicas:      {type: Int32, optional: true},
     registry_host: {type: String, optional: true},
     registry_user: {type: String, optional: true},
     labels:        {type: StringMap, optional: true},

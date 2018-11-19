@@ -8,7 +8,7 @@ class Psykube::V2::Generator::StatefulSet < ::Psykube::Generator
       spec: Pyrite::Api::Apps::V1beta1::StatefulSetSpec.new(
         selector: generate_selector,
         service_name: manifest.service_name || name,
-        replicas: manifest.replicas,
+        replicas: manifest.replicas || cluster.replicas,
         volume_claim_templates: generate_volume_claim_templates,
         template: generate_pod_template,
         update_strategy: generate_strategy,

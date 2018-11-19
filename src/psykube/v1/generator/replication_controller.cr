@@ -9,7 +9,7 @@ class Psykube::V1::Generator::ReplicationController < ::Psykube::Generator
       metadata: generate_metadata,
       spec: Pyrite::Api::Core::V1::ReplicationControllerSpec.new(
         selector: generate_selector.match_labels,
-        replicas: manifest.replicas,
+        replicas: manifest.replicas || cluster.replicas,
         template: generate_pod_template
       )
     )

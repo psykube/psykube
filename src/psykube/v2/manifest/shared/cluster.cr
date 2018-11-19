@@ -2,6 +2,7 @@ class Psykube::V2::Manifest::Shared::Cluster
   getter? initialized : Bool = false
 
   Macros.mapping({
+    replicas:            {type: Int32, optional: true},
     registry_host:       {type: String, optional: true},
     registry_user:       {type: String, optional: true},
     labels:              {type: StringMap, optional: true},
