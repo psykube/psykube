@@ -4,7 +4,7 @@ class Psykube::V2::Generator::Deployment < ::Psykube::Generator
 
   protected def result
     Pyrite::Api::Extensions::V1beta1::Deployment.new(
-      metadata: generate_metadata,
+      metadata: generate_metadata(annotations: combined_annotations),
       spec: Pyrite::Api::Extensions::V1beta1::DeploymentSpec.new(
         selector: generate_selector,
         replicas: cluster.replicas || manifest.replicas,
@@ -25,5 +25,12 @@ class Psykube::V2::Generator::Deployment < ::Psykube::Generator
         max_surge: manifest.rollout.try(&.max_surge),
       )
     )
+  end
+
+  private def combined_annotations
+    [
+      manifest.annotations,
+      cluster.annotations,
+    ]
   end
 end

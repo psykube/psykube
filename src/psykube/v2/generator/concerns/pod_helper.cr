@@ -12,7 +12,8 @@ module Psykube::V2::Generator::Concerns::PodHelper
         labels: {
           "app"             => name,
           "psykube.io/type" => role,
-        }
+        },
+        annotations: manifest.pod_annotations
       )
     )
   end

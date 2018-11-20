@@ -137,6 +137,7 @@ abstract class Psykube::V2::Manifest
       context:                         {type: String, optional: true, envvar: "PSYKUBE_CONTEXT"},
       namespace:                       {type: String, optional: true, envvar: "PSYKUBE_NAMESPACE"},
       restart_policy:                  {type: String, optional: true},
+      pod_annotations:                 {type: StringMap, default: StringMap.new},
       annotations:                     {type: StringMap, default: StringMap.new},
       labels:                          {type: StringMap, default: StringMap.new},
       config_map:                      {type: StringMap, default: StringMap.new},
