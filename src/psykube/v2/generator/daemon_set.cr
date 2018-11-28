@@ -18,7 +18,7 @@ class Psykube::V2::Generator::DaemonSet < ::Psykube::Generator
     Pyrite::Api::Extensions::V1beta1::DaemonSetUpdateStrategy.new(
       type: "RollingUpdate",
       rolling_update: Pyrite::Api::Extensions::V1beta1::RollingUpdateDaemonSet.new(
-        max_unavailable: manifest.rollout.try(&.max_unavailable)
+        max_unavailable: manifest.@rollout.try(&.max_unavailable)
       )
     )
   end

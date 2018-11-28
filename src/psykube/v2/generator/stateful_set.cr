@@ -23,7 +23,7 @@ class Psykube::V2::Generator::StatefulSet < ::Psykube::Generator
     Pyrite::Api::Apps::V1beta1::StatefulSetUpdateStrategy.new(
       type: "RollingUpdate",
       rolling_update: Pyrite::Api::Apps::V1beta1::RollingUpdateStatefulSetStrategy.new(
-        partition: manifest.rollout.try(&.partition)
+        partition: manifest.@rollout.try(&.partition)
       )
     )
   end
