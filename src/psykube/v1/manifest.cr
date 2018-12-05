@@ -29,7 +29,7 @@ class Psykube::V1::Manifest
     ingress:                {type: Ingress, optional: true},
     service:                {type: String | Service, default: "ClusterIP", optional: true},
     config_map:             {type: StringMap, optional: true},
-    secrets:                {type: StringMap, optional: true},
+    secrets:                {type: StringMap | Bool, optional: true},
     ports:                  {type: Hash(String, Int32), optional: true},
     clusters:               {type: Hash(String, Cluster), optional: true},
     healthcheck:            {type: Bool | Healthcheck, optional: true, default: false},

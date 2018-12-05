@@ -167,7 +167,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
 
   private def alias_to_secret(items : Array(String))
     key_paths = items.map do |item|
-      raise Error.new("Unknown secret alias: #{item}") unless manifest.secrets[item]?
+      raise Error.new("Unknown secret alias: #{item}") unless combined_secrets[item]? || secrets_disabled?
       Pyrite::Api::Core::V1::KeyToPath.new(key: item, path: item)
     end
     Pyrite::Api::Core::V1::SecretVolumeSource.new(
@@ -437,7 +437,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def expand_env_secret(key : String)
-    raise ValidationError.new "Secret `#{key}` not defined in cluster: `#{cluster_name}`." unless cluster_secrets.has_key? key
+    raise ValidationError.new "Secret `#{key}` not defined in cluster: `#{cluster_name}`." unless combined_secrets.has_key?(key) || secrets_disabled?
     Pyrite::Api::Core::V1::SecretKeySelector.new(key: key, name: name)
   end
 

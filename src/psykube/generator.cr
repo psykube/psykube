@@ -44,8 +44,33 @@ abstract class Psykube::Generator
     manifest.config_map.merge cluster.config_map
   end
 
+  private def secrets_disabled?
+    puts manifest.secrets
+    puts cluster.secrets
+    manifest.secrets == false || cluster.secrets == false
+  end
+
+  private def combined_secrets
+    return {} of String => String if secrets_disabled?
+    manifest_secrets.merge(cluster_secrets)
+  end
+
+  private def manifest_secrets
+    case manifest.secrets
+    when true, false, nil
+      {} of String => String
+    else
+      manifest.secrets.as(Hash(String, String))
+    end
+  end
+
   private def cluster_secrets
-    manifest.secrets.merge cluster.secrets
+    case cluster.secrets
+    when true, false, nil
+      {} of String => String
+    else
+      cluster.secrets.as(Hash(String, String))
+    end
   end
 
   private def manifest_env

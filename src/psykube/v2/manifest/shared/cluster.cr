@@ -13,7 +13,7 @@ class Psykube::V2::Manifest::Shared::Cluster
     context:             {type: String, optional: true},
     namespace:           {type: String, optional: true},
     config_map:          {type: StringMap, default: {} of String => String},
-    secrets:             {type: StringMap, default: {} of String => String},
+    secrets:             {type: StringMap | Bool, optional: true},
     autoscale:           {type: Manifest::Autoscale, optional: true},
     container_overrides: {type: ContainerOverides, default: ContainerOverides.new},
   })

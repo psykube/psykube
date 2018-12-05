@@ -15,7 +15,7 @@ class Psykube::V1::Manifest::Cluster
     context:       {type: String, optional: true},
     namespace:     {type: String, optional: true},
     config_map:    {type: StringMap, default: {} of String => String},
-    secrets:       {type: StringMap, default: {} of String => String},
+    secrets:       {type: StringMap | Bool, default: StringMap.new},
     autoscale:     {type: Autoscale, optional: true},
   })
 

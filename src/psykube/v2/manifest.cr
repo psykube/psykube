@@ -141,7 +141,7 @@ abstract class Psykube::V2::Manifest
       annotations:                     {type: StringMap, default: StringMap.new},
       labels:                          {type: StringMap, default: StringMap.new},
       config_map:                      {type: StringMap, default: StringMap.new},
-      secrets:                         {type: StringMap, default: StringMap.new},
+      secrets:                {type: StringMap | Bool, optional: true},
       affinity:                        {type: Pyrite::Api::Core::V1::Affinity, optional: true},
       init_containers:                 {type: ContainerMap | Hash(String, Array(String) | String), default: ContainerMap.new},
       containers:                      {type: ContainerMap},

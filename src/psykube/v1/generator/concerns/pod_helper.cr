@@ -279,7 +279,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
   end
 
   private def expand_env_secret(key : String)
-    raise ValidationError.new "Secret `#{key}` not defined in cluster: `#{cluster_name}`." unless cluster_secrets.has_key? key
+    raise ValidationError.new "Secret `#{key}` not defined in cluster: `#{cluster_name}`." unless combined_secrets.has_key? key
     Pyrite::Api::Core::V1::SecretKeySelector.new(key: key, name: name)
   end
 
