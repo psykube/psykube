@@ -45,8 +45,6 @@ abstract class Psykube::Generator
   end
 
   private def secrets_disabled?
-    puts manifest.secrets
-    puts cluster.secrets
     manifest.secrets == false || cluster.secrets == false
   end
 
