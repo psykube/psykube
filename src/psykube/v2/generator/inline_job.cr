@@ -47,7 +47,7 @@ class Psykube::V2::Generator::InlineJob < ::Psykube::Generator
           container.ports = nil
           container.args = nil
           container.resources = nil
-          container.command = generate_container_command(job.command)
+          container.command = generate_exec_array(job.command)
         end]
       end
     end
@@ -67,7 +67,7 @@ class Psykube::V2::Generator::InlineJob < ::Psykube::Generator
           container.ports = nil
           container.args = nil
           container.resources = nil
-          container.command = generate_container_command(command)
+          container.args = generate_exec_array(command)
         end]
       end
     end

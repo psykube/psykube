@@ -28,9 +28,9 @@ class Psykube::V2::Generator::InlineCronJob < ::Psykube::Generator
               container.liveness_probe = nil
               container.readiness_probe = nil
               container.ports = nil
-              container.args = nil
+              container.args = generate_exec_array(manifest.args)
               container.resources = nil
-              container.command = generate_container_command(manifest.command)
+              container.command = generate_exec_array(manifest.command)
             end]
           end
         end

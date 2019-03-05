@@ -12,7 +12,7 @@ class Psykube::V2::Manifest::Shared::Container
     resources:         {type: Manifest::Resources, optional: true},
     env:               {type: Hash(String, Manifest::Env | String | Int32 | Bool | Float64 | Nil), optional: true},
     command:           {type: Array(String) | String, optional: true},
-    args:              {type: Array(String), optional: true},
+    args:              {type: Array(String) | String, optional: true},
     security_context:  {type: SecurityContext, optional: true},
     lifecycle:         {type: Lifecycle, optional: true},
   })

@@ -94,8 +94,8 @@ module Psykube::V2::Generator::Concerns::PodHelper
       liveness_probe: generate_container_liveness_probe(container, container.healthcheck),
       readiness_probe: generate_container_readiness_probe(container, container.readycheck || container.healthcheck),
       ports: generate_container_ports(container.ports),
-      command: generate_container_command(container.command),
-      args: generate_container_args(container.args),
+      command: generate_exec_array(container.command),
+      args: generate_exec_array(container.args),
       security_context: generate_security_context(container.security_context),
       lifecycle: generate_container_lifecycle(container, container.lifecycle)
     )
@@ -118,7 +118,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
       container.ports = nil
       container.args = nil
       container.resources = nil
-      container.command = generate_container_command(command)
+      container.command = generate_exec_array(command)
     end
   end
 
@@ -499,15 +499,15 @@ module Psykube::V2::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_container_command(string : String)
-    generate_container_command string.split(" ")
+  private def generate_exec_array(string : String)
+    generate_exec_array string.split(" ")
   end
 
-  private def generate_container_command(strings : Array(String))
+  private def generate_exec_array(strings : Array(String))
     strings
   end
 
-  private def generate_container_command(strings : Nil) : Nil
+  private def generate_exec_array(strings : Nil) : Nil
   end
 
   private def generate_container_lifecycle(container : Manifest::Shared::Container, spec : Manifest::Shared::Container::Lifecycle)
@@ -529,13 +529,6 @@ module Psykube::V2::Generator::Concerns::PodHelper
   end
 
   private def generate_container_lifecycle_hook(container : Manifest::Shared::Container, spec : Nil) : Nil
-  end
-
-  private def generate_container_args(strings : Array(String))
-    strings
-  end
-
-  private def generate_container_args(strings : Nil) : Nil
   end
 
   private def generate_image_pull_secrets(_nil : Nil) : Nil

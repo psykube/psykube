@@ -42,7 +42,7 @@ module Psykube::V1::Generator::Concerns::PodHelper
       liveness_probe: generate_container_liveness_probe(manifest.healthcheck),
       readiness_probe: generate_container_readiness_probe(manifest.readycheck || manifest.healthcheck),
       ports: generate_container_ports(manifest.ports),
-      command: generate_container_command(manifest.command),
+      command: generate_exec_array(manifest.command),
       args: generate_container_args(manifest.args)
     )
   end
@@ -314,15 +314,15 @@ module Psykube::V1::Generator::Concerns::PodHelper
     )
   end
 
-  private def generate_container_command(string : String)
-    generate_container_command [string]
+  private def generate_exec_array(string : String)
+    generate_exec_array [string]
   end
 
-  private def generate_container_command(strings : Array(String))
+  private def generate_exec_array(strings : Array(String))
     strings
   end
 
-  private def generate_container_command(strings : Nil) : Nil
+  private def generate_exec_array(strings : Nil) : Nil
   end
 
   private def generate_container_args(strings : Array(String))
