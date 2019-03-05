@@ -38,6 +38,7 @@ class Psykube::CLI::Main < Admiral::Command
   register_sub_command "run-job", Commands::RunJob, short: "j"
   register_sub_command "generate-job", Commands::GenerateJob
   register_sub_command "edit-secret", Commands::EditSecret
+  register_sub_command "get-secret", Commands::GetSecret
   register_sub_command "validate", Commands::Validate
 end
 

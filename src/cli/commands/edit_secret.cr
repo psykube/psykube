@@ -6,13 +6,12 @@ class Psykube::CLI::Commands::EditSecret < Admiral::Command
 
   define_help description: "Edit a secrets plain text values"
 
-  define_argument name,
-    description: "The command to run in the container."
+  define_argument name, description: "The name of the secret."
 
   def run
     secret = Pyrite::Api::Core::V1::Secret.from_json(kubectl_json(resource: "secret", name: arguments.name || actor.name))
     data = decode(secret.data || {} of String => String)
-    tempfile = 
+    tempfile =
       {% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}
         Tempfile.open("edit-secret") do |io|
           data.to_yaml(io)
