@@ -5,6 +5,7 @@ class Psykube::V2::Manifest::Shared::InlineJob
     completions:     {type: Int32, optional: true},
     parallelism:     {type: Int32, optional: true},
     restart_policy:  {type: String, default: "OnFailure"},
-    command:         {type: Array(String) | String},
+    command:         {type: Array(String) | String, optional: true},
+    args:            {type: Array(String) | String, optional: true},
   })
 end
