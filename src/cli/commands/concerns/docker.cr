@@ -8,6 +8,7 @@ module Psykube::CLI::Commands::Docker
       description: "The build args to add to docker build.",
       default: Set(String).new
     define_flag login : Bool, default: true, description: "Don't login with the specified image pull secrets before pushing."
+    define_flag quiet_build : Bool, default: true, description: "Quiet docker output", short: q
   end
 
   def build_args
@@ -33,6 +34,8 @@ module Psykube::CLI::Commands::Docker
         args << "--build-arg=#{arg}"
       end
       args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
+      args << "--cache-from=#{build_context.cache_from}" if build_context.cache_from
+      args << "--quiet-build" if flags.quiet_build
       docker_run args + [build_context.context]
       io = IO::Memory.new
       docker_run args + ["-q"] + [build_context.context], output: io

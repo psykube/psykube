@@ -76,15 +76,15 @@ class Psykube::Actor
   end
 
   private def ci_branch
-    ENV["TRAVIS_BRANCH"]? || ENV["CIRCLE_BRANCH"]? || ENV["GIT_BRANCH"]?
+    ENV["TRAVIS_BRANCH"]? || ENV["CIRCLE_BRANCH"]? || ENV["GIT_BRANCH"]? || (ENV["CI_COMMIT_TAG"] ? nil : ENV["CI_COMMIT_REF_NAME"]?)
   end
 
   private def ci_sha
-    ENV["TRAVIS_COMMIT"]? || ENV["CIRCLE_SHA1"]? || ENV["GIT_COMMIT"]?
+    ENV["TRAVIS_COMMIT"]? || ENV["CIRCLE_SHA1"]? || ENV["GIT_COMMIT"]? || ENV["CI_COMMIT_SHA"]?
   end
 
   private def ci_tag
-    ENV["TRAVIS_TAG"]? || ENV["CIRCLE_TAG"]? || ENV["GIT_TAG_NAME"]?
+    ENV["TRAVIS_TAG"]? || ENV["CIRCLE_TAG"]? || ENV["GIT_TAG_NAME"]? || ENV["CI_COMMIT_TAG"]?
   end
 
   private def env_hash
