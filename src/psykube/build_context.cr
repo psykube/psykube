@@ -11,9 +11,9 @@ class Psykube::BuildContext
   getter args : Array(String)
   getter login : Login?
 
-  def initialize(*, @container_name : String, @image : String, tag : String?, @context, @dockerfile, @build, args, @login = nil, @cache_from = nil)
+  def initialize(*, @container_name : String, image : String, tag : String?, @context, @dockerfile, @build, args, @login = nil, @cache_from = nil)
     parts = image.split(':')
-    image = parts[0]
+    @image = parts[0]
     tag = parts[1]? || tag
     @tag = tag if tag.to_s.size > 0
     @args = args.map &.join('=')
