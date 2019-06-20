@@ -49,7 +49,7 @@ module Psykube::CLI::Commands::Kubectl
           args << resource if resource
           args << name if name
           flags = Flags.new.merge(flags)
-          flags.merge!({"--export" => export, "--output" => "json"})
+          flags.merge!({"--output" => "json"})
           kubectl_run(
             command: "get",
             args: args,
@@ -68,7 +68,7 @@ module Psykube::CLI::Commands::Kubectl
           args << resource if resource
           args << name if name
           flags = Flags.new.merge(flags)
-          flags.merge!({"--export" => export, "--output" => "json"})
+          flags.merge!({"--output" => "json"})
           kubectl_run(
             command: "get",
             args: args,
