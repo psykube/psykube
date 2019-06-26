@@ -1,3 +1,5 @@
+require "../v1/*"
+
 abstract class Psykube::V2::Manifest
   module Serviceable; end
 
@@ -87,11 +89,13 @@ abstract class Psykube::V2::Manifest
         container_name: container_name,
         build: build,
         image: image,
-        tag: container.image ? nil : (container.tag || tag),
+        tag: container.tag || tag,
         args: (container.build.try(&.args) || StringMap.new).merge(cluster.container_overrides.build_args),
         context: get_context_path(container, working_directory),
         dockerfile: container.build.try(&.dockerfile) || cluster.container_overrides.dockerfile,
-        login: get_login(image, image_pull_secrets)
+        login: get_login(image, image_pull_secrets),
+        cache_from: container.build.try(&.cache_from),
+        build_tags: container.build.try(&.tag),
       )
     end
 
@@ -141,7 +145,7 @@ abstract class Psykube::V2::Manifest
       annotations:                     {type: StringMap, default: StringMap.new},
       labels:                          {type: StringMap, default: StringMap.new},
       config_map:                      {type: StringMap, default: StringMap.new},
-      secrets:                {type: StringMap | Bool, optional: true},
+      secrets:                         {type: StringMap | Bool, optional: true},
       affinity:                        {type: Pyrite::Api::Core::V1::Affinity, optional: true},
       init_containers:                 {type: ContainerMap | Hash(String, Array(String) | String), default: ContainerMap.new},
       containers:                      {type: ContainerMap},
@@ -152,14 +156,14 @@ abstract class Psykube::V2::Manifest
       tolerations:                     {type: Array(Pyrite::Api::Core::V1::Toleration), optional: true},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
       volumes:                         {type: VolumeMap, optional: true},
-      security_context: {type: Shared::SecurityContext, optional: true},
+      security_context:                {type: Shared::SecurityContext, optional: true},
       {% if service %}
-        ingress: {type: Manifest::Ingress, optional: true},
-        services: {type: Array(String) | Hash(String, String | Manifest::Service), default: "ClusterIP", optional: true },
+        ingress:                       {type: Manifest::Ingress, optional: true},
+        services:                      {type: Array(String) | Hash(String, String | Manifest::Service), default: "ClusterIP", optional: true },
       {% end %}
       {% if jobable %}
-        jobs:           {type: Hash(String, Shared::InlineJob | String | Array(String)), optional: true},
-        cron_jobs:      {type: Hash(String, Shared::InlineCronJob), optional: true},
+        jobs:                          {type: Hash(String, Shared::InlineJob | String | Array(String)), optional: true},
+        cron_jobs:                     {type: Hash(String, Shared::InlineCronJob), optional: true},
       {% end %}
     })
 

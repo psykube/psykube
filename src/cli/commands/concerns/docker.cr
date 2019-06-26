@@ -34,7 +34,12 @@ module Psykube::CLI::Commands::Docker
         args << "--build-arg=#{arg}"
       end
       args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
-      args << "--cache-from=#{build_context.cache_from}" if build_context.cache_from
+      build_context.cache_from.each do |c|
+        args << "--cache-from=#{c}"
+      end
+      build_context.build_tags.each do |t|
+        args << "--tag=#{t}"
+      end
       args << "--quiet" if flags.quiet_build
       docker_run args + [build_context.context]
       io = IO::Memory.new

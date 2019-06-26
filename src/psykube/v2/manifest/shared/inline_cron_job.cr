@@ -12,6 +12,6 @@ class Psykube::V2::Manifest::Shared::InlineCronJob
     restart_policy:                {type: String, default: "OnFailure"},
     schedule:                      {type: String},
     command:                       {type: Array(String) | String, optional: true},
-    args:                          {type: Array(String) | String, optional: true}
+    args:                          {type: Array(String) | String, optional: true},
   })
 end
