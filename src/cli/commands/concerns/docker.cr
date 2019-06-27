@@ -20,11 +20,20 @@ module Psykube::CLI::Commands::Docker
     docker_push(*args)
   end
 
+  def docker_login(build_context : BuildContext)
+    if flags.login && (login = build_context.login)
+      password = IO::Memory.new.tap(&.puts login.password).tap(&.rewind)
+      docker_run ["login", login.server, "-u=#{login.username}", "--password-stdin"], input: password
+    end
+  end
+
   def docker_build(build_contexts : Array(BuildContext), tag : String? = nil)
     build_contexts.each { |c| docker_build c, tag }
   end
 
   def docker_build(build_context : BuildContext, tag : String? = nil)
+    docker_login(build_context)
+
     build_context.cache_from.each do |c|
       docker_run ["pull", c], allow_failure: true
     end
@@ -62,11 +71,9 @@ module Psykube::CLI::Commands::Docker
   end
 
   def docker_push(build_context : BuildContext, tag : String? = nil)
+    docker_login(build_context)
+
     image = tag && tag.includes?(":") ? tag : build_context.image(tag)
-    if flags.login && (login = build_context.login)
-      password = IO::Memory.new.tap(&.puts login.password).tap(&.rewind)
-      docker_run ["login", login.server, "-u=#{login.username}", "--password-stdin"], input: password
-    end
     build_context.build_tags.each do |build_tag|
       docker_run ["push", build_tag]
     end
