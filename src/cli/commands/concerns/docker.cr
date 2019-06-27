@@ -8,7 +8,7 @@ module Psykube::CLI::Commands::Docker
       description: "The build args to add to docker build.",
       default: Set(String).new
     define_flag login : Bool, default: true, description: "Don't login with the specified image pull secrets before pushing."
-    define_flag quiet_build : Bool, default: true, description: "Quiet docker output", short: q
+    define_flag quiet_build : Bool, default: false, description: "Quiet docker output", short: q
   end
 
   def build_args
@@ -25,6 +25,10 @@ module Psykube::CLI::Commands::Docker
   end
 
   def docker_build(build_context : BuildContext, tag : String? = nil)
+    build_context.cache_from.each do |c|
+      docker_run ["pull", c], allow_failure: true
+    end
+
     Dir.cd actor.working_directory do
       args = ["build"]
       build_args.each do |arg|
@@ -43,10 +47,12 @@ module Psykube::CLI::Commands::Docker
       args << "--quiet" if flags.quiet_build
       docker_run args + [build_context.context]
       io = IO::Memory.new
-      docker_run args + ["-q"] + [build_context.context], output: io
+      docker_run args + ["--quiet"] + [build_context.context], output: io
       sha = io.rewind.gets_to_end.strip
       build_context.image, build_context.tag = tag.split(':') if tag && tag.includes?(":")
       build_context.tag ||= sha.sub(':', '-')
+      puts sha
+      puts build_context.tag
       docker_run ["tag", sha, build_context.image(tag)]
     end
   end
@@ -61,14 +67,17 @@ module Psykube::CLI::Commands::Docker
       password = IO::Memory.new.tap(&.puts login.password).tap(&.rewind)
       docker_run ["login", login.server, "-u=#{login.username}", "--password-stdin"], input: password
     end
+    build_context.build_tags.each do |build_tag|
+      docker_run ["push", build_tag]
+    end
     docker_run ["push", build_context.image(tag)]
   end
 
-  def docker_run(args : Array(String), *, input = Process::Redirect::Close, output = @output_io)
+  def docker_run(args : Array(String), *, input = Process::Redirect::Close, output = @output_io, allow_failure = false)
     File.exists?(Docker.bin) || panic("docker not found")
     puts (["DEBUG:", Docker.bin] + args).join(" ").colorize(:dark_gray) if ENV["PSYKUBE_DEBUG"]? == "true"
     Process.run(Docker.bin, args, input: input, output: output, error: @error_io).tap do |process|
-      panic "Process: `#{Docker.bin} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success?
+      panic "Process: `#{Docker.bin} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success? || allow_failure
     end
   end
 end
