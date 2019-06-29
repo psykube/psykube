@@ -53,6 +53,15 @@ abstract class Psykube::Generator
     manifest_secrets.merge(cluster_secrets)
   end
 
+  private def combined_volumes
+    case (c = cluster)
+    when Psykube::V2::Manifest::Shared::Cluster
+      manifest.volumes.merge(c.volumes)
+    else 
+      manifest.volumes
+    end
+  end
+
   private def manifest_secrets
     case manifest.secrets
     when true, false, nil

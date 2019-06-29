@@ -3,7 +3,7 @@ class Psykube::V2::Generator::PersistentVolumeClaims < ::Psykube::Generator
   cast_manifest Manifest
 
   protected def result
-    generate_persistent_volume_claims(manifest.volumes)
+    generate_persistent_volume_claims(combined_volumes)
   end
 
   private def volume_is_claim?(volume : String | Manifest::Volume::Claim)

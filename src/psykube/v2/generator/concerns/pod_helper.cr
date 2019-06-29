@@ -30,7 +30,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
   private def generate_pod_spec
     Pyrite::Api::Core::V1::PodSpec.new(
       restart_policy: manifest.restart_policy,
-      volumes: generate_volumes(manifest.volumes),
+      volumes: generate_volumes(combined_volumes),
       containers: generate_containers,
       init_containers: generate_init_containers(manifest.init_containers),
       security_context: generate_security_context,
@@ -137,16 +137,19 @@ module Psykube::V2::Generator::Concerns::PodHelper
     end unless volumes.empty?
   end
 
-  private def generate_volumes(any)
-    nil
-  end
-
   private def generate_volume(volume_name : String, size : String)
     Pyrite::Api::Core::V1::Volume.new(
       name: volume_name,
       persistent_volume_claim: Pyrite::Api::Core::V1::PersistentVolumeClaimVolumeSource.new(
         claim_name: volume_name
       )
+    )
+  end
+
+  private def generate_volume(volume_name : String, size : Nil)
+    Pyrite::Api::Core::V1::Volume.new(
+      name: volume_name,
+      empty_dir: Pyrite::Api::Core::V1::EmptyDirVolumeSource.new
     )
   end
 

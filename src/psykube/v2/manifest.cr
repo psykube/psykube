@@ -155,7 +155,7 @@ abstract class Psykube::V2::Manifest
       termination_grace_period:        {type: Int32, optional: true},
       tolerations:                     {type: Array(Pyrite::Api::Core::V1::Toleration), optional: true},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
-      volumes:                         {type: VolumeMap, optional: true},
+      volumes:                         {type: VolumeMap, default: VolumeMap.new},
       security_context:                {type: Shared::SecurityContext, optional: true},
       {% if service %}
         ingress:                       {type: Manifest::Ingress, optional: true},
