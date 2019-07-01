@@ -21,6 +21,7 @@ Spec:
   script: crystal spec --verbose
     
 Release Package:
+  stage: Release
   only: 
     - tags
   script:
@@ -28,6 +29,7 @@ Release Package:
     - tar -czC ./bin psykube > ./psykube-linux-$CI_COMMIT_TAG.tar.gz
 
 Release Dockerfile:
+  stage: Release
   only: 
     - tags
   script: 
