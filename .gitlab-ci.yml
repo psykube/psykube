@@ -1,4 +1,4 @@
-image: crystal
+image: crystallang/crystal
 services:
   - docker:dind
 variables:
