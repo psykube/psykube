@@ -1,6 +1,3 @@
-image: crystallang/crystal
-services:
-  - docker:dind
 variables:
   PSYKUBE_DEBUG: "true"
   CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE: "True"
@@ -12,6 +9,9 @@ stages:
   - Release
 
 Spec:
+  image: crystallang/crystal
+  services:
+    - docker:dind
   stage: Test
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
@@ -22,6 +22,9 @@ Spec:
   script: crystal spec --verbose
     
 Release Package:
+  image: crystallang/crystal
+  services:
+    - docker:dind
   stage: Release
   only: 
     - tags
@@ -30,6 +33,9 @@ Release Package:
     - tar -czC ./bin psykube > ./psykube-linux-$CI_COMMIT_TAG.tar.gz
 
 Release Dockerfile:
+  image: crystallang/crystal
+  services:
+    - docker:dind
   stage: Release
   only: 
     - tags
