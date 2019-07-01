@@ -1,0 +1,37 @@
+image: crystal
+services:
+  - dind
+variables:
+  PSYKUBE_DEBUG: "true"
+  CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE: "True"
+  CLOUDSDK_CORE_DISABLE_PROMPTS: "1"
+  PSYKUBE_CONTEXT: gke_waldrip-net_us-central1-a_waldrip-net
+
+stages:
+  - Test
+  - Release
+
+Spec:
+  stage: Test
+  before_script:
+    - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+    - chmod +x ./kubectl
+    - sudo mv ./kubectl /usr/local/bin/kubectl
+    - shards install
+  script: crystal spec --verbose
+    
+Release Package:
+  only: 
+    - tags
+  script:
+    - shards build --release --no-debug
+    - tar -czC ./bin psykube > ./psykube-linux-$CI_COMMIT_TAG.tar.gz
+
+Release Dockerfile:
+  only: 
+    - tags
+  script: 
+    - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+    - docker pull psykube/psykube || true 
+    - docker build -t psykube/psykube .
+    - docker push psykube/psykube

@@ -60,8 +60,6 @@ module Psykube::CLI::Commands::Docker
       sha = io.rewind.gets_to_end.strip
       build_context.image, build_context.tag = tag.split(':') if tag && tag.includes?(":")
       build_context.tag ||= sha.sub(':', '-')
-      puts sha
-      puts build_context.tag
       docker_run ["tag", sha, build_context.image(tag)]
     end
   end
