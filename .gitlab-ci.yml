@@ -14,6 +14,8 @@ Spec:
     - docker:dind
   stage: Test
   before_script:
+    - apt update -y
+    - apt install -y docker-ce-cli
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
     - chmod +x ./kubectl
@@ -23,8 +25,6 @@ Spec:
     
 Release Package:
   image: crystallang/crystal
-  services:
-    - docker:dind
   stage: Release
   only: 
     - tags
@@ -40,6 +40,8 @@ Release Dockerfile:
   only: 
     - tags
   script: 
+    - apt update -y
+    - apt install -y docker-ce-cli
     - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
     - docker pull psykube/psykube || true 
     - docker build -t psykube/psykube .
