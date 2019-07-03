@@ -53,6 +53,17 @@ def Psykube::V2::Manifest.new(command : Psykube::CLI::Commands::Init)
     manifest.registry_user = flags.registry_user || "[dockerhub username]"
   end
 
+  # Set Registry Login Info
+  if (password = flags.registry_password)
+    manifest.image_pull_secrets = [
+      Manifest::Shared::PullSecretCredentials.new(
+        server: flags.registry_host || "https://index.docker.io/v1/",
+        username: flags.registry_user || "[dockerhub username]",
+        password: password
+      )
+    ] of Psykube::V2::Manifest::Shared::PullSecretCredentials | String
+  end
+
   # Set Namespace
   manifest.namespace = flags.namespace
 

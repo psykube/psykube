@@ -12,6 +12,7 @@ class Psykube::CLI::Commands::Init < Admiral::Command
   define_flag namespace, "Set the namespace to deploy into.", short: 'n'
   define_flag registry_host, "The hostname for the registry.", short: 'H'
   define_flag registry_user : String, "The username for the registry.", short: 'U'
+  define_flag registry_password : String, "The password for the registry.", short: 'P'
   define_flag ports : Array(String), "Set a port. (can be in the format of --port 1234 or --port http=1234).", long: "port", short: "p", default: [] of String
   define_flag env : Array(String), short: "e", default: [] of String
   define_flag hosts : Array(String), "Set a host for ingress.", long: "host", default: [] of String
