@@ -14,10 +14,10 @@ dependencies:
   crustache:
     gitlab: jwaldrip/crustache
   admiral:
-    gitlab: jwaldrip/admiral.cr
+    gitlab: jwaldrip/admiral-cr
     version: 1.8.0
   orion:
-    gitlab: obsidian/orion
+    gitlab: obsidian-framework/orion
   pyrite:
     gitlab: psykube/pyrite
 
