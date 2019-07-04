@@ -26,6 +26,7 @@ Spec:
     - chmod +x ./kubectl
     - mv ./kubectl /usr/local/bin/kubectl
     - shards install
+    - kubectl --context gke_waldrip-net_us-central1-a_waldrip-net get pods
   script: crystal spec --verbose
     
 Release Package:
