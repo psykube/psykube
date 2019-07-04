@@ -30,7 +30,7 @@ Dir.cd("spec") do
   namespace = "psykube-test-#{UUID.random}"
 
   describe Psykube::CLI do
-    psykube_it "init --overwrite --namespace=#{namespace} --name=psykube-test --registry-host=#{ENV["CI_REGISTRY"]} --registry-user=#{ENV["CI_DEPLOY_USER"]} --registry-password=#{ENV["CI_JOB_TOKEN"]} --port http=80"
+    psykube_it "init --overwrite --namespace=#{namespace} --name=psykube-test --registry-host=#{ENV["CI_REGISTRY"]} --registry-user=gitlab-ci-token --registry-password=#{ENV["CI_JOB_TOKEN"]} --port http=80"
     psykube_it "create-namespace"
     psykube_it "generate"
     psykube_it "apply"
