@@ -59,12 +59,12 @@ Dir.cd("spec") do
     psykube_it "copy-namespace #{namespace} #{namespace}-copy --force"
 
     # Cleanup
-    psykube_it "delete -y"
-    psykube_it "delete-namespace -y"
+    # psykube_it "delete -y"
+    # psykube_it "delete-namespace -y"
 
     it "deletes the namespace" do
-      kubectl "delete namespace #{namespace}-copy"
-      kubectl "delete namespace #{namespace}"
+      # kubectl "delete namespace #{namespace}-copy"
+      # kubectl "delete namespace #{namespace}"
     end
   end
 end

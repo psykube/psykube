@@ -26,8 +26,23 @@ Spec:
     - chmod +x ./kubectl
     - mv ./kubectl /usr/local/bin/kubectl
     - shards install
-  script: crystal spec --verbose
-    
+    - shards build
+    - mv bin/psykube usr/local/bin/psykube
+  script:
+    - cd spec
+    - export NAMESPACE="psykube-test-$(openssl rand -hex 4)"
+    - psykube init --overwrite --namespace=$NAMESPACE --name=psykube-test --registry-host=$CI_REGISTRY --registry-user=gitlab-ci-token --registry-password=$CI_JOB_TOKEN --port http=80
+    - psykube create-namespace
+    - psykube generate
+    - psykube apply
+    - psykube status
+    - psykube push
+    - psykube exec -- echo 'hello world'
+    # - psykube logs -t 100
+    - psykube copy-namespace $NAMESPACE $NAMESPACE-copy --force
+    - psykube delete -y
+    - psykube delete-namespace
+    - kubectl delete ns $NAMESPACE
 Release Package:
   image: crystallang/crystal
   stage: Release
