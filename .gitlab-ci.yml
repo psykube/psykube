@@ -27,7 +27,7 @@ Spec:
     - mv ./kubectl /usr/local/bin/kubectl
     - shards install
     - shards build
-    - mv bin/psykube usr/local/bin/psykube
+    - mv bin/psykube /usr/local/bin/psykube
   script:
     - cd spec
     - export NAMESPACE="psykube-test-$(openssl rand -hex 4)"
