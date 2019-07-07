@@ -3,6 +3,8 @@ variables:
   CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE: "True"
   CLOUDSDK_CORE_DISABLE_PROMPTS: "1"
   PSYKUBE_CONTEXT: gke_waldrip-net_us-central1-a_waldrip-net
+  DOCKER_HOST: tcp://localhost:2375/
+  DOCKER_DRIVER: overlay2
 
 stages:
   - Test
