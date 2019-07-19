@@ -1,9 +1,10 @@
 class Psykube::BuildContext
   record Login, server : String, username : String, password : String
 
+  @cache_from : Array(String)
+
   property tag : String?
   getter build_tags : Array(String)
-  getter cache_from : Array(String)
   setter image : String
   getter container_name : String
   getter build : Bool
@@ -17,9 +18,9 @@ class Psykube::BuildContext
     @image = parts[0]
     tag ||= parts[1]?
     @tag = tag
-    @build_tags = parse_build_tags(build_tags).compact.reject(&.empty?)
+    @build_tags = parse_build_tags(build_tags).compact.reject(&.empty?).uniq
     @build_tags.unshift(tag) if (tag)
-    @cache_from = parse_cache_from(cache_from).compact.reject(&.empty?)
+    @cache_from = parse_cache_from(cache_from).compact.reject(&.empty?).uniq
     @args = args.map &.join('=')
   end
 
@@ -27,6 +28,10 @@ class Psykube::BuildContext
     base_image = build ? [@image, container_name].join('-') : @image
     tag ||= @tag
     [base_image, tag].compact.join(':')
+  end
+
+  def cache_from
+    (@build_tags + @cache_from).uniq
   end
 
   private def parse_cache_from(value : String | Array(String) | Nil)
