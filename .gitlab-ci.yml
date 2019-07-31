@@ -32,10 +32,10 @@ Spec:
   script:
     - cd spec
     - export NAMESPACE="psykube-test-$(openssl rand -hex 4)"
-    - psykube init --overwrite --namespace=$NAMESPACE --name=psykube-test --registry-host=$CI_REGISTRY --registry-user=$CI_REGISTRY_USER --registry-password=$CI_REGISTRY_PASSWORD --port http=80
+    - psykube init --overwrite --namespace=$NAMESPACE --name=psykube-test --registry-host=$CI_REGISTRY --registry-user=$CI_DEPLOY_USER --registry-password=$CI_DEPLOY_PASSWORD --port http=80
     - psykube create-namespace
     - psykube generate
-    - psykube apply --docker-credentials=gitlab-ci-token:$CI_JOB_TOKEN
+    - psykube apply --docker-credentials=$CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
     - psykube status
     - psykube push
     - psykube exec -- echo 'hello world'
