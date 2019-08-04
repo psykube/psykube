@@ -22,9 +22,9 @@ shards:
 
   orion:
     github: obsidian/orion
-    version: 1.6.0
+    version: 1.7.0
 
   pyrite:
     github: psykube/pyrite
-    commit: ac6acfd2ded9d08c0ed4cfa48703c7197c745d8e
+    version: 1.2.0
 

@@ -57,7 +57,7 @@ abstract class Psykube::Generator
     case (c = cluster)
     when Psykube::V2::Manifest::Shared::Cluster
       manifest.volumes.merge(c.volumes)
-    else 
+    else
       manifest.volumes
     end
   end

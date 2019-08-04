@@ -1,4 +1,4 @@
-require "pyrite/versions/v1.11"
+require "pyrite/versions/v1.15"
 require "colorize"
 require "digest"
 require "yaml"

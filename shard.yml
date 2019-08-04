@@ -1,6 +1,6 @@
 name: psykube
-version: 2.19.0
-crystal: 0.29.0
+version: 2.20.0
+crystal: 0.30.0
 
 authors:
   - Jason Waldrip <jason@waldrip.net>
@@ -12,14 +12,13 @@ description: |
 
 dependencies:
   crustache:
-    gitlab: jwaldrip/crustache
+    github: jwaldrip/crustache
   admiral:
-    gitlab: jwaldrip/admiral-cr
-    version: 1.8.0
+    github: jwaldrip/admiral.cr
   orion:
-    gitlab: obsidian-framework/orion
+    github: obsidian/orion
   pyrite:
-    gitlab: psykube/pyrite
+    github: psykube/pyrite
 
 license: MIT
 

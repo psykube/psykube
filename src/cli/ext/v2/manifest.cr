@@ -60,7 +60,7 @@ def Psykube::V2::Manifest.new(command : Psykube::CLI::Commands::Init)
         server: flags.registry_host || "https://index.docker.io/v1/",
         username: flags.registry_user || "[dockerhub username]",
         password: password
-      )
+      ),
     ] of Psykube::V2::Manifest::Shared::PullSecretCredentials | String
   end
 
