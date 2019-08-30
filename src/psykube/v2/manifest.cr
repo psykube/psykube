@@ -96,6 +96,8 @@ abstract class Psykube::V2::Manifest
         login: get_login(image, image_pull_secrets),
         cache_from: container.build.try(&.cache_from),
         build_tags: container.build.try(&.tag),
+        stages: container.build.try(&.stages) || [] of String,
+        target: container.build.try(&.target)
       )
     end
 

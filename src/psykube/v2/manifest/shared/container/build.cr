@@ -10,6 +10,8 @@ class Psykube::V2::Manifest::Shared::Container::Build
     tag:        {type: String | Array(String), optional: true},
     context:    {type: String, optional: true},
     cache_from: {type: String | Array(String | CacheFromTag), optional: true},
+    stages:     {type: Array(String), optional: true},
+    target:     {type: String, optional: true},
     args:       {type: StringMap, default: StringMap.new},
   })
 
