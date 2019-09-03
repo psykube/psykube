@@ -47,6 +47,9 @@ module Psykube::CLI::Commands::Docker
     docker_login(build_context)
 
     build_context.cache_from.each do |c|
+      build_context.stages.each do |stage|
+        docker_run ["pull", "#{c}-#{stage}"], allow_failure: true
+      end
       docker_run ["pull", c], allow_failure: true
     end
 
