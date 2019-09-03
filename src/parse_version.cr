@@ -1,10 +1,11 @@
 require "yaml"
 
 version = YAML.parse(File.read "shard.yml")["version"].to_s
-if !ENV["TRAVIS_TAG"]?.to_s.empty? && ENV["TRAVIS_TAG"] != "v#{version}"
-  raise "TRAVIS_TAG (#{ENV["TRAVIS_TAG"]}) does not match version (v#{version})"
-elsif ENV["TRAVIS_TAG"]?
-  version = ENV["TRAVIS_TAG"]
+tag = `git describe --tags`.strip
+if !tag.empty? && tag != "v#{version}"
+  raise "tag (#{tag}) does not match version (v#{version})"
+elsif tag
+  version = tag.lchop("v")
 else
   match_rxp = /\d+$/
   digits = version.match(match_rxp)
