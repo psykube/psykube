@@ -11,7 +11,7 @@ class Psykube::CLI::Commands::Status < Admiral::Command
       case pod
       when Pyrite::Api::Core::V1::Pod
         if (status = pod.status)
-          age_span = (Time.now - (status.start_time || Time.now))
+          age_span = (Time.utc - (status.start_time || Time.utc))
           age_string = ""
           age_string += "#{age_span.total_days.to_i}d" if age_span.total_days.to_i > 0
           age_string += "#{age_span.hours.to_i}h" if age_span.hours.to_i > 0
