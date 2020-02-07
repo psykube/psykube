@@ -49,7 +49,6 @@ module Psykube::CLI::Commands::Docker
       build_context.stages.each do |stage|
         docker_run ["pull", "#{c}-#{stage}"], allow_failure: true
       end
-      docker_run ["pull", c], allow_failure: true
     end
 
     Dir.cd actor.working_directory do

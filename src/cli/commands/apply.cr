@@ -44,7 +44,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
       if actor.manifest.type == "Deployment" && flags.wait
         kubectl_run("rollout", ["status", "#{actor.manifest.type}/#{actor.manifest.name}".downcase])
       end
-      kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.now.to_json}"], flags: {"--overwrite" => "true"})
+      kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.utc.to_json}"], flags: {"--overwrite" => "true"})
     elsif flags.skip_if_no_cluster
       @error_io.puts "cluster not defined: `#{actor.cluster_name}`, skipping...".colorize(:yellow)
     else

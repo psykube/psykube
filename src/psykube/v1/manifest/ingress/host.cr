@@ -2,17 +2,16 @@ require "./tls"
 
 class Psykube::V1::Manifest::Ingress::Host
   alias PathList = Array(String)
-  alias PathMap = Hash(String, Path)
+  alias PathMap = Hash(String?, Path)
 
   Macros.mapping({
     tls:   {type: Tls | Bool, optional: true},
     port:  {type: Int32 | String, default: "default"},
-    path:  {type: String, default: "/"},
+    path:  {type: String, optional: true},
     paths: {type: PathList | PathMap, optional: true},
   })
 
   def initialize
-    @path = "/"
     @port = "default"
   end
 
@@ -28,7 +27,7 @@ class Psykube::V1::Manifest::Ingress::Host
                else
                  PathMap.new
                end
-    path_map[path] = Path.new(port) if path
+    path_map[path] = Path.new(port)
     path_map
   end
 end
