@@ -48,9 +48,14 @@ module Psykube::CLI::Commands::Docker
 
     build_context.cache_from.each do |c|
       build_context.stages.each do |stage|
-        docker_run ["pull", "#{c}-#{stage}"], allow_failure: true
+        if docker_run ["inspect", "#{c}-#{stage}"], output: Process::Redirect::Close, allow_failure: true
+          puts "#{c}-#{stage}"
+          docker_run ["pull", "#{c}-#{stage}"], allow_failure: true
+        end
       end
-      docker_run ["pull", c], allow_failure: true
+      if docker_run ["inspect", "#{c}"], output: Process::Redirect::Close, allow_failure: true
+        docker_run ["pull", c], allow_failure: true
+      end
     end
 
     Dir.cd actor.working_directory do
