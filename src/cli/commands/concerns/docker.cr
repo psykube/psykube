@@ -45,15 +45,11 @@ module Psykube::CLI::Commands::Docker
 
   def docker_build(build_context : BuildContext, tag : String? = nil)
     docker_login(build_context)
-    begin
-      build_context.cache_from.each do |c|
-        build_context.stages.each do |stage|
-          docker_run ["pull", "#{c}-#{stage}"]
-        end
-        docker_run ["pull", c]
+    build_context.cache_from.each do |c|
+      build_context.stages.each do |stage|
+        docker_run ["pull", "#{c}-#{stage}"], allow_failure: true
       end
-    rescue
-      puts "no image found, skipping"
+      docker_run ["pull", c], allow_failure: true
     end
 
     Dir.cd actor.working_directory do
@@ -76,10 +72,10 @@ module Psykube::CLI::Commands::Docker
     args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
     build_context.cache_from.each do |c|
       build_context.stages.each do |stage|
-        args << "--cache-from=#{c}-#{stage}" unless stage == target
+        args << "--cache-from=#{c}-#{stage}" unless stage == target || container_missing("#{c}-#{stage}")
       end
       c += "-#{target}" if target
-      args << "--cache-from=#{c}"
+      args << "--cache-from=#{c}" unless container_missing(c)
     end
     build_context.build_tags.each do |t|
       t += "-#{target}" if target
@@ -124,5 +120,11 @@ module Psykube::CLI::Commands::Docker
     Process.run(Docker.bin, args, input: input, output: output, error: @error_io).tap do |process|
       panic "Process: `#{Docker.bin} #{args.join(" ")}` exited unexpectedly".colorize(:red) unless process.success? || allow_failure
     end
+  end
+
+  private def container_missing(container : String)
+    stdout = IO::Memory.new
+    docker_run ["images", container, "-q"], output: stdout
+    stdout.to_s.empty?
   end
 end
