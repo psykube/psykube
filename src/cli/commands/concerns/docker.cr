@@ -45,17 +45,15 @@ module Psykube::CLI::Commands::Docker
 
   def docker_build(build_context : BuildContext, tag : String? = nil)
     docker_login(build_context)
-
-    build_context.cache_from.each do |c|
-      build_context.stages.each do |stage|
-        if docker_run ["inspect", "#{c}-#{stage}"], output: Process::Redirect::Close, allow_failure: true
-          puts "#{c}-#{stage}"
-          docker_run ["pull", "#{c}-#{stage}"], allow_failure: true
+    begin
+      build_context.cache_from.each do |c|
+        build_context.stages.each do |stage|
+          docker_run ["pull", "#{c}-#{stage}"]
         end
+        docker_run ["pull", c]
       end
-      if docker_run ["inspect", "#{c}"], output: Process::Redirect::Close, allow_failure: true
-        docker_run ["pull", c], allow_failure: true
-      end
+    rescue
+      puts "no image found, skipping"
     end
 
     Dir.cd actor.working_directory do
