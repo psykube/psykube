@@ -109,7 +109,7 @@ module Psykube::CLI::Commands::Kubectl
     # Generate manifests and assign to --filename
     if manifest
       file = {% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}Tempfile.new{% else %}File.tempfile{% end %}(manifest.kind)
-      file.print manifest.to_yaml
+      file.print manifest.to_json
       file.flush
       flags["--filename"] = file.path
     end

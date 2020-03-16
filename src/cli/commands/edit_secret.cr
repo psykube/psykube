@@ -11,8 +11,6 @@ class Psykube::CLI::Commands::EditSecret < Admiral::Command
 
   def run
     json = kubectl_json(resource: "secret", name: arguments.name || actor.name)
-    puts json
-    return;
     secret = Pyrite::Api::Core::V1::Secret.from_json(json)
     data = decode(secret.data || {} of String => String)
     tempfile =
