@@ -1,5 +1,5 @@
 name: psykube
-version: 2.26.0
+version: 2.27.0
 crystal: 0.33.0
 
 authors:
@@ -12,11 +12,10 @@ description: |
 
 dependencies:
   crustache:
-    github: jwaldrip/crustache
+    github: MakeNowJust/crustache
+    version: 2.4.1
   admiral:
     github: jwaldrip/admiral.cr
-  orion:
-    github: obsidian/orion
   pyrite:
     github: psykube/pyrite
 
