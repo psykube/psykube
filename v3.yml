@@ -1,0 +1,38 @@
+prefix: "api"
+cluster_variables:
+  [cluster]:
+    [key]: ["value"]
+builds:
+  [name]:
+    dockerfile: .
+    context: .
+    args: .
+    cache_from:
+      - [image] or [tag]
+    tags:
+      - [image] or [tag]
+pod_specs:
+  [name]: true
+services:
+  [name]:
+    prefix: true
+    pod_spec: "name" # or full def
+ingresses:
+  [name]:
+    prefix: true
+    pod_spec: "name"
+jobs:
+  [name]:
+    prefix: true
+    pod_spec: "name"
+cron_jobs:
+  [name]:
+    prefix: true
+    pod_spec: "name"
+deployments:
+  [name]:
+    prefix: true
+    pod_spec: "name"
+containers:
+  [name]:
+    ...
