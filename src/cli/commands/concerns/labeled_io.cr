@@ -18,13 +18,13 @@ class Psykube::CLI::Commands::LabeledIO < IO::FileDescriptor
   delegate read, to: @io
 
   def initialize(@io : IO::FileDescriptor, @label : String?, color : Symbol? = nil)
-    @fd = @io.@fd
+    @volatile_fd = @io.@volatile_fd
     @closed = @io.@closed
     @color = color || Colors.sample
   end
 
   def initialize(@io : IO::FileDescriptor, @label : String?, index : Int)
-    @fd = @io.@fd
+    @volatile_fd = @io.@volatile_fd
     @closed = @io.@closed
     @color = Colors[index % Colors.size]
   end

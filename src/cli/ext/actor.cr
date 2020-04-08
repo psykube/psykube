@@ -18,7 +18,7 @@ class Psykube::Actor
         tag: flags.responds_to?(:tag) ? flags.tag : nil,
       )
     end
-  rescue e : Errno
+  rescue e : IO::Error
     raise Error.new e.message
   end
 end
