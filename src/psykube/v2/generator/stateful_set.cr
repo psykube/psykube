@@ -3,9 +3,9 @@ class Psykube::V2::Generator::StatefulSet < ::Psykube::Generator
   cast_manifest Manifest::StatefulSet
 
   protected def result
-    Pyrite::Api::Apps::V1beta1::StatefulSet.new(
+    Pyrite::Api::Apps::V1::StatefulSet.new(
       metadata: generate_metadata,
-      spec: Pyrite::Api::Apps::V1beta1::StatefulSetSpec.new(
+      spec: Pyrite::Api::Apps::V1::StatefulSetSpec.new(
         selector: generate_selector,
         service_name: manifest.service_name || name,
         replicas: cluster.replicas || manifest.replicas,
@@ -19,10 +19,10 @@ class Psykube::V2::Generator::StatefulSet < ::Psykube::Generator
 
   # Strategy
   private def generate_strategy
-    Pyrite::Api::Apps::V1beta1::StatefulSetUpdateStrategy.new(type: "Recreate") if manifest.recreate
-    Pyrite::Api::Apps::V1beta1::StatefulSetUpdateStrategy.new(
+    Pyrite::Api::Apps::V1::StatefulSetUpdateStrategy.new(type: "Recreate") if manifest.recreate
+    Pyrite::Api::Apps::V1::StatefulSetUpdateStrategy.new(
       type: "RollingUpdate",
-      rolling_update: Pyrite::Api::Apps::V1beta1::RollingUpdateStatefulSetStrategy.new(
+      rolling_update: Pyrite::Api::Apps::V1::RollingUpdateStatefulSetStrategy.new(
         partition: manifest.@rollout.try(&.partition)
       )
     )
