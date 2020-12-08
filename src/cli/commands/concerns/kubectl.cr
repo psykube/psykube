@@ -44,44 +44,44 @@ module Psykube::CLI::Commands::Kubectl
                    error : Bool | IO = true,
                    panic : Bool = true)
     tempfile = {% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}
-        Tempfile.open("kubectl") do |io|
-          args = [] of String
-          args << resource if resource
-          args << name if name
-          flags = Flags.new.merge(flags)
-          flags.merge!({"--output" => "json"})
-          kubectl_run(
-            command: "get",
-            args: args,
-            flags: flags,
-            manifest: manifest,
-            namespace: namespace,
-            output: io,
-            input: false,
-            error: error,
-            panic: panic
-          )
-        end
-      {% else %}
-        File.tempfile do |io|
-          args = [] of String
-          args << resource if resource
-          args << name if name
-          flags = Flags.new.merge(flags)
-          flags.merge!({"--output" => "json"})
-          kubectl_run(
-            command: "get",
-            args: args,
-            flags: flags,
-            manifest: manifest,
-            namespace: namespace,
-            output: io,
-            input: false,
-            error: error,
-            panic: panic
-          )
-        end
-      {% end %}
+                 Tempfile.open("kubectl") do |io|
+                   args = [] of String
+                   args << resource if resource
+                   args << name if name
+                   flags = Flags.new.merge(flags)
+                   flags.merge!({"--output" => "json"})
+                   kubectl_run(
+                     command: "get",
+                     args: args,
+                     flags: flags,
+                     manifest: manifest,
+                     namespace: namespace,
+                     output: io,
+                     input: false,
+                     error: error,
+                     panic: panic
+                   )
+                 end
+               {% else %}
+                 File.tempfile do |io|
+                   args = [] of String
+                   args << resource if resource
+                   args << name if name
+                   flags = Flags.new.merge(flags)
+                   flags.merge!({"--output" => "json"})
+                   kubectl_run(
+                     command: "get",
+                     args: args,
+                     flags: flags,
+                     manifest: manifest,
+                     namespace: namespace,
+                     output: io,
+                     input: false,
+                     error: error,
+                     panic: panic
+                   )
+                 end
+               {% end %}
     return File.read(tempfile.path)
   end
 
