@@ -27,6 +27,6 @@ module Psykube::CLI::Commands::PsykubeFileFlag
 
   private def deployment
     deployment = actor.generate.items.not_nil!.find(&.kind.== "Deployment")
-    deployment.as(Pyrite::Api::Extensions::V1beta1::Deployment) if deployment
+    deployment.as(Pyrite::Api::Apps::V1::Deployment) if deployment
   end
 end

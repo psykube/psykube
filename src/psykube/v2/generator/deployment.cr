@@ -3,9 +3,9 @@ class Psykube::V2::Generator::Deployment < ::Psykube::Generator
   cast_manifest Manifest::Deployment
 
   protected def result
-    Pyrite::Api::Extensions::V1beta1::Deployment.new(
+    Pyrite::Api::Apps::V1::Deployment.new(
       metadata: generate_metadata(annotations: combined_annotations),
-      spec: Pyrite::Api::Extensions::V1beta1::DeploymentSpec.new(
+      spec: Pyrite::Api::Apps::V1::DeploymentSpec.new(
         selector: generate_selector,
         replicas: cluster.replicas || manifest.replicas,
         revision_history_limit: manifest.@rollout.try(&.history_limit),
@@ -17,10 +17,10 @@ class Psykube::V2::Generator::Deployment < ::Psykube::Generator
   end
 
   private def generate_strategy
-    return Pyrite::Api::Extensions::V1beta1::DeploymentStrategy.new(type: "Recreate") if manifest.recreate
-    Pyrite::Api::Extensions::V1beta1::DeploymentStrategy.new(
+    return Pyrite::Api::Apps::V1::DeploymentStrategy.new(type: "Recreate") if manifest.recreate
+    Pyrite::Api::Apps::V1::DeploymentStrategy.new(
       type: "RollingUpdate",
-      rolling_update: Pyrite::Api::Extensions::V1beta1::RollingUpdateDeployment.new(
+      rolling_update: Pyrite::Api::Apps::V1::RollingUpdateDeployment.new(
         max_unavailable: manifest.@rollout.try(&.max_unavailable),
         max_surge: manifest.@rollout.try(&.max_surge),
       )
