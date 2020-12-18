@@ -3,6 +3,7 @@ class Psykube::V2::Manifest::Shared::Container
     image:             {type: String, optional: true},
     image_pull_policy: {type: String, optional: true},
     tag:               {type: String, optional: true},
+    working_dir:       {type: String, optional: true},
     build:             {type: Build, optional: true},
     healthcheck:       {type: Bool | Manifest::Healthcheck, optional: true, default: false},
     readycheck:        {type: Bool | Manifest::Readycheck, optional: true, default: false},

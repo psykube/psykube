@@ -89,6 +89,7 @@ module Psykube::V2::Generator::Concerns::PodHelper
       image: image,
       image_pull_policy: container.image_pull_policy,
       resources: generate_container_resources(container),
+      working_dir: container.working_dir,
       env: generate_container_env(container),
       volume_mounts: generate_container_volume_mounts(container.volume_mounts || container.volumes),
       liveness_probe: generate_container_liveness_probe(container, container.healthcheck),
