@@ -38,8 +38,6 @@ abstract class Psykube::Generator
     result.to_yaml(*args, **props)
   end
 
-  abstract def result(*args, **params)
-
   private def cluster_config_map
     manifest.config_map.merge cluster.config_map
   end
