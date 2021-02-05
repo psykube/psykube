@@ -18,6 +18,7 @@ dependencies:
     github: jwaldrip/admiral.cr
   pyrite:
     github: psykube/pyrite
+    branch: master
 
 license: MIT
 
