@@ -209,7 +209,7 @@ module Psykube::CLI::Commands::Kubectl
         when Pyrite::Api::Core::V1::PersistentVolumeClaim
           item.spec.not_nil!.volume_name = nil
           if annotations = item.metadata.try(&.annotations)
-            annotations.delete_if { |k, _| k.starts_with? "pv.kubernetes.io/" }
+            annotations.reject { |k, _| k.starts_with? "pv.kubernetes.io/" }
           end
         when Pyrite::Api::Core::V1::Service
           item.spec.not_nil!.cluster_ip = nil unless item.spec.not_nil!.cluster_ip == "None"
