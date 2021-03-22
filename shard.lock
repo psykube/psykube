@@ -2,13 +2,13 @@ version: 2.0
 shards:
   admiral:
     git: https://github.com/jwaldrip/admiral.cr.git
-    version: 1.11.2
+    version: 1.11.4
 
   crustache:
-    git: https://github.com/MakeNowJust/crustache.git
-    version: 2.4.1
+    git: https://github.com/jwaldrip/crustache.git
+    version: 2.4.3+git.commit.af72c606879f7a1684fe669b7d3ae15de5b6885b
 
   pyrite:
     git: https://github.com/psykube/pyrite.git
-    version: 1.2.2+git.commit.afb374daac1b0fe2a3921d0121810e70eb80140f
+    version: 1.2.2+git.commit.0dd843f643fffbd4c2ac3aaeb5670f0bd2593018
 
