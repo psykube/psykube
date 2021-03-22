@@ -1,6 +1,6 @@
 name: psykube
-version: 2.41.0
-crystal: 0.35.1
+version: 2.42.0
+crystal: ">= 0.35.1"
 
 authors:
   - Jason Waldrip <jason@waldrip.net>
