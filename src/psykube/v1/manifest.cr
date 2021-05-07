@@ -97,7 +97,7 @@ class Psykube::V1::Manifest
     end
   end
 
-  def lookup_port(port : Int32)
+  def lookup_port(port : Int32?)
     port
   end
 

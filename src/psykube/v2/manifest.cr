@@ -180,7 +180,7 @@ abstract class Psykube::V2::Manifest
         services.size > 0
       end
 
-      def lookup_port(port : Int32)
+      def lookup_port(port : Int32?)
         port
       end
 

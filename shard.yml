@@ -1,11 +1,9 @@
 name: psykube
-version: 2.43.0
-crystal: ">= 0.35.1"
+version: 2.44.0
+crystal: ">= 0.36.0 - 1.0"
 
 authors:
   - Jason Waldrip <jason@waldrip.net>
-  - Eric Irwin <eirwin@commercialtribe.com>
-  - Jacob Caban-Tomski <jcabantomski@commercialtribe.com>
 
 description: |
   A tool to help with kubernetes deployments in CI/CD deployments.

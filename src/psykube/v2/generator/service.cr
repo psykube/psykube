@@ -54,21 +54,37 @@ class Psykube::V2::Generator::Service < ::Psykube::Generator
 
   private def generate_ports(ports : Hash(String, Int32 | String))
     ports.map do |name, port|
-      Pyrite::Api::Core::V1::ServicePort.new(
-        name: name,
-        port: lookup_port(port),
-        protocol: "TCP"
-      )
+      generate_port(name, port)
     end
   end
 
-  private def generate_ports(ports : Array(String))
-    ports.map do |name|
-      Pyrite::Api::Core::V1::ServicePort.new(
-        name: name,
-        port: lookup_port(name),
-        protocol: "TCP"
-      )
+  private def generate_ports(ports : Array(String | Pyrite::Api::Core::V1::ServicePort))
+    ports.map do |port|
+      generate_port(port)
     end
+  end
+
+  private def generate_port(name, port)
+    Pyrite::Api::Core::V1::ServicePort.new(
+      name: name,
+      port: lookup_port(port),
+      protocol: "TCP"
+    )
+  end
+
+  private def generate_port(port : String)
+    parts = port.split(":")
+    source_port = parts[0]
+    target_port = parts[1]?
+    Pyrite::Api::Core::V1::ServicePort.new(
+      name: name,
+      port: lookup_port(source_port),
+      target_port: lookup_port(target_port),
+      protocol: "TCP"
+    )
+  end
+
+  private def generate_port(port : Pyrite::Api::Core::V1::ServicePort)
+    port
   end
 end
