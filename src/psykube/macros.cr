@@ -2,9 +2,9 @@ module Psykube::Macros
   # :nodoc:
   macro __mapping(properties)
     {% for key, value in properties %}
-      @{{key.id}} : {{value[:type]}} {{ (value[:optional] || value[:default] ? "?" : "").id }}
+      @{{key.id}} : {{value[:type]}}{{ (value[:optional] || value[:default] ? "?" : "").id }}
 
-      def {{key.id}}=(_{{key.id}} : {{value[:type]}} {{ (value[:optional] ? "?" : "").id }})
+      def {{key.id}}=(_{{key.id}} : {{value[:type]}}{{ (value[:optional] ? "?" : "").id }})
         @{{key.id}} = _{{key.id}}
       end
 
@@ -137,7 +137,7 @@ module Psykube::Macros
   end
 
   # The macro to create a manifest root
-  macro manifest(version, type, *property_sets)
+  macro manifest(type, *property_sets)
     {% properties = {} of String => _ %}
     {% for property_set, index in property_sets %}
       {% if property_set %}
@@ -147,26 +147,19 @@ module Psykube::Macros
       {% end %}
     {% end %}
 
-    getter version : Int32? = nil
     getter type : String? = nil
 
-    {% raise "version key not allowed" if properties[:version] %}
     {% raise "type key not allowed" if properties[:type] %}
 
     ::Psykube::Macros.__mapping({{properties}}) do
-      version_location = {0,0}
       type_location = {0,0}
 
-      # Parse out version and type
+      # Parse out  type
       remaining_nodes = [] of Tuple(YAML::Nodes::Node, YAML::Nodes::Node)
       YAML::Schema::Core.each(node) do |key_node, value_node|
         ::Psykube::Macros.__check_scalar(key_node)
 
         case key_node.value
-        when "version"
-          version_location = key_node.location
-          @version = Int32.new(ctx, value_node)
-          next
         when "type"
           type_location = key_node.location
           @type = String.new(ctx, value_node)
@@ -176,10 +169,6 @@ module Psykube::Macros
         end
       end
 
-      {% if version %}
-        {% if version %}raise VersionException.new("invalid version: #{@version.inspect}", *version_location) unless @version == {{version}}{% end %}
-      {% end %}
-
       {% if type %}
         {% if type %}raise TypeException.new("invalid type: #{@type.inspect}", *type_location) unless @type == {{type}}{% end %}
       {% end %}
@@ -187,7 +176,7 @@ module Psykube::Macros
       # Parse the rest
       remaining_nodes.each do |key_node, value_node|
         ::Psykube::Macros.__check_scalar(key_node)
-        next if ["version", "type"].includes? key_node.value
+        next if ["type"].includes? key_node.value
         ::Psykube::Macros.__case_keys(key_node, value_node, {{properties}})
       end
     end
@@ -197,20 +186,12 @@ module Psykube::Macros
         @{{key.id}}{% if value[:default] || value[:optional] %} = {{ value[:optional] ? "nil".id : value[:default] }}{% end %},
       {% end %}
     )
-      @version = {{version}}
       @type = {{type}}
     end
 
     def to_yaml(yaml : ::YAML::Nodes::Builder)
       yaml.mapping(reference: self) do
-        version = @version
         type = @type
-
-        # Set version
-        unless version.nil?
-          "version".to_yaml(yaml)
-          version.to_yaml(yaml)
-        end
 
         # Set type
         unless type.nil?

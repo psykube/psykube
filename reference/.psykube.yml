@@ -6,7 +6,7 @@ name: test-app # required
 # = Docker Registry Settings ==
 # Specify where to push the docker image during the push command. We use google
 # gloud, but you can omit the registry_host if you use docker hub.
-registry_user: commercial-tribe  # required
+registry_user: psyducker  # required
 registry_host: gcr.io
 
 # = Docker image ==

@@ -15,7 +15,7 @@ abstract class Psykube::Generator
 
   @role : String
   @actor : Actor
-  getter manifest : Manifest::Any
+  getter manifest : Manifest
 
   delegate name, cluster, tag, namespace, cluster_name, to: @actor
   delegate lookup_port, to: manifest
@@ -30,7 +30,7 @@ abstract class Psykube::Generator
     @actor = generator.@actor
   end
 
-  def initialize(@manifest : Manifest::Any, @actor : Actor)
+  def initialize(@manifest : Manifest, @actor : Actor)
     @role = @manifest.type.not_nil!
   end
 
@@ -53,7 +53,7 @@ abstract class Psykube::Generator
 
   private def combined_volumes
     case (c = cluster)
-    when Psykube::V2::Manifest::Shared::Cluster
+    when Psykube::Manifest::Shared::Cluster
       manifest.volumes.merge(c.volumes)
     else
       manifest.volumes
@@ -82,3 +82,6 @@ abstract class Psykube::Generator
     manifest.env || {} of String => String | Manifest::Env
   end
 end
+
+require "./generator/concerns/*"
+require "./generator/*"

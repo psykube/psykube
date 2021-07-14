@@ -6,7 +6,6 @@ class Psykube::CLI::Commands::Init < Admiral::Command
   define_help description: "Generate a .psykube.yml in the current directory."
 
   define_flag overwrite : Bool, "Overwrite the file if it exists.", short: 'o'
-  define_flag v1 : Bool, default: false
   define_flag type, "Set the type of pyskube manifest.", short: 't', default: "Deployment"
   define_flag name, "Set the name of the application.", short: 'N'
   define_flag namespace, "Set the namespace to deploy into.", short: 'n'
@@ -31,7 +30,7 @@ class Psykube::CLI::Commands::Init < Admiral::Command
   end
 
   def run
-    manifest = flags.v1 ? Psykube::V1::Manifest.new(self) : Psykube::V2::Manifest.new(self)
+    manifest = Psykube::Manifest.new(self)
     string = manifest.to_yaml
     if flags.preview
       STDOUT.write string.lines[1..-1].join("\n").to_slice

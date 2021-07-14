@@ -2,7 +2,7 @@ class Psykube::Actor
   @git_data : StringMap?
   @metadata : StringMap?
   @raw_metadata : StringMap?
-  @manifest : Manifest::Any?
+  @manifest : Manifest?
   @template : Crustache::Syntax::Template
   setter build_contexts : Array(BuildContext)?
   setter init_build_contexts : Array(BuildContext)?

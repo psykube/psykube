@@ -40,17 +40,17 @@ class Psykube::BuildContext
     parse_array_opts(value)
   end
 
-  private def parse_cache_from(value : V2::Manifest::Shared::Container::Build::CacheFromTag)
+  private def parse_cache_from(value : Manifest::Shared::Container::Build::CacheFromTag)
     [parse_cache_from_value(value)]
   end
 
-  private def parse_cache_from(values : Array(V2::Manifest::Shared::Container::Build::CacheFromTag | String))
+  private def parse_cache_from(values : Array(Manifest::Shared::Container::Build::CacheFromTag | String))
     values.map do |value|
       parse_cache_from_value(value)
     end
   end
 
-  def parse_cache_from_value(value : V2::Manifest::Shared::Container::Build::CacheFromTag)
+  def parse_cache_from_value(value : Manifest::Shared::Container::Build::CacheFromTag)
     [image, value.tag].join(":") unless value.tag.empty?
   end
 

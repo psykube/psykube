@@ -1,4 +1,0 @@
-# Code Owners
-/.github @CommercialTribe/leads
-*.eslintrc.* @CommercialTribe/leads
-package.json @CommercialTribe/leads

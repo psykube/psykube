@@ -11,7 +11,7 @@ script: "true"
 before_deploy:
   - CLOUDSDK_CORE_DISABLE_PROMPTS=true sudo gcloud components update kubectl
   - sudo chown -R $USER /home/travis/.config/gcloud
-  - curl -sSL https://github.com/CommercialTribe/psykube/releases/download/$PSYKUBE_VERSION/psykube-linux-$PSYKUBE_VERSION.tar.gz | sudo tar -xzC /usr/local/bin
+  - curl -sSL https://github.com/psykube/psykube/releases/download/$PSYKUBE_VERSION/psykube-linux-$PSYKUBE_VERSION.tar.gz | sudo tar -xzC /usr/local/bin
   - echo $GCLOUD_ENCODED_CREDS | base64 -d > /tmp/gcloud.json
   - gcloud auth activate-service-account $(jq -r ".client_email" /tmp/gcloud.json) --key-file=/tmp/gcloud.json
   - gcloud docker --authorize-only
@@ -31,18 +31,18 @@ deploy:
 
   # Apply master to kubernetes production
   - provider: script
-    script: gcloud container clusters get-credentials production --project=commercial-tribe --zone=us-east1-c && psykube apply production --namespace=apps
+    script: gcloud container clusters get-credentials production --project=my-production-account --zone=us-east1-c && psykube apply production --namespace=apps
     on:
       branch: master
 
   # Apply develop to kubernetes staging
   - provider: script
-    script: gcloud container clusters get-credentials staging --project=commercial-tribe --zone=us-east1-c && psykube apply staging --namespace=apps
+    script: gcloud container clusters get-credentials staging --project=my-production-account --zone=us-east1-c && psykube apply staging --namespace=apps
     on:
       branch: develop
 
   # Apply feature/* to kubernetes staging on its own namespace
   - provider: script
-    script: gcloud container clusters get-credentials staging --project=commercial-tribe --zone=us-east1-c && psykube apply staging --namespace=apps-`echo $TRAVIS_BRANCH | sed "s|/|-|"` --copy-namespace=apps
+    script: gcloud container clusters get-credentials staging --project=my-production-account --zone=us-east1-c && psykube apply staging --namespace=apps-`echo $TRAVIS_BRANCH | sed "s|/|-|"` --copy-namespace=apps
     on:
       branch: feature/*
