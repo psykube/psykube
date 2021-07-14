@@ -23,7 +23,7 @@ class Psykube::CLI::Commands::EditSecret < Admiral::Command
           data.to_yaml(io)
         end
       {% end %}
-    Process.run(command: ENV["EDITOR"] || "vim", args: [tempfile.path], input: STDIN, output: STDOUT, error: STDERR)
+    Process.run(command: ENV["EDITOR"] || "vim", args: [tempfile.path], input: @input_io, output: @output_io, error: @error_io)
     secret.data = encode(Hash(String, String).from_yaml(File.read(tempfile.path)))
     flags.dry_run ? puts(secret.to_yaml) : kubectl_run("apply", manifest: secret)
   ensure

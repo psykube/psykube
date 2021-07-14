@@ -15,14 +15,20 @@ class Psykube::CLI::Commands::Exec < Admiral::Command
   define_flag container : String,
     description: "The name of the container to connect to.",
     short: c
+  define_flag nth : Int32,
+    description: "Load the nth listed container",
+    short: n
 
   define_argument command,
     description: "The command to run in the container.",
     required: true
 
   def run
-    pod = kubectl_get_pods.sample
-    args = [pod.metadata.not_nil!.name.not_nil!]
+    pod = flags.nth ? kubectl_get_pods[flags.nth.not_nil!]? : kubectl_get_pods.sample
+    pod = kubectl_get_pods.sample unless pod
+    raise Error.new("No pod to connect to") unless pod
+    name = pod.metadata.not_nil!.name.not_nil!
+    args = [name]
     args << "-i" if flags.stdin
     args << "-t" if flags.tty
     args << "-c #{flags.container}" if flags.container

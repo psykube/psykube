@@ -4,6 +4,10 @@ class Psykube::CLI::Commands::PortForward < Admiral::Command
   include KubectlAll
   include Kubectl
 
+  define_flag nth : Int32,
+    description: "Load the nth listed container",
+    short: n
+
   define_help description: "Forward one or more local ports to a running pod for the application."
 
   private def help_usage
@@ -31,6 +35,10 @@ class Psykube::CLI::Commands::PortForward < Admiral::Command
 
   def run
     port_args = arguments[0..-1].map(&.split(":").map { |p| actor.manifest.lookup_port(p) }.join(":"))
-    kubectl_exec(command: "port-forward", args: [kubectl_get_pods.first.metadata.not_nil!.name.to_s] + port_args)
+    pod = flags.nth ? kubectl_get_pods[flags.nth.not_nil!]? : kubectl_get_pods.sample
+    pod = kubectl_get_pods.sample unless pod
+    raise Error.new("No pod to connect to") unless pod
+    name = pod.metadata.not_nil!.name.not_nil!
+    kubectl_exec(command: "port-forward", args: [name.to_s] + port_args)
   end
 end
