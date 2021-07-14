@@ -21,7 +21,7 @@ class Psykube::Generator::List < ::Psykube::Generator
         end
 
         # Add podable object
-        list << podable
+        list << Podable.result(self)
 
         # Expose Service & Ingress
         case manifest.type
@@ -37,24 +37,5 @@ class Psykube::Generator::List < ::Psykube::Generator
         end
       end.compact
     )
-  end
-
-  private def podable
-    case manifest.type
-    when "Deployment"
-      Deployment.result(self)
-    when "Cron"
-      CronJob.result(self)
-    when "Job"
-      Job.result(self)
-    when "StatefulSet"
-      StatefulSet.result(self)
-    when "DaemonSet"
-      DaemonSet.result(self)
-    when "Pod"
-      Pod.result(self)
-    else
-      raise "Invalid type: `#{manifest.type}`"
-    end
   end
 end

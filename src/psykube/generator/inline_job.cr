@@ -61,6 +61,9 @@ class Psykube::Generator::InlineJob < ::Psykube::Generator
         spec.restart_policy = "Never"
         template.metadata.not_nil!.labels.not_nil!["role"] = "job"
         spec.init_containers = nil
+        if (spec.containers.size > 1)
+          STDERR.puts("Warning: Simple jobs on #{manifest.type} with more than one container will run using first container in the spec.")
+        end
         spec.containers = [spec.containers.first.tap do |container|
           container.liveness_probe = nil
           container.readiness_probe = nil

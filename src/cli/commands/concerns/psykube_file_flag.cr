@@ -25,8 +25,7 @@ module Psykube::CLI::Commands::PsykubeFileFlag
     @actor ||= Actor.new(self)
   end
 
-  private def deployment
-    deployment = actor.generate.items.not_nil!.find(&.kind.== "Deployment")
-    deployment.as(Pyrite::Api::Apps::V1::Deployment) if deployment
+  private def podable
+    actor.podable
   end
 end

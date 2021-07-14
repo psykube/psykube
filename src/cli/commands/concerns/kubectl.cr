@@ -19,7 +19,7 @@ module Psykube::CLI::Commands::Kubectl
   end
 
   def set_images_from_current!
-    spec = Pyrite::Api::Apps::V1::Deployment.from_json(kubectl_json(manifest: deployment, panic: false, error: false)).spec.not_nil!.template.not_nil!.spec.not_nil!
+    spec = Pyrite::Api::Apps::V1::Deployment.from_json(kubectl_json(manifest: podable, panic: false, error: false)).spec.not_nil!.template.not_nil!.spec.not_nil!
     actor.build_contexts.each do |build_context|
       if (container = spec.containers.find { |c| build_context.container_name == c.name })
         build_context.image, build_context.tag = container.image.to_s.split(':')
@@ -134,9 +134,14 @@ module Psykube::CLI::Commands::Kubectl
   {% end %}
 
   def kubectl_get_pods(phase : String? = "Running")
-    arguments = @arguments
     flags = Flags.new
-    flags["--selector"] = deployment.try(&.spec.not_nil!.selector.try(&.match_labels.try(&.map(&.join("=")).join(",")))).to_s
+    spec = podable.try(&.spec.not_nil!)
+    if spec.is_a?(Pyrite::Api::Core::V1::PodSpec)
+      flags["--selector"] = podable.metadata.try(&.labels.try(&.map(&.join("=")).join(","))).to_s
+    else
+      spec = spec.job_template.spec if spec.responds_to?(:job_template)
+      flags["--selector"] = spec.not_nil!.selector.try(&.match_labels.try(&.map(&.join("=")).join(","))).to_s
+    end
     json = kubectl_json(resource: "pods", flags: flags, export: false)
     pods = Pyrite::Api::Core::V1::List.from_json(json).items.not_nil!.select do |pod|
       if pod.is_a?(Pyrite::Api::Core::V1::Pod)

@@ -1,3 +1,6 @@
+
+require "random"
+
 abstract class Psykube::Manifest
   module Serviceable; end
 
@@ -32,6 +35,10 @@ abstract class Psykube::Manifest
 
     def generate(actor : Actor)
       Generator::List.new(self, actor).result
+    end
+
+    def podable(actor : Actor)
+      Generator::Podable.new(self, actor).result
     end
 
     def get_build_contexts(cluster_name : String, basename : String, tag : String?, working_directory : String)
@@ -138,7 +145,7 @@ abstract class Psykube::Manifest
       config_map:                      {type: StringableMap, default: StringableMap.new},
       secrets:                         {type: StringableMap | Bool, optional: true},
       affinity:                        {type: Pyrite::Api::Core::V1::Affinity, optional: true},
-      init_containers:                 {type: ContainerMap | Hash(String, Array(String) | String), default: ContainerMap.new},
+      init_containers:                 {type: ContainerMap, default: ContainerMap.new},
       containers:                      {type: ContainerMap},
       host_pid:                        {type: Bool, optional: true},
       host_network:                    {type: Bool, optional: true},

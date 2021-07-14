@@ -12,16 +12,20 @@ class Psykube::CLI::Commands::Exec < Admiral::Command
   define_flag tty : Bool,
     description: "Allocate tty.",
     short: t
+  define_flag container : String,
+    description: "The name of the container to connect to.",
+    short: c
 
   define_argument command,
     description: "The command to run in the container.",
     required: true
 
   def run
-    pod = kubectl_get_pods.first
+    pod = kubectl_get_pods.sample
     args = [pod.metadata.not_nil!.name.not_nil!]
     args << "-i" if flags.stdin
     args << "-t" if flags.tty
+    args << "-c #{flags.container}" if flags.container
     args << "--"
     args << arguments.command
     args.concat(arguments[0..-1])
