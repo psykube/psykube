@@ -9,6 +9,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   define_flag push : Bool, description: "Don't push the docker image.", default: true
   define_flag image, description: "Override the generated docker image."
   define_flag wait : Bool, description: "Don't wait for the rollout.", default: true
+  define_flag restart : Bool, description: "Restart the deployment after the apply.", default: false
   define_flag tag, description: "The docker tag to apply.", short: t
   define_flag force : Bool, description: "Force the recreation of the kubernetes resources."
   define_flag create_namespace : Bool, description: "create the namespace before the given apply."
@@ -41,8 +42,11 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
         end
         kubectl_run("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
       end
-      if actor.manifest.type == "Deployment" && flags.wait
+      if ["Deployment", "StatefulSet", "DaemonSet"].includes?(actor.manifest.type) && flags.wait
         kubectl_run("rollout", ["status", "#{actor.manifest.type}/#{actor.manifest.name}".downcase])
+      end
+      if ["Deployment", "StatefulSet", "DaemonSet"].includes?(actor.manifest.type) && flags.restart
+        kubectl_run("rollout", ["restart", "#{actor.manifest.type}/#{actor.manifest.name}".downcase])
       end
       kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.utc.to_json}"], flags: {"--overwrite" => "true"})
     elsif flags.skip_if_no_cluster

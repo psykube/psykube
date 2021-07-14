@@ -34,6 +34,7 @@ class Psykube::CLI::Main < Admiral::Command
   register_sub_command "init", Commands::Init
   register_sub_command "history", Commands::History
   register_sub_command "rollback", Commands::Rollback
+  register_sub_command "restart", Commands::Restart
   register_sub_command "scale", Commands::Scale
   register_sub_command "run-job", Commands::RunJob, short: "j"
   register_sub_command "generate-job", Commands::GenerateJob
