@@ -30,6 +30,7 @@ class Psykube::CLI::Commands::PortForward < Admiral::Command
   end
 
   def run
-    kubectl_exec(command: "port-forward", args: [kubectl_get_pods.first.metadata.not_nil!.name.to_s] + arguments[0..-1])
+    port_args = arguments[0..-1].map(&.split(":").map { |p| actor.manifest.lookup_port(p) }.join(":"))
+    kubectl_exec(command: "port-forward", args: [kubectl_get_pods.first.metadata.not_nil!.name.to_s] + port_args)
   end
 end
