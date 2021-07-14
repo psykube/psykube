@@ -6,6 +6,8 @@
 {% end %}
 
 module Psykube::CLI::Commands::Kubectl
+  include Psykube::Concerns::MetadataHelper
+
   alias Flags = Hash(String, String | Bool)
 
   def self.bin
@@ -161,7 +163,7 @@ module Psykube::CLI::Commands::Kubectl
       kubectl_run(command: "apply", manifest: Pyrite::Api::Core::V1::Namespace.new(
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           name: namespace,
-          labels: LABELS
+          labels: stringify_hash_values(LABELS)
         )
       ))
     end
@@ -221,7 +223,7 @@ module Psykube::CLI::Commands::Kubectl
       namespace = Pyrite::Api::Core::V1::Namespace.new(
         metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
           name: to,
-          labels: LABELS
+          labels: stringify_hash_values(LABELS)
         )
       )
       items.unshift namespace

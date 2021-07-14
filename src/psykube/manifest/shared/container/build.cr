@@ -12,7 +12,7 @@ class Psykube::Manifest::Shared::Container::Build
     cache_from: {type: String | Array(String | CacheFromTag), optional: true},
     stages:     {type: Array(String), optional: true},
     target:     {type: String, optional: true},
-    args:       {type: StringMap, default: StringMap.new},
+    args:       {type: StringableMap, default: StringableMap.new},
   })
 
   def_equals_and_hash dockerfile, context, args

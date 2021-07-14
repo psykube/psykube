@@ -3,7 +3,7 @@ class Psykube::Manifest::Ingress
   alias HostnameList = Array(String)
 
   Macros.mapping({
-    annotations: {type: StringMap, optional: true},
+    annotations: {type: StringableMap, optional: true},
     tls:         {type: Tls | Bool, optional: true},
     host:        {type: String, optional: true},
     hosts:       {type: HostnameList | HostHash, optional: true},

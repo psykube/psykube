@@ -13,7 +13,7 @@ module Psykube::Generator::Concerns::PodHelper
           "app"             => name,
           "psykube.io/type" => role,
         },
-        annotations: manifest.pod_annotations
+        annotations: stringify_hash_values(manifest.pod_annotations)
       )
     )
   end
@@ -334,7 +334,7 @@ module Psykube::Generator::Concerns::PodHelper
       port: container.lookup_port(http_check.port).not_nil!,
       host: http_check.host,
       scheme: http_check.scheme,
-      http_headers: http_check.headers.try(&.map { |k, v| Pyrite::Api::Core::V1::HTTPHeader.new(name: k, value: v) })
+      http_headers: stringify_hash_values(http_check.headers).try(&.map { |k, v| Pyrite::Api::Core::V1::HTTPHeader.new(name: k, value: v) })
     )
   end
 

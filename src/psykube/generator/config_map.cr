@@ -3,7 +3,7 @@ class Psykube::Generator::ConfigMap < ::Psykube::Generator
     unless combined_config_map.empty?
       Pyrite::Api::Core::V1::ConfigMap.new(
         metadata: generate_metadata,
-        data: combined_config_map
+        data: stringify_hash_values(combined_config_map)
       )
     end
   end

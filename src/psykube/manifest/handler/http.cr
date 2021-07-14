@@ -4,6 +4,6 @@ class Psykube::Manifest::Handler::Http
     port:    {type: String | Int32, default: "default"},
     host:    {type: String, optional: true},
     scheme:  {type: String, optional: true},
-    headers: {type: StringMap, optional: true},
+    headers: {type: StringableMap, optional: true},
   })
 end

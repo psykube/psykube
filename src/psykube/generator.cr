@@ -3,7 +3,7 @@ require "file_utils"
 abstract class Psykube::Generator
   class ValidationError < Error; end
 
-  alias TemplateData = StringMap
+  alias TemplateData = StringableMap
 
   include Concerns::MetadataHelper
 
@@ -61,20 +61,20 @@ abstract class Psykube::Generator
   end
 
   private def manifest_secrets
-    case manifest.secrets
-    when true, false, nil
+    case (secrets = manifest.secrets)
+    when Bool, Nil
       {} of String => String
     else
-      manifest.secrets.as(Hash(String, String))
+      stringify_hash_values(secrets)
     end
   end
 
   private def cluster_secrets
-    case cluster.secrets
-    when true, false, nil
+    case (secrets = cluster.secrets)
+    when Bool, Nil
       {} of String => String
     else
-      cluster.secrets.as(Hash(String, String))
+      stringify_hash_values(secrets)
     end
   end
 
