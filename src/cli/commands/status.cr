@@ -7,7 +7,7 @@ class Psykube::CLI::Commands::Status < Admiral::Command
   define_help description: "List the status of the kubernetes pods."
 
   def run
-    statuses = kubectl_get_pods(phase: nil).map do |pod|
+    statuses = kubectl_get_pods(phase: nil).compact_map do |pod|
       case pod
       when Pyrite::Api::Core::V1::Pod
         if (status = pod.status)
@@ -25,7 +25,7 @@ class Psykube::CLI::Commands::Status < Admiral::Command
           }
         end
       end
-    end.compact
+    end
     puts "No pods are running" if statuses.empty?
     pad = 4
     statuses[0].keys.each do |name|
