@@ -25,7 +25,7 @@ module Psykube::CLI::Commands::PsykubeFileFlag
     @actor ||= Actor.new(self)
   end
 
-  private def podable
+  private def podable : Psykube::Generator::Podable::Resource
     actor.podable
   end
 end

@@ -1,4 +1,3 @@
-
 require "random"
 
 abstract class Psykube::Manifest
@@ -37,7 +36,7 @@ abstract class Psykube::Manifest
       Generator::List.new(self, actor).result
     end
 
-    def podable(actor : Actor)
+    def podable(actor : Actor) : Psykube::Generator::Podable::Resource
       Generator::Podable.new(self, actor).result
     end
 

@@ -1,5 +1,7 @@
 class Psykube::Generator::Podable < ::Psykube::Generator
-  protected def result
+  alias Resource = Pyrite::Api::Apps::V1::Deployment | Pyrite::Api::Batch::V1beta1::CronJob | Pyrite::Api::Batch::V1::Job | Pyrite::Api::Apps::V1::StatefulSet | Pyrite::Api::Apps::V1::DaemonSet | Pyrite::Api::Core::V1::Pod
+
+  protected def result : Resource
     case manifest.type
     when "Deployment"
       Deployment.result(self)

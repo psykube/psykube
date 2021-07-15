@@ -49,4 +49,3 @@ class Psykube::Actor
     raise Error.new e.message
   end
 end
-
