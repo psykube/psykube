@@ -133,17 +133,30 @@ module Psykube::CLI::Commands::Kubectl
   end
   {% end %}
 
+  {% for t in [Pyrite::Api::Apps::V1::Deployment, Pyrite::Api::Batch::V1::Job, Pyrite::Api::Apps::V1::StatefulSet, Pyrite::Api::Apps::V1::DaemonSet] %}
+    private def get_labels(resource : {{ t }})
+      resource.spec.not_nil!.selector.try(&.match_labels) || get_labels
+    end
+  {% end %}
+
+  private def get_labels(resource : Pyrite::Api::Batch::V1beta1::CronJob)
+    resource.spec.not_nil!.job_template.spec.not_nil!.selector.try(&.match_labels) || get_labels
+  end
+
+  private def get_labels(resource : Pyrite::Api::Core::V1::Pod)
+    resource.metadata.try(&.labels) || get_labels
+  end
+
+  private def get_labels(resource = nil)
+    { "unknown" => "unknown" }
+  end
+
   def kubectl_get_pods(phase : String? = "Running")
     flags = Flags.new
-    podable = self.podable.as(Psykube::Generator::Podable::Resource)
-    spec = podable.spec
-    if spec.is_a?(Pyrite::Api::Core::V1::PodSpec)
-      flags["--selector"] = podable.metadata.try(&.labels.try(&.map(&.join("=")).join(","))).to_s
-    else
-      spec = spec.job_template.spec if spec.responds_to?(:job_template)
-      flags["--selector"] = spec.not_nil!.selector.try(&.match_labels.try(&.map(&.join("=")).join(","))).to_s
-    end
+    flags["--selector"] = get_labels(podable).map(&.join("=")).join(",")
+
     json = kubectl_json(resource: "pods", flags: flags, export: false)
+
     pods = Pyrite::Api::Core::V1::List.from_json(json).items.not_nil!.select do |pod|
       if pod.is_a?(Pyrite::Api::Core::V1::Pod)
         next pod unless phase
