@@ -1,5 +1,5 @@
 class Psykube::Generator::Autoscale < ::Psykube::Generator
-  @resource : Pyrite::Kubernetes::Resource?
+  @resource : Pyrite::Kubernetes::Object?
 
   cast_manifest Manifest::Deployment
 

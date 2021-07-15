@@ -28,7 +28,7 @@ class Psykube::CLI::Commands::CopyResource < Admiral::Command
       name: arguments.resource_name,
       namespace: source_namespace || namespace
     )
-    resource = Pyrite::Kubernetes::Resource.from_json(json)
+    resource = Pyrite::Kubernetes::Object.from_json(json)
     allow_copy = case resource.metadata.not_nil!.annotations.try(&.["psykube.io/allow-copy"]?)
                  when "true"
                    true

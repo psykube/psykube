@@ -15,11 +15,11 @@ module Psykube::Concerns::MetadataHelper
     )
   end
 
-  private def stringify_hash_values(map : Nil): Nil
+  private def stringify_hash_values(map : Nil) : Nil
     nil
   end
 
-  private def stringify_hash_values(map : StringableMap): StringMap
+  private def stringify_hash_values(map : StringableMap) : StringMap
     map.each_with_object(StringMap.new) do |(k, v), a|
       a[k] = v.to_s unless v.nil?
     end

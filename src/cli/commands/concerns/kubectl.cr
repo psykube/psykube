@@ -40,7 +40,7 @@ module Psykube::CLI::Commands::Kubectl
   def kubectl_json(resource : String? = nil,
                    name : String? = nil,
                    flags : Flags = Flags.new,
-                   manifest : Pyrite::Kubernetes::Resource | Pyrite::Api::Core::V1::List | Nil = nil,
+                   manifest : Pyrite::Kubernetes::Object | Pyrite::Api::Core::V1::List | Nil = nil,
                    export : Bool = true,
                    namespace : String? = namespace,
                    error : Bool | IO = true,
@@ -135,7 +135,8 @@ module Psykube::CLI::Commands::Kubectl
 
   def kubectl_get_pods(phase : String? = "Running")
     flags = Flags.new
-    spec = podable.try(&.spec.not_nil!)
+    podable = self.podable.as(Psykube::Generator::Podable::Resource)
+    spec = podable.spec
     if spec.is_a?(Pyrite::Api::Core::V1::PodSpec)
       flags["--selector"] = podable.metadata.try(&.labels.try(&.map(&.join("=")).join(","))).to_s
     else
