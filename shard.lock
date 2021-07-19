@@ -10,5 +10,5 @@ shards:
 
   pyrite:
     git: https://github.com/psykube/pyrite.git
-    version: 2.0.0+git.commit.aef38f454c5f8753a5ce8b103bfbe0a394034c30
+    version: 2.0.0+git.commit.7909ed363b2d05175a4625d8b63f394843b0f8dd
 

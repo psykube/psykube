@@ -7,13 +7,13 @@ class Psykube::Generator::ClusterRole < ::Psykube::Generator
   end
 
   private def generate_cluster_roles(_nil : Nil)
-    return [] of Pyrite::Api::Rbac::V1::ClusterRole
+    [] of Pyrite::Api::Rbac::V1::ClusterRole
   end
 
   private def generate_cluster_roles(cluster_roles : Array(Manifest::Shared::Role | String))
-    cluster_roles.map do |role|
+    cluster_roles.compact_map do |role|
       generate_cluster_role(role)
-    end.compact
+    end
   end
 
   private def generate_cluster_role(name : String) : Nil

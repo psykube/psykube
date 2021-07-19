@@ -1,9 +1,4 @@
-{% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}
-  require "tempfile"
-  alias ExecStdio = Process::Stdio
-{% else %}
-  alias ExecStdio = Process::ExecStdio
-{% end %}
+alias ExecStdio = Process::ExecStdio
 
 module Psykube::CLI::Commands::Kubectl
   include Psykube::Concerns::MetadataHelper
@@ -45,46 +40,25 @@ module Psykube::CLI::Commands::Kubectl
                    namespace : String? = namespace,
                    error : Bool | IO = true,
                    panic : Bool = true)
-    tempfile = {% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}
-                 Tempfile.open("kubectl") do |io|
-                   args = [] of String
-                   args << resource if resource
-                   args << name if name
-                   flags = Flags.new.merge(flags)
-                   flags.merge!({"--output" => "json"})
-                   kubectl_run(
-                     command: "get",
-                     args: args,
-                     flags: flags,
-                     manifest: manifest,
-                     namespace: namespace,
-                     output: io,
-                     input: false,
-                     error: error,
-                     panic: panic
-                   )
-                 end
-               {% else %}
-                 File.tempfile do |io|
-                   args = [] of String
-                   args << resource if resource
-                   args << name if name
-                   flags = Flags.new.merge(flags)
-                   flags.merge!({"--output" => "json"})
-                   kubectl_run(
-                     command: "get",
-                     args: args,
-                     flags: flags,
-                     manifest: manifest,
-                     namespace: namespace,
-                     output: io,
-                     input: false,
-                     error: error,
-                     panic: panic
-                   )
-                 end
-               {% end %}
-    return File.read(tempfile.path)
+    tempfile = File.tempfile do |io|
+      args = [] of String
+      args << resource if resource
+      args << name if name
+      flags = Flags.new.merge(flags)
+      flags.merge!({"--output" => "json"})
+      kubectl_run(
+        command: "get",
+        args: args,
+        flags: flags,
+        manifest: manifest,
+        namespace: namespace,
+        output: STDOUT,
+        input: false,
+        error: error,
+        panic: panic
+      )
+    end
+    File.read(tempfile.path)
   end
 
   {% for m in %w(run exec new) %}
@@ -110,8 +84,9 @@ module Psykube::CLI::Commands::Kubectl
 
     # Generate manifests and assign to --filename
     if manifest
-      file = {% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}Tempfile.new{% else %}File.tempfile{% end %}(manifest.kind)
-      file.print manifest.to_json
+      file = File.tempfile(manifest.kind)
+      manifest_json = manifest.to_json
+      file.print manifest_json
       file.flush
       flags["--filename"] = file.path
     end
@@ -148,7 +123,7 @@ module Psykube::CLI::Commands::Kubectl
   end
 
   private def get_labels(resource = nil)
-    { "unknown" => "unknown" }
+    {"unknown" => "unknown"}
   end
 
   def kubectl_get_pods(phase : String? = "Running")
@@ -165,7 +140,7 @@ module Psykube::CLI::Commands::Kubectl
     end
 
     # Exec into the pod
-    if pods.any?(&.is_a? Pyrite::Api::Core::V1::Pod)
+    if pods.any?(Pyrite::Api::Core::V1::Pod)
       pods
     else
       raise "There are no running pods, try running `psykube status`"

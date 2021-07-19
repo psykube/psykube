@@ -13,21 +13,14 @@ class Psykube::CLI::Commands::EditSecret < Admiral::Command
     json = kubectl_json(resource: "secret", name: arguments.name || actor.name)
     secret = Pyrite::Api::Core::V1::Secret.from_json(json)
     data = decode(secret.data || {} of String => String)
-    tempfile =
-      {% if compare_versions(Crystal::VERSION, "0.27.0") < 0 %}
-        Tempfile.open("edit-secret") do |io|
-          data.to_yaml(io)
-        end
-      {% else %}
-        File.tempfile do |io|
-          data.to_yaml(io)
-        end
-      {% end %}
+    tempfile = File.tempfile do |io|
+      data.to_yaml(io)
+    end
     Process.run(command: ENV["EDITOR"] || "vim", args: [tempfile.path], input: @input_io, output: @output_io, error: @error_io)
     secret.data = encode(Hash(String, String).from_yaml(File.read(tempfile.path)))
     flags.dry_run ? puts(secret.to_yaml) : kubectl_run("apply", manifest: secret)
   ensure
-    # tempfile.delete if tempfile
+    tempfile.delete if tempfile
   end
 
   private def decode(data : Hash(String, String))

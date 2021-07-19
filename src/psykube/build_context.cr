@@ -20,9 +20,9 @@ class Psykube::BuildContext
     @image = parts[0]
     tag ||= parts[1]?
     @tag = tag
-    @build_tags = parse_build_tags(build_tags).compact.reject(&.empty?).uniq
+    @build_tags = parse_build_tags(build_tags).compact.reject(&.empty?).uniq!
     @build_tags.unshift(tag) if (tag)
-    @cache_from = parse_cache_from(cache_from).compact.reject(&.empty?).uniq
+    @cache_from = parse_cache_from(cache_from).compact.reject(&.empty?).uniq!
     @args = args.map &.join('=')
   end
 
