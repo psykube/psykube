@@ -52,7 +52,7 @@ module Psykube::CLI::Commands::Kubectl
         flags: flags,
         manifest: manifest,
         namespace: namespace,
-        output: STDOUT,
+        output: io,
         input: false,
         error: error,
         panic: panic
@@ -85,8 +85,7 @@ module Psykube::CLI::Commands::Kubectl
     # Generate manifests and assign to --filename
     if manifest
       file = File.tempfile(manifest.kind)
-      manifest_json = manifest.to_json
-      file.print manifest_json
+      manifest.to_json(file)
       file.flush
       flags["--filename"] = file.path
     end
