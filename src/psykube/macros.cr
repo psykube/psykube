@@ -160,6 +160,7 @@ module Psykube::Macros
         ::Psykube::Macros.__check_scalar(key_node)
 
         case key_node.value
+        when "version"
         when "type"
           type_location = key_node.location
           @type = String.new(ctx, value_node)
