@@ -13,14 +13,12 @@ class Psykube::CLI::Commands::GetSecret < Admiral::Command
     description: "The command to run in the container."
 
   def run
-    secret = Pyrite::Api::Core::V1::Secret.from_json(kubectl_json(resource: "secret", name: flags.secret_name || actor.name))
-    data = decode(secret.data || {} of String => String)
-    @output_io.puts data[arguments.name]
-  end
-
-  private def decode(data : Hash(String, String))
-    data.each_with_object({} of String => String) do |(k, v), o|
-      o[k] = Base64.decode_string(v)
+    secret_name = flags.secret_name || actor.name
+    secret = Pyrite::Api::Core::V1::Secret.from_json(kubectl_json(resource: "secret", name: secret_name))
+    if (value = secret.data.try(&.[arguments.name]?))
+      @output_io.puts Base64.decode_string(value)
+    else
+      panic "No key named `#{arguments.name}` in secret `#{secret_name}`"
     end
   end
 end
