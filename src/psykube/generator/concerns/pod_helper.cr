@@ -40,7 +40,8 @@ module Psykube::Generator::Concerns::PodHelper
       host_network: manifest.host_network,
       dns_policy: manifest.dns_policy,
       termination_grace_period_seconds: manifest.termination_grace_period,
-      tolerations: manifest.tolerations
+      tolerations: manifest.tolerations,
+      node_selector: stringify_hash_values(manifest.node_selector.try(&.merge(cluster.node_selector || StringableMap.new)) || cluster.node_selector)
     )
   end
 

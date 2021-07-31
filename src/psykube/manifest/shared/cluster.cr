@@ -14,6 +14,7 @@ class Psykube::Manifest::Shared::Cluster
     namespace:           {type: String, optional: true},
     config_map:          {type: StringableMap, default: StringableMap.new},
     secrets:             {type: StringableMap | Bool, optional: true},
+    node_selector:       {type: StringableMap, optional: true},
     autoscale:           {type: Manifest::Autoscale, optional: true},
     container_overrides: {type: ContainerOverides, default: ContainerOverides.new},
     volumes:             {type: VolumeMap, default: VolumeMap.new},
