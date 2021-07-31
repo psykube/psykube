@@ -1,6 +1,8 @@
 require "random"
 
 abstract class Psykube::Manifest
+  class PortError < Psykube::Error; end
+
   module Serviceable; end
 
   module Jobable; end
@@ -164,10 +166,6 @@ abstract class Psykube::Manifest
       {% end %}
     })
 
-    def lookup_port(port : Int32?)
-      port
-    end
-
     def ports
       containers.each_with_object(PortMap.new) do |(container_name, container), port_map|
         container.ports.each do |port_name, port|
@@ -176,14 +174,27 @@ abstract class Psykube::Manifest
       end
     end
 
-    def lookup_port(port_name : String)
-      if port_name.to_i?
-        port_name.to_i
-      elsif port_name == "default" && !ports.has_key?("default")
-        ports.values.first
+    def lookup_port!(port_name : Nil = nil)
+      ports["default"]? || ports.values.first? || raise Psykube::Error.new "Containers do not export any ports"
+    end
+
+    def lookup_port!(port_number : Int32)
+      raise Psykube::Error.new "No container exports port #{port_number}" unless ports.values.includes? port_number
+      port_number
+    end
+
+    def lookup_port!(port_name : String)
+      if (port_int = port_name.to_i?)
+        lookup_port! port_int
       else
-        ports[port_name]? || raise "Invalid port #{port_name}"
+        ports[port_name]? || raise Psykube::Error.new "No port named #{port_name}"
       end
+    end
+
+    def lookup_port(port : Int32 | String | Nil = nil)
+      lookup_port!(port)
+    rescue PortError
+      nil
     end
 
     {% if service %}

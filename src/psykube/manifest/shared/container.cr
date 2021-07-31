@@ -1,4 +1,7 @@
 class Psykube::Manifest::Shared::Container
+  class PortError < Psykube::Error
+  end
+
   Macros.mapping({
     image:             {type: String, optional: true},
     image_pull_policy: {type: String, optional: true},
@@ -21,7 +24,7 @@ class Psykube::Manifest::Shared::Container
   def env
     env = @env || {} of String => Manifest::Env | String | Int32 | Bool | Float64 | Nil
     return env unless ports?
-    env["PORT"] = lookup_port("default").to_s
+    env["PORT"] = lookup_port.to_s
     ports.each_with_object(env) do |(name, port), env|
       env["#{name.underscore.upcase.gsub(/(-\.)/, "_")}_PORT"] = port.to_s
     end
@@ -31,18 +34,27 @@ class Psykube::Manifest::Shared::Container
     !ports.empty?
   end
 
-  def lookup_port(port : Int32)
-    port
+  def lookup_port!(port_name : Nil = nil)
+    ports["default"]? || ports.values.first? || raise PortError.new "Container does not export any ports"
   end
 
-  def lookup_port(port_name : String)
-    if port_name.to_i?
-      port_name.to_i
-    elsif port_name == "default" && !ports.has_key?("default")
-      ports.values.first
+  def lookup_port!(port_number : Int32)
+    raise PortError.new "Container does not export port #{port_number}" unless ports.values.includes? port_number
+    port_number
+  end
+
+  def lookup_port!(port_name : String)
+    if (port_int = port_name.to_i?)
+      lookup_port! port_int
     else
-      ports[port_name]? || raise "Invalid port #{port_name}"
+      ports[port_name]? || raise PortError.new "No port named #{port_name}"
     end
+  end
+
+  def lookup_port(port : Int32 | String | Nil = nil)
+    lookup_port!(port)
+  rescue PortError
+    nil
   end
 end
 

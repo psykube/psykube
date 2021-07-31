@@ -142,7 +142,7 @@ module Psykube::CLI::Commands::Kubectl
     if pods.any?(Pyrite::Api::Core::V1::Pod)
       pods
     else
-      raise "There are no running pods, try running `psykube status`"
+      raise Psykube::Error.new "There are no running pods, try running `psykube status`"
     end
   rescue e : Generator::ValidationError
     panic "Error: #{e.message}".colorize(:red)

@@ -16,7 +16,7 @@ class Psykube::Generator::Podable < ::Psykube::Generator
     when "Pod"
       Pod.result(self)
     else
-      raise "Invalid type: `#{manifest.type}`"
+      raise Psykube::Error.new "Invalid type: `#{manifest.type}`"
     end
   end
 end

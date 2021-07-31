@@ -21,7 +21,7 @@ class Psykube::Generator::Autoscale < ::Psykube::Generator
   end
 
   private def resource
-    raise "Invalid type for autoscale: `#{manifest.type}`" unless manifest.type == "Deployment"
+    raise Psykube::Error.new "Invalid type for autoscale: `#{manifest.type}`" unless manifest.type == "Deployment"
     @resource ||= Deployment.result(self)
   end
 

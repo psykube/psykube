@@ -34,7 +34,7 @@ class Psykube::CLI::Commands::PortForward < Admiral::Command
   end
 
   def run
-    port_args = arguments[0..-1].map(&.split(":").map { |p| actor.manifest.lookup_port(p) }.join(":"))
+    port_args = arguments[0..-1].map(&.split(":").map { |p| actor.manifest.lookup_port!(p) }.join(":"))
     pod = flags.nth ? kubectl_get_pods[flags.nth.not_nil!]? : kubectl_get_pods.sample
     pod = kubectl_get_pods.sample unless pod
     raise Error.new("No pod to connect to") unless pod

@@ -22,7 +22,7 @@ def Psykube::Manifest.new(command : Psykube::CLI::Commands::Init)
   container.ports = Hash(String, Int32).new.tap do |hash|
     flags.ports.each_with_index do |spec, index|
       parts = spec.split("=", 2).reverse
-      port = parts[0].to_i? || raise "Invalid port format."
+      port = parts[0].to_i? || raise Psykube::Error.new "Invalid port format."
       port_name = parts[1]? || (index == 0 ? "default" : "port_#{index}")
       hash[port_name] = port
     end
@@ -44,7 +44,7 @@ def Psykube::Manifest.new(command : Psykube::CLI::Commands::Init)
     when "Pod"
       Pod.new(**args)
     else
-      raise "Unsupported type #{type}"
+      raise Psykube::Error.new "Unsupported type #{type}"
     end
 
   # Set Docker Info

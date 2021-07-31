@@ -55,15 +55,15 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
   end
 
   private def generate_tls
-    tls_list = cluster_hosts.map do |host, spec|
+    tls_list = cluster_hosts.compact_map do |host, spec|
       tls = spec.tls || cluster_tls
-      tls_record = generate_host_tls(host, tls) if tls
-    end.compact
+      generate_host_tls(host, tls) if tls
+    end
     tls_list unless tls_list.empty?
   end
 
   private def generate_host_tls(host : String, tls : Manifest::Ingress::Tls)
-    raise "Cannot assign automatic TLS with a static secret name." if tls.auto && tls.secret_name
+    raise Psykube::Error.new "Cannot assign automatic TLS with a static secret name." if tls.auto && tls.secret_name
     if (auto = tls.auto)
       return generate_host_tls_auto host, auto
     end
@@ -101,8 +101,8 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
           Pyrite::Api::Extensions::V1beta1::HTTPIngressPath.new(
             path: path,
             backend: Pyrite::Api::Extensions::V1beta1::IngressBackend.new(
-              service_name: generate_service_name(manifest.services),
-              service_port: lookup_port(path_spec.port)
+              service_name: generate_service_name(path_spec.service_name),
+              service_port: get_service_port(path_spec.service_name, path_spec.port)
             )
           )
         end
@@ -110,16 +110,65 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
     )
   end
 
-  private def generate_service_name(type : Nil | String)
-    name
+  private def generate_service_name(_nil : Nil)
+    return name unless (services = manifest.services)
+    case (services = manifest.services)
+    when Hash(String, String | Manifest::Service)
+      generate_service_name(services.keys.first? || "default")
+    when Array(String)
+      generate_service_name(services.first? || "default")
+    end
   end
 
-  private def generate_service_name(types : Array(String))
-    [name, types.first.downcase].compact.join("-")
+  private def generate_service_name(service_name : String)
+    case (services = manifest.services)
+    when Hash(String, String | Manifest::Service)
+      raise Psykube::Error.new "Service #{service_name.inspect} does not exist in manifest" unless services.keys.includes? service_name
+    when Array(String)
+      raise Psykube::Error.new "Service #{service_name.inspect} does not exist in manifest" unless services.includes? service_name
+    when Nil
+      raise Psykube::Error.new "Service #{service_name.inspect} does not exist in manifest" unless service_name === "default"
+    end
+    service_name == "default" ? name : [name, service_name].compact.join("-")
   end
 
-  private def generate_service_name(services : Hash(String, Manifest::Service | String))
-    service_name = services.keys.first == "default" ? nil : services.keys.first
-    [name, service_name].compact.join("-")
+  private def get_service_port(service_name : String | Nil, port : String | Int32 | Nil)
+    return nil unless (service = get_service(service_name))
+    get_service_port(service, port)
+  rescue e : Manifest::PortError
+    raise Manifest::PortError.new "#{service_name || "default"} service: {e.message}"
+  end
+
+  private def get_service_port(service : Manifest::Service, port : String | Int32 | Nil)
+    service_ports = service.ports
+    return lookup_port!(port) if !service_ports
+    port ||= get_first_service_port(service) || lookup_port!(port)
+    unless service_ports.includes?(port) || service_ports.includes?(lookup_port(port))
+      raise Manifest::PortError.new "Port #{port.inspect} does not exist"
+    end
+  end
+
+  private def get_first_service_port(service : Manifest::Service)
+    case (service_ports = service.ports)
+    when Hash(String, Int32 | String)
+      service_ports.values.first?
+    when Array(Int32 | String | Pyrite::Api::Core::V1::ServicePort)
+      unless (port = service_ports.first?).is_a? Pyrite::Api::Core::V1::ServicePort
+        port
+      end
+    end
+  end
+
+  private def get_service(service_name : String | Nil)
+    case (services = manifest.services)
+    when Hash(String, String | Manifest::Service)
+      return nil if services.empty? && (!service_name || service_name == "default")
+      unless (service = service_name ? services[service_name]? : services["default"]? || services.values.first?)
+        raise Psykube::Error.new "Service #{service_name} does not exist in manifest"
+      end
+      service
+    else
+      nil
+    end
   end
 end
