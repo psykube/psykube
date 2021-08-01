@@ -115,6 +115,8 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
     case (services = manifest.services)
     when Hash(String, String | Manifest::Service)
       generate_service_name(services.keys.first? || "default")
+    else
+      name
     end
   end
 
