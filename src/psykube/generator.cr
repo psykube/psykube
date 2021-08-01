@@ -18,7 +18,7 @@ abstract class Psykube::Generator
   getter manifest : Manifest
 
   delegate name, cluster, tag, namespace, cluster_name, to: @actor
-  delegate lookup_port, lookup_port!, to: manifest
+  delegate ports, lookup_port, lookup_port!, to: manifest
 
   def self.result(parent, *args, **params)
     new(parent).result(*args, **params)

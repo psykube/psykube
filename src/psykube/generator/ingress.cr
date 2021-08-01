@@ -133,30 +133,36 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
   end
 
   private def get_service_port(service_name : String | Nil, port : String | Int32 | Nil)
-    return nil unless (service = get_service(service_name))
+    return lookup_port!(port) unless (service = get_service(service_name))
     get_service_port(service, port)
   rescue e : Manifest::PortError
     raise Manifest::PortError.new "#{service_name || "default"} service: {e.message}"
   end
 
-  private def get_service_port(service : Manifest::Service, port : String | Int32 | Nil)
-    service_ports = service.ports
-    return lookup_port!(port) if !service_ports
-    port ||= get_first_service_port(service) || lookup_port!(port)
-    unless service_ports.includes?(port) || service_ports.includes?(lookup_port(port))
+  private def get_service_port(service : Manifest::Service, port : Int32 | Nil) : Int32
+    return lookup_port!(port) if !service.ports
+    port ||= get_first_service_port(service)
+    unless extract_service_ports(service).includes? port
       raise Manifest::PortError.new "Port #{port.inspect} does not exist"
+    end
+    port
+  end
+
+  private def get_service_port(service : Manifest::Service, port_name : String) : Int32
+    case (service_ports = service.ports)
+    when Hash(String, Int32 | String)
+      parse_service_port service_ports[port_name]? || raise Psykube::Error.new("No port named #{port_name} in service")
+    when Nil
+      lookup_port! port_name
+    else
+      raise Psykube::Error.new("port not found in service")
     end
   end
 
-  private def get_first_service_port(service : Manifest::Service)
-    case (service_ports = service.ports)
-    when Hash(String, Int32 | String)
-      service_ports.values.first?
-    when Array(Int32 | String | Pyrite::Api::Core::V1::ServicePort)
-      unless (port = service_ports.first?).is_a? Pyrite::Api::Core::V1::ServicePort
-        port
-      end
-    end
+  private def get_first_service_port(service : Manifest::Service) : Int32
+    extract_service_ports(service).first?.tap do |port|
+      raise Psykube::Error.new("Service has no ports") unless port
+    end.not_nil!
   end
 
   private def get_service(service_name : String | Nil)
@@ -164,11 +170,35 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
     when Hash(String, String | Manifest::Service)
       return nil if services.empty? && (!service_name || service_name == "default")
       unless (service = service_name ? services[service_name]? : services["default"]? || services.values.first?)
-        raise Psykube::Error.new "Service #{service_name} does not exist in manifest (in get_service)"
+        raise Psykube::Error.new "Service #{service_name} does not exist in manifest"
       end
       return service if service.is_a? Manifest::Service
     else
       nil
+    end
+  end
+
+  private def parse_service_port(port : String | Int32 | Pyrite::Api::Core::V1::ServicePort) : Int32
+    case port
+    when Int32
+      port
+    when String
+      port.split(":")[0].to_i?.tap do |source_port|
+        raise Psykube::Error.new("port must be an integer greater than zero") unless source_port.try(&.> 0)
+      end
+    when Pyrite::Api::Core::V1::ServicePort
+      port.port
+    end.not_nil!
+  end
+
+  private def extract_service_ports(service : Manifest::Service)
+    case (service_ports = service.ports)
+    when Hash(String, Int32 | String)
+      service_ports.values.compact_map { |p| parse_service_port p }.uniq!
+    when Array(Int32 | String | Pyrite::Api::Core::V1::ServicePort)
+      service_ports.compact_map { |p| parse_service_port p }.uniq!
+    else
+      ports.values || [] of Int32
     end
   end
 end

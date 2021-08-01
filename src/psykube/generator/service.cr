@@ -64,33 +64,30 @@ class Psykube::Generator::Service < ::Psykube::Generator
     end
   end
 
-  private def generate_port(name, port)
+  private def generate_port(name : String, port : String)
+    parts = port.split(":")
+    source_port = parts[0].to_i?
+    raise Psykube::Error.new("port must be an integer greater than zero") unless source_port.try(&.> 0)
+    target_port = parts[1]? || source_port
     Pyrite::Api::Core::V1::ServicePort.new(
       name: name,
-      port: lookup_port!(port),
+      port: source_port.not_nil!,
+      target_port: lookup_port!(target_port).not_nil!,
       protocol: "TCP"
     )
   end
 
-  private def generate_port(port : Int32)
+  private def generate_port(name : String, port : Int32)
     Pyrite::Api::Core::V1::ServicePort.new(
       name: name,
-      port: lookup_port!(port),
+      port: port,
       target_port: lookup_port!(port),
       protocol: "TCP"
     )
   end
 
-  private def generate_port(port : String)
-    parts = port.split(":")
-    source_port = parts[0]
-    target_port = parts[1]?
-    Pyrite::Api::Core::V1::ServicePort.new(
-      name: name,
-      port: lookup_port!(source_port),
-      target_port: lookup_port!(target_port),
-      protocol: "TCP"
-    )
+  private def generate_port(port : String | Int32)
+    generate_port name, port
   end
 
   private def generate_port(port : Pyrite::Api::Core::V1::ServicePort)
