@@ -121,7 +121,9 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
   private def generate_service_name(service_name : String)
     case (services = manifest.services)
     when Hash(String, String | Manifest::Service)
-      raise Psykube::Error.new "Service #{service_name.inspect} does not exist in manifest (in generate_service_name from Hash)" unless services.keys.includes? service_name
+      raise Psykube::Error.new "Service #{service_name.inspect} does not exist in manifest" unless services.keys.includes? service_name
+    when Array(String)
+      raise Psykube::Error.new "Service #{service_name.inspect} does not exist in manifest" unless services.includes? service_name
     when Nil
       raise Psykube::Error.new "Service #{service_name.inspect} does not exist in manifest" unless service_name === "default"
     end
