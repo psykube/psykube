@@ -183,9 +183,10 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
     when Int32
       port
     when String
-      port.split(":")[0].to_i?.tap do |source_port|
-        raise Psykube::Error.new("port must be an integer greater than zero") unless source_port.try(&.> 0)
-      end
+      parts = port.split(":", 2)
+      source_port = parts.size == 2 ? parts[0].to_i? : lookup_port!(parts[0])
+      raise Psykube::Error.new("port must be an integer greater than zero") unless source_port.try(&.> 0)
+      source_port.not_nil!
     when Pyrite::Api::Core::V1::ServicePort
       port.port
     end.not_nil!
