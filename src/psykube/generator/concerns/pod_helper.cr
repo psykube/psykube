@@ -332,7 +332,7 @@ module Psykube::Generator::Concerns::PodHelper
   private def generate_container_probe_http_get(container : Manifest::Shared::Container, http_check : Manifest::Handler::Http)
     Pyrite::Api::Core::V1::HTTPGetAction.new(
       path: http_check.path,
-      port: container.lookup_port!(http_check.port).not_nil!,
+      port: container.lookup_port(http_check.port).not_nil!,
       host: http_check.host,
       scheme: http_check.scheme,
       http_headers: stringify_hash_values(http_check.headers).try(&.map { |k, v| Pyrite::Api::Core::V1::HTTPHeader.new(name: k, value: v) })
@@ -350,13 +350,13 @@ module Psykube::Generator::Concerns::PodHelper
 
   private def generate_container_probe_tcp_socket(container : Manifest::Shared::Container, port : String | Int32)
     Pyrite::Api::Core::V1::TCPSocketAction.new(
-      port: container.lookup_port! port
+      port: container.lookup_port port
     )
   end
 
   private def generate_container_probe_tcp_socket(container : Manifest::Shared::Container, tcp : Manifest::Handler::Tcp)
     Pyrite::Api::Core::V1::TCPSocketAction.new(
-      port: container.lookup_port! tcp.port
+      port: container.lookup_port tcp.port
     )
   end
 

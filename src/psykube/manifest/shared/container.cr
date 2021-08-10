@@ -51,10 +51,16 @@ class Psykube::Manifest::Shared::Container
     end
   end
 
-  def lookup_port(port : Int32 | String | Nil = nil)
-    lookup_port!(port)
-  rescue PortError
-    nil
+  def lookup_port(port_number : Int32)
+    port_number
+  end
+
+  def lookup_port(port_name : String)
+    lookup_port(port_name.to_i? || ports[port_name]?)
+  end
+
+  def lookup_port(port_name : Nil = nil)
+    lookup_port!(port_name)
   end
 end
 
