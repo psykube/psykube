@@ -15,48 +15,25 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
     !!(manifest.ingress || cluster.ingress)
   end
 
-  private def cluster_ingress
-    cluster.ingress || Manifest::Ingress.new
-  end
-
   private def cluster_ingress_annotations
     sets = [
       acme? ? {"kubernetes.io/tls-acme" => "true"} : nil,
-      manifest_ingress.annotations,
-      cluster_ingress.annotations,
+      ingress.annotations,
     ].compact
     sets.reduce { |p, n| p.merge n } unless sets.empty?
   end
 
-  private def manifest_ingress
-    manifest.ingress || Manifest::Ingress.new
-  end
-
-  private def cluster_tls
-    case cluster_ingress.tls
-    when .nil?
-      manifest_ingress.tls
-    else
-      cluster_ingress.tls
-    end
-  end
-
   private def acme?
-    return true if cluster_tls == true
-    if cluster_tls.is_a? Manifest::Ingress::Tls
-      return true if cluster_tls.as(Manifest::Ingress::Tls).auto
-    else
-      false
-    end
+    !!ingress.tls
   end
 
-  private def cluster_hosts
-    manifest_ingress.hosts.merge cluster_ingress.hosts
+  private def ingress
+    (manifest.ingress || Manifest::Ingress.new).merge(cluster.ingress || Manifest::Ingress.new)
   end
 
   private def generate_tls
-    tls_list = cluster_hosts.compact_map do |host, spec|
-      tls = spec.tls || cluster_tls
+    tls_list = ingress.hosts.compact_map do |host, spec|
+      tls = spec.tls
       generate_host_tls(host, tls) if tls
     end
     tls_list unless tls_list.empty?
@@ -87,7 +64,7 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
   end
 
   private def generate_rules
-    rules = cluster_hosts.map do |host, spec|
+    rules = ingress.hosts.map do |host, spec|
       generate_host_paths(host, spec.paths)
     end
     rules.empty? ? nil : rules

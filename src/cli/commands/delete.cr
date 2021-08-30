@@ -20,7 +20,7 @@ class Psykube::CLI::Commands::Delete < Admiral::Command
   def run
     if confirm?
       puts "Deleting Kubernetes Manifests...".colorize(:yellow)
-      success = actor.generate.as(Pyrite::Api::Core::V1::List).items.not_nil!.reject(&.kind.== "PersistentVolumeClaim").map do |item|
+      actor.generate.as(Pyrite::Api::Core::V1::List).items.not_nil!.reject(&.kind.== "PersistentVolumeClaim").map do |item|
         kubectl_new("delete", manifest: item)
       end.all?(&.wait.success?) || panic("Failed kubectl delete.".colorize(:red))
     end

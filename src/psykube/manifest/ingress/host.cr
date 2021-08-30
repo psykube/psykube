@@ -12,7 +12,9 @@ class Psykube::Manifest::Ingress::Host
     paths:        {type: PathList | PathMap, optional: true},
   })
 
-  def initialize(*, @port = nil, @service_name = nil, @path = nil, @paths = nil)
+  def_clone
+
+  def initialize(*, @port = nil, @service_name = nil, @path = nil, @paths = nil, @tls = nil)
   end
 
   def paths
@@ -20,7 +22,10 @@ class Psykube::Manifest::Ingress::Host
     paths = @paths
     path_map = case paths
                when PathMap
-                 paths
+                 paths.tap(&.each do |_, p|
+                   p.port ||= port
+                   p.service_name ||= service_name
+                 end)
                when PathList
                  paths.each_with_object(PathMap.new) do |path_string, map|
                    map[path_string] = Path.new(port: port, service_name: service_name)

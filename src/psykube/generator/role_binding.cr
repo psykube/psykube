@@ -7,7 +7,7 @@ class Psykube::Generator::RoleBinding < ::Psykube::Generator
   end
 
   private def generate_role_bindings(_nil : Nil)
-    return [] of Pyrite::Api::Rbac::V1::RoleBinding
+    [] of Pyrite::Api::Rbac::V1::RoleBinding
   end
 
   private def generate_role_bindings(roles : Array)
@@ -18,7 +18,7 @@ class Psykube::Generator::RoleBinding < ::Psykube::Generator
 
   private def generate_role_binding(name : String)
     Pyrite::Api::Rbac::V1::RoleBinding.new(
-      metadata: generate_metadata(name: [self.name, name].join('-')),
+      metadata: generate_metadata(name: [self.name, name].uniq.join('-')),
       subjects: [generate_subject(manifest.service_account)],
       role_ref: Pyrite::Api::Rbac::V1::RoleRef.new(
         kind: "Role",
@@ -30,7 +30,7 @@ class Psykube::Generator::RoleBinding < ::Psykube::Generator
 
   private def generate_role_binding(cluster_role : Manifest::Shared::ClusterRoleType)
     Pyrite::Api::Rbac::V1::RoleBinding.new(
-      metadata: generate_metadata(name: [self.name, name].join('-')),
+      metadata: generate_metadata(name: [self.name, name].uniq.join('-')),
       subjects: [generate_subject(manifest.service_account)],
       role_ref: Pyrite::Api::Rbac::V1::RoleRef.new(
         kind: "ClusterRole",
@@ -42,7 +42,7 @@ class Psykube::Generator::RoleBinding < ::Psykube::Generator
 
   private def generate_role_binding(role : Manifest::Shared::Role)
     Pyrite::Api::Rbac::V1::RoleBinding.new(
-      metadata: generate_metadata(name: [self.name, name].join('-')),
+      metadata: generate_metadata(name: [self.name, name].uniq.join('-')),
       subjects: [generate_subject(manifest.service_account)],
       role_ref: Pyrite::Api::Rbac::V1::RoleRef.new(
         kind: "Role",

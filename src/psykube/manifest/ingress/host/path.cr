@@ -4,6 +4,8 @@ class Psykube::Manifest::Ingress::Host::Path
     service_name: {type: String, optional: true},
   })
 
+  def_clone
+
   def initialize(*, @port : String | Int32, @service_name : String? = nil)
   end
 end

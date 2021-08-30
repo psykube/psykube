@@ -70,7 +70,7 @@ class Psykube::Actor
   end
 
   def name
-    [prefix, manifest.name, suffix].compact.join
+    [prefix, manifest.name, suffix].compact.join("-")
   end
 
   def template_result(metadata : StringMap = metadata)

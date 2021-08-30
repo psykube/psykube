@@ -43,10 +43,10 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
         kubectl_run("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
       end
       if ["Deployment", "StatefulSet", "DaemonSet"].includes?(actor.manifest.type) && flags.wait
-        kubectl_run("rollout", ["status", "#{actor.manifest.type}/#{actor.manifest.name}".downcase])
+        kubectl_run("rollout", ["status", "#{actor.manifest.type}/#{actor.name}".downcase])
       end
       if ["Deployment", "StatefulSet", "DaemonSet"].includes?(actor.manifest.type) && flags.restart
-        kubectl_run("rollout", ["restart", "#{actor.manifest.type}/#{actor.manifest.name}".downcase])
+        kubectl_run("rollout", ["restart", "#{actor.manifest.type}/#{actor.name}".downcase])
       end
       kubectl_run("annotate", ["namespace", namespace, "psykube.io/last-modified=#{Time.utc.to_json}"], flags: {"--overwrite" => "true"})
     elsif flags.skip_if_no_cluster

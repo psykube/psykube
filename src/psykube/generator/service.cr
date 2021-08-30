@@ -71,12 +71,12 @@ class Psykube::Generator::Service < ::Psykube::Generator
     raise Psykube::Error.new("target_port must be an integer greater than zero") unless target_port.try(&.> 0)
     raise Psykube::Error.new("source_port must be an integer greater than zero") unless source_port.try(&.> 0)
     name ||= if parts.size == 2 && parts[1].to_i? != target_port
-      parts[1]
-    elsif parts.size == 1 && parts[0].to_i? != source_port
-      parts[0]
-    else
-      self.name
-    end
+               parts[1]
+             elsif parts.size == 1 && parts[0].to_i? != source_port
+               parts[0]
+             else
+               self.name
+             end
     Pyrite::Api::Core::V1::ServicePort.new(
       name: name,
       port: source_port.not_nil!,
