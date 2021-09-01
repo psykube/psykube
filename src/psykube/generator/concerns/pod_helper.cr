@@ -10,8 +10,9 @@ module Psykube::Generator::Concerns::PodHelper
       spec: generate_pod_spec,
       metadata: Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new(
         labels: {
-          "app"             => name,
-          "psykube.io/type" => role,
+          "app"                    => name,
+          "app.kubernetes.io/name" => name,
+          "psykube.io/type"        => role,
         },
         annotations: stringify_hash_values(manifest.pod_annotations)
       )
@@ -21,8 +22,9 @@ module Psykube::Generator::Concerns::PodHelper
   private def generate_selector(role = @role)
     Pyrite::Apimachinery::Apis::Meta::V1::LabelSelector.new(
       match_labels: {
-        "app"             => name,
-        "psykube.io/type" => role,
+        "app"                    => name,
+        "app.kubernetes.io/name" => name,
+        "psykube.io/type"        => role,
       }
     )
   end

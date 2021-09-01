@@ -19,5 +19,5 @@ module Psykube
   alias VolumeMountMap = Hash(String, String | Manifest::Shared::Container::VolumeMount)
   alias VolumeMap = Hash(String, String | Manifest::Volume::Claim | Manifest::Volume::Alias | Manifest::Volume::Spec)
 
-  LABELS = StringableMap{"psykube" => true}
+  LABELS = StringableMap{"app.kubernetes.io/managed-by" => "psykube"}
 end
