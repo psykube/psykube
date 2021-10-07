@@ -2,9 +2,9 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
   cast_manifest Manifest::Serviceable
 
   protected def result
-    Pyrite::Api::Extensions::V1beta1::Ingress.new(
+    Pyrite::Api::Networking::V1::Ingress.new(
       metadata: generate_metadata(annotations: [cluster_ingress_annotations]),
-      spec: Pyrite::Api::Extensions::V1beta1::IngressSpec.new(
+      spec: Pyrite::Api::Networking::V1::IngressSpec.new(
         rules: generate_rules,
         tls: generate_tls
       )
@@ -45,7 +45,7 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
       return generate_host_tls_auto host, auto
     end
     if (secret_name = tls.secret_name)
-      Pyrite::Api::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
+      Pyrite::Api::Networking::V1::IngressTLS.new(hosts: [host], secret_name: secret_name)
     end
   end
 
@@ -55,12 +55,12 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
 
   private def generate_host_tls_auto(host : String, auto : Manifest::Ingress::Tls::Auto)
     secret_name = "cert-" + auto.prefix.to_s + Digest::SHA1.hexdigest(host.downcase) + auto.suffix.to_s
-    Pyrite::Api::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
+    Pyrite::Api::Networking::V1::IngressTLS.new(hosts: [host], secret_name: secret_name)
   end
 
   private def generate_host_tls_auto(host : String, auto : Bool)
     secret_name = "cert-" + Digest::SHA1.hexdigest(host.downcase)
-    Pyrite::Api::Extensions::V1beta1::IngressTLS.new(hosts: [host], secret_name: secret_name)
+    Pyrite::Api::Networking::V1::IngressTLS.new(hosts: [host], secret_name: secret_name)
   end
 
   private def generate_rules
@@ -71,15 +71,20 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
   end
 
   private def generate_host_paths(host, paths : Manifest::Ingress::Host::PathMap)
-    Pyrite::Api::Extensions::V1beta1::IngressRule.new(
+    Pyrite::Api::Networking::V1::IngressRule.new(
       host: host,
-      http: Pyrite::Api::Extensions::V1beta1::HTTPIngressRuleValue.new(
+      http: Pyrite::Api::Networking::V1::HTTPIngressRuleValue.new(
         paths: paths.map do |path, path_spec|
-          Pyrite::Api::Extensions::V1beta1::HTTPIngressPath.new(
-            path: path,
-            backend: Pyrite::Api::Extensions::V1beta1::IngressBackend.new(
-              service_name: generate_service_name(path_spec.service_name),
-              service_port: get_service_port(path_spec.service_name, path_spec.port)
+          Pyrite::Api::Networking::V1::HTTPIngressPath.new(
+            path_type: "Prefix",
+            path: path.to_s == "" ? "/" : path,
+            backend: Pyrite::Api::Networking::V1::IngressBackend.new(
+              service: Pyrite::Api::Networking::V1::IngressServiceBackend.new(
+                name: generate_service_name(path_spec.service_name),
+                port: Pyrite::Api::Networking::V1::ServiceBackendPort.new(
+                  number: get_service_port(path_spec.service_name, path_spec.port)
+                )
+              )
             )
           )
         end
