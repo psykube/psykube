@@ -131,7 +131,7 @@ module Psykube::CLI::Commands::Kubectl
 
     json = kubectl_json(resource: "pods", flags: flags, export: false)
 
-    pods = Pyrite::Api::Core::V1::List.from_json(json).items.not_nil!.select do |pod|
+    pods = Pyrite::Kubernetes::List(Pyrite::Api::Core::V1::Pod).from_json(json).items.not_nil!.select do |pod|
       if pod.is_a?(Pyrite::Api::Core::V1::Pod)
         next pod unless phase
         (pod.status || Pyrite::Api::Core::V1::PodStatus.new).phase == phase
