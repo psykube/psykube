@@ -40,7 +40,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
         if item.is_a?(Pyrite::Api::Core::V1::Service) && (service = Pyrite::Api::Core::V1::Service.from_json(kubectl_json(manifest: item, panic: false, error: false)) rescue nil)
           item.metadata.not_nil!.resource_version = service.metadata.not_nil!.resource_version
         end
-        kubectl_run("apply", manifest: item, flags: {"--record" => !force, "--force" => force})
+        kubectl_run("apply", manifest: item, flags: {"--force" => force})
       end
       if ["Deployment", "StatefulSet", "DaemonSet"].includes?(actor.manifest.type) && flags.wait
         kubectl_run("rollout", ["status", "#{actor.manifest.type}/#{actor.name}".downcase])
