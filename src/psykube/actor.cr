@@ -105,7 +105,7 @@ class Psykube::Actor
 
   private def git_data
     @git_data ||= Dir.cd(working_directory) do
-      {"sha" => git_sha, "branch" => git_branch, "tag": git_tag}
+      {"sha" => git_sha, "branch" => git_branch, "tag" => git_tag}
     end
   end
 
