@@ -5,7 +5,7 @@ class Psykube::Generator::Podable < ::Psykube::Generator
     case manifest.type
     when "Deployment"
       Deployment.result(self)
-    when "Cron"
+    when "CronJob"
       CronJob.result(self)
     when "Job"
       Job.result(self)

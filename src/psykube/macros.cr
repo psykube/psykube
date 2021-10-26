@@ -171,7 +171,9 @@ module Psykube::Macros
       end
 
       {% if type %}
-        {% if type %}raise TypeException.new("invalid type: #{@type.inspect}", *type_location) unless @type == {{type}}{% end %}
+        unless @type == {{type}}
+          raise ParseException.new("invalid type: #{@type.inspect}", *type_location)
+        end
       {% end %}
 
       # Parse the rest
