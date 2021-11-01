@@ -47,9 +47,9 @@ module Psykube::CLI::Commands::Docker
     docker_login(build_context)
     build_context.cache_from.each do |c|
       build_context.stages.each do |stage|
-        docker_run ["pull", "#{c}-#{stage}"], allow_failure: true
+        docker_run ["pull", "--platform=#{build_context.platform}", "#{c}-#{stage}"], allow_failure: true
       end
-      docker_run ["pull", c], allow_failure: true
+      docker_run ["pull", "--platform=#{build_context.platform}", c], allow_failure: true
     end
 
     Dir.cd actor.working_directory do
@@ -63,6 +63,7 @@ module Psykube::CLI::Commands::Docker
   def build_image(build_context : BuildContext, tag : String? = nil, target : String? = nil)
     iidfile = File.tempfile("iidfile")
     args = ["build"]
+    args << "--platform=#{build_context.platform}"
     build_args.each do |arg|
       args << "--build-arg=#{arg}"
     end

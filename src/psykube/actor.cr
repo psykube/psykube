@@ -69,6 +69,10 @@ class Psykube::Actor
     @manifest ||= Manifest.from_yaml(template_result metadata)
   end
 
+  def platform
+    cluster.platform || manifest.platform
+  end
+
   def name
     [prefix, manifest.name, suffix].compact.join("-")
   end

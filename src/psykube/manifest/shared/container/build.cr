@@ -13,6 +13,7 @@ class Psykube::Manifest::Shared::Container::Build
     stages:     {type: Array(String), optional: true},
     target:     {type: String, optional: true},
     args:       {type: StringableMap, default: StringableMap.new},
+    platform:   {type: String, default: "linux/amd64"},
   })
 
   def_equals_and_hash dockerfile, context, args

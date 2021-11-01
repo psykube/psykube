@@ -94,7 +94,8 @@ abstract class Psykube::Manifest
         cache_from: container.build.try(&.cache_from),
         build_tags: container.build.try(&.tag),
         stages: container.build.try(&.stages) || [] of String,
-        target: container.build.try(&.target)
+        target: container.build.try(&.target),
+        platform: container.build.try(&.platform) || "linux/amd64"
       )
     end
 

@@ -14,8 +14,9 @@ class Psykube::BuildContext
   getter login : Login?
   getter stages : Array(String)
   getter target : String?
+  getter platform : String
 
-  def initialize(*, @container_name : String, image : String, tag, @context, @dockerfile, @build, args, @login = nil, cache_from = nil, build_tags = nil, @stages = [] of String, @target = nil)
+  def initialize(*, @container_name : String, image : String, tag, @context, @dockerfile, @build, args, @login = nil, cache_from = nil, build_tags = nil, @stages = [] of String, @target = nil, @platform : String)
     parts = image.split(':')
     @image = parts[0]
     tag ||= parts[1]?
