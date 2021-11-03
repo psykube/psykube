@@ -40,9 +40,3 @@ deploy:
     script: gcloud container clusters get-credentials staging --project=my-production-account --zone=us-east1-c && psykube apply staging --namespace=apps
     on:
       branch: develop
-
-  # Apply feature/* to kubernetes staging on its own namespace
-  - provider: script
-    script: gcloud container clusters get-credentials staging --project=my-production-account --zone=us-east1-c && psykube apply staging --namespace=apps-`echo $TRAVIS_BRANCH | sed "s|/|-|"` --copy-namespace=apps
-    on:
-      branch: feature/*

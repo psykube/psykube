@@ -17,7 +17,7 @@ class Psykube::Manifest::Shared::Container
     env:               {type: Hash(String, Manifest::Env | String | Int32 | Bool | Float64 | Nil), optional: true},
     command:           {type: Array(String) | String, optional: true},
     args:              {type: Array(String) | String, optional: true},
-    security_context:  {type: SecurityContext, optional: true},
+    security_context:  {type: Pyrite::Api::Core::V1::SecurityContext, optional: true},
     lifecycle:         {type: Lifecycle, optional: true},
   })
 

@@ -20,8 +20,6 @@ class Psykube::CLI::Main < Admiral::Command
   define_help
 
   register_sub_command "apply", Commands::Apply
-  register_sub_command "copy-namespace", Commands::CopyNamespace
-  register_sub_command "copy-resource", Commands::CopyResource
   register_sub_command "create-namespace", Commands::CreateNamespace
   register_sub_command "delete-namespace", Commands::DeleteNamespace
   register_sub_command "generate", Commands::Generate, short: "gen"

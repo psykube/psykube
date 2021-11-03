@@ -33,7 +33,7 @@ module Psykube::Generator::Concerns::PodHelper
       volumes: generate_volumes(combined_volumes),
       containers: generate_containers,
       init_containers: generate_init_containers(manifest.init_containers),
-      security_context: generate_security_context,
+      security_context: manifest.security_context,
       image_pull_secrets: generate_image_pull_secrets(manifest.image_pull_secrets),
       service_account_name: generate_service_account_name(manifest.service_account),
       host_pid: manifest.host_pid,
@@ -41,7 +41,8 @@ module Psykube::Generator::Concerns::PodHelper
       dns_policy: manifest.dns_policy,
       termination_grace_period_seconds: manifest.termination_grace_period,
       tolerations: manifest.tolerations,
-      node_selector: stringify_hash_values(manifest.node_selector.try(&.merge(cluster.node_selector || StringableMap.new)) || cluster.node_selector)
+      node_selector: stringify_hash_values(manifest.node_selector.try(&.merge(cluster.node_selector || StringableMap.new)) || cluster.node_selector),
+      enable_service_links: manifest.enable_service_links
     )
   end
 
@@ -98,7 +99,7 @@ module Psykube::Generator::Concerns::PodHelper
       ports: generate_container_ports(container.ports),
       command: generate_exec_array(container.command),
       args: generate_exec_array(container.args),
-      security_context: generate_security_context(container.security_context),
+      security_context: container.security_context,
       lifecycle: generate_container_lifecycle(container, container.lifecycle)
     )
   end
@@ -474,33 +475,6 @@ module Psykube::Generator::Concerns::PodHelper
       resource: field_ref.resource,
       container_name: field_ref.container,
       divisor: field_ref.divisor
-    )
-  end
-
-  private def generate_security_context
-    if (security_context = manifest.security_context)
-      Pyrite::Api::Core::V1::PodSecurityContext.new(
-        fs_group: security_context.fs_group,
-        run_as_non_root: security_context.run_as_non_root,
-        run_as_user: security_context.run_as_user,
-        se_linux_options: security_context.se_linux_options,
-        supplemental_groups: security_context.supplemental_groups,
-      )
-    end
-  end
-
-  private def generate_security_context(_nil : Nil) : Nil
-  end
-
-  private def generate_security_context(security_context : Manifest::Shared::Container::SecurityContext)
-    Pyrite::Api::Core::V1::SecurityContext.new(
-      allow_privilege_escalation: security_context.allow_privilege_escalation,
-      capabilities: security_context.capabilities,
-      privileged: security_context.privileged,
-      read_only_root_filesystem: security_context.read_only_root_filesystem,
-      run_as_non_root: security_context.run_as_non_root,
-      run_as_user: security_context.run_as_user,
-      se_linux_options: security_context.se_linux_options,
     )
   end
 

@@ -157,7 +157,8 @@ abstract class Psykube::Manifest
       tolerations:                     {type: Array(Pyrite::Api::Core::V1::Toleration), optional: true},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
       volumes:                         {type: VolumeMap, default: VolumeMap.new},
-      security_context:                {type: Shared::SecurityContext, optional: true},
+      security_context:                {type: Pyrite::Api::Core::V1::PodSecurityContext, optional: true},
+      enable_service_links:            {type: Bool, optional: true},
       {% if service %}
         ingress:                       {type: Manifest::Ingress, optional: true},
         services:                      {type: Array(String) | Hash(String, String | Manifest::Service), default: "ClusterIP", optional: true },

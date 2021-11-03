@@ -1,4 +1,4 @@
-require "pyrite/versions/v1.19"
+require "pyrite/versions/v1.20"
 require "colorize"
 require "digest"
 require "yaml"

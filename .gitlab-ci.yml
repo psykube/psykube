@@ -40,7 +40,6 @@ Spec:
     - psykube push
     - psykube exec -- echo 'hello world'
     # - psykube logs -t 100
-    - psykube copy-namespace $NAMESPACE $NAMESPACE-copy --force
     - psykube delete -y
     - psykube delete-namespace
     - kubectl delete ns $NAMESPACE

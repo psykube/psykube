@@ -195,7 +195,6 @@ module Psykube::CLI::Commands::Kubectl
       end
 
       items.each do |item|
-        item.status = nil if item.responds_to?(:"status=")
         metadata = item.metadata.not_nil!
         metadata.namespace = to
         metadata.self_link = nil

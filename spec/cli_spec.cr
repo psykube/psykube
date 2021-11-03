@@ -57,8 +57,6 @@ Dir.cd("spec") do
       #   process.wait
       # end
 
-      psykube_it "copy-namespace #{namespace} #{namespace}-copy --force"
-
       # Cleanup
       psykube_it "delete -y"
       psykube_it "delete-namespace -y"
