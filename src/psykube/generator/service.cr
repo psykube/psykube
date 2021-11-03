@@ -47,7 +47,8 @@ class Psykube::Generator::Service < ::Psykube::Generator
         load_balancer_source_ranges: service.load_balancer_source_ranges,
         session_affinity: service.session_affinity,
         external_ips: service.external_ips,
-        ports: generate_ports(service.ports || manifest.ports)
+        ports: generate_ports(service.ports || manifest.ports),
+        publish_not_ready_addresses: service.publish_not_ready_addresses,
       )
     )
   end

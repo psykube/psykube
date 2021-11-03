@@ -25,6 +25,7 @@ class Psykube::CLI::Main < Admiral::Command
   register_sub_command "generate", Commands::Generate, short: "gen"
   register_sub_command "delete", Commands::Delete, short: "rm"
   register_sub_command "exec", Commands::Exec
+  register_sub_command "command", Commands::Command, short: "c"
   register_sub_command "port-forward", Commands::PortForward
   register_sub_command "push", Commands::Push
   register_sub_command "status", Commands::Status, short: "st"
