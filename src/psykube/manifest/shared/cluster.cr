@@ -18,6 +18,7 @@ class Psykube::Manifest::Shared::Cluster
     autoscale:           {type: Manifest::Autoscale, optional: true},
     container_overrides: {type: ContainerOverides, default: ContainerOverides.new},
     volumes:             {type: VolumeMap, default: VolumeMap.new},
+    crds:                {type: Array(String), optional: true},
   })
 
   def initialize(@context : String? = nil)

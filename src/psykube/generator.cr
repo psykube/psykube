@@ -42,6 +42,10 @@ abstract class Psykube::Generator
     manifest.config_map.merge cluster.config_map
   end
 
+  private def cluster_crds
+    manifest.crds.merge cluster.crds
+  end
+
   private def secrets_disabled?
     manifest.secrets == false || cluster.secrets == false
   end

@@ -160,6 +160,7 @@ abstract class Psykube::Manifest
       security_context:                {type: Pyrite::Api::Core::V1::PodSecurityContext, optional: true},
       enable_service_links:            {type: Bool, optional: true},
       commands:                        {type: Hash(String, String), optional: true},
+      crds:                            {type: Array(String), optional: true},
       {% if service %}
         ingress:                       {type: Manifest::Ingress, optional: true},
         services:                      {type: Array(String) | Hash(String, String | Manifest::Service), default: "ClusterIP", optional: true },
