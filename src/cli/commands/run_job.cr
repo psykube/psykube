@@ -9,6 +9,7 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
   define_flag build : Bool, description: "Don't build the docker image.", default: true
   define_flag push : Bool, description: "Don't push the docker image.", default: true
   define_flag wait : Bool, description: "Wait for the job to complete.", default: true
+  define_flag current_image : Bool, description: "Use the currently deployed image."
   define_flag timeout : Int32, description: "The timeout to wait for the job to complete in seconds.", default: 300
   define_flag create_namespace : Bool, description: "create the namespace before the given apply."
   define_flag skip_if_no_cluster : Bool, description: "dont fail, just skip the apply if the cluster does not exist."
@@ -24,7 +25,7 @@ class Psykube::CLI::Commands::RunJob < Admiral::Command
       if flags.build
         docker_build(actor.buildable_contexts)
         docker_push(actor.buildable_contexts) if flags.push
-      else
+      elsif flags.current_image
         set_images_from_current!
       end
 

@@ -7,6 +7,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
 
   define_flag build : Bool, description: "Don't build the docker image.", default: true
   define_flag push : Bool, description: "Don't push the docker image.", default: true
+  define_flag current_image : Bool, description: "Use the currently deployed image."
   define_flag image, description: "Override the generated docker image."
   define_flag wait : Bool, description: "Don't wait for the rollout.", default: true
   define_flag restart : Bool, description: "Restart the deployment after the apply.", default: false
@@ -24,7 +25,7 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
       # Build the image
       if !flags.tag && !flags.image && flags.build
         docker_build(actor.buildable_contexts)
-      else
+      elsif flags.current_image
         set_images_from_current!
       end
 

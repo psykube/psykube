@@ -10,9 +10,10 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
   define_flag image, description: "Override the docker image."
   define_flag output, description: "Write the raw kubernetes files to a folder.", short: o
   define_flag tag, description: "The docker tag to apply.", short: t
+  define_flag current_image : Bool, description: "Use the currently deployed image."
 
   def run
-    set_images_from_current!
+    set_images_from_current! if flags.current_image
     if (output = flags.output)
       output_dir = File.expand_path(output)
       actor.generate.items.not_nil!.each do |item|

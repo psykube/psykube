@@ -9,9 +9,10 @@ class Psykube::CLI::Commands::GenerateJob < Admiral::Command
   define_help description: "Generate the kubernetes manifests for a job."
   define_flag output, description: "Write the raw kubernetes files to a folder.", short: o
   define_argument job_name, description: "the name of the job you wish to generate."
+  define_flag current_image : Bool, description: "Use the currently deployed image."
 
   def run
-    set_images_from_current!
+    set_images_from_current! if flags.current_image
     manifest = actor.get_job(arguments.job_name)
     if (output = flags.output)
       output_dir = File.expand_path(output)
