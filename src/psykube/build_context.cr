@@ -1,4 +1,8 @@
+require "./concerns/git_data"
+
 class Psykube::BuildContext
+  include GitData
+
   record Login, server : String, username : String, password : String
 
   @cache_from : Array(String)
@@ -20,7 +24,7 @@ class Psykube::BuildContext
     parts = image.split(':')
     @image = parts[0]
     tag ||= parts[1]?
-    @tag = tag
+    @tag = tag || default_tag
     @build_tags = parse_build_tags(build_tags).compact.reject(&.empty?).uniq!
     @build_tags.unshift(tag) if (tag)
     @cache_from = parse_cache_from(cache_from).compact.reject(&.empty?).uniq!
@@ -31,6 +35,14 @@ class Psykube::BuildContext
     base_image = build ? [@image, container_name].join('-') : @image
     tag ||= @tag
     [base_image, tag].compact.join(':')
+  end
+
+  def default_tag
+    case ENV["PSYKUBE_TAG_STRATEGY"]?
+    when "git"
+      return "git-tag-#{git_tag}" if git_tag
+      return "git-sha-#{git_sha}" if git_sha
+    end
   end
 
   def cache_from

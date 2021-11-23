@@ -5,11 +5,11 @@ class Psykube::CLI::Commands::Apply < Admiral::Command
   include KubectlAll
   include Docker
 
-  define_flag build : Bool, description: "Don't build the docker image.", default: true
-  define_flag push : Bool, description: "Don't push the docker image.", default: true
+  define_flag build : Bool, description: "Don't build the docker image.", default: !Bool.from_yaml(ENV["PSYKUBE_NO_BUILD"]? || "false")
+  define_flag push : Bool, description: "Don't push the docker image.", default: !Bool.from_yaml(ENV["PSYKUBE_NO_PUSH"]? || "false")
   define_flag current_image : Bool, description: "Use the currently deployed image."
   define_flag image, description: "Override the generated docker image."
-  define_flag wait : Bool, description: "Don't wait for the rollout.", default: true
+  define_flag wait : Bool, description: "Don't wait for the rollout.", default: !Bool.from_yaml(ENV["PSYKUBE_NO_WAIT"]? || "false")
   define_flag restart : Bool, description: "Restart the deployment after the apply.", default: false
   define_flag tag, description: "The docker tag to apply.", short: t
   define_flag force : Bool, description: "Force the recreation of the kubernetes resources."
