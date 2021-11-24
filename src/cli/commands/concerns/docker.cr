@@ -71,6 +71,8 @@ module Psykube::CLI::Commands::Docker
       args << "--build-arg=#{arg}"
     end
     args << "--file=#{build_context.dockerfile}" if build_context.dockerfile
+    args << "--quiet" if flags.quiet_build
+    args << "--target=#{target}" if target
     build_context.cache_from.each do |c|
       build_context.stages.each do |stage|
         args << "--cache-from=#{c}-#{stage}" unless stage == target || container_missing("#{c}-#{stage}")
@@ -82,15 +84,20 @@ module Psykube::CLI::Commands::Docker
       t += "-#{target}" if target
       args << "--tag=#{t}"
     end
-    args << "--quiet" if flags.quiet_build
-    args << "--iidfile=#{iidfile.path}"
-    args << "--target=#{target}" if target
+    args << "--tag=#{tag}" if tag
+    if build_context.tag
+      args << "--tag=#{build_context.image}"
+    else
+      args << "--iidfile=#{iidfile.path}" unless build_context.tag
+    end
     docker_run args + [build_context.context]
-    sha = File.read(iidfile.path).strip
-    iidfile.delete
-    build_context.image, build_context.tag = tag.split(':') if tag && tag.includes?(":")
-    build_context.tag ||= sha.sub(':', '-')
-    docker_run ["tag", sha, build_context.image(tag)]
+    unless build_context.tag
+      sha = File.read(iidfile.path).strip
+      iidfile.delete
+      build_context.image, build_context.tag = tag.split(':') if tag && tag.includes?(":")
+      build_context.tag = sha.sub(':', '-')
+      docker_run ["tag", sha, build_context.image(tag)]
+    end
   end
 
   def docker_push(build_contexts : Array(BuildContext), tag : String? = nil)
@@ -105,7 +112,8 @@ module Psykube::CLI::Commands::Docker
       push_tags(build_context, stage)
     end
     push_tags(build_context, build_context.target)
-    docker_run ["push", build_context.image(tag)]
+    docker_run ["push", build_context.image(tag)] if tag
+    docker_run ["push", build_context.image]
   end
 
   def push_tags(build_context : BuildContext, target : String? = nil)
