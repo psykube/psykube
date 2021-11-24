@@ -1,4 +1,6 @@
 module Psykube::GitData
+  GIT_BIN = ENV["GIT_BIN"]? || `which git`.strip
+
   private def ci_branch
     ENV["TRAVIS_BRANCH"]? || ENV["CIRCLE_BRANCH"]? || ENV["GIT_BRANCH"]? || (ENV["CI_COMMIT_TAG"]? ? nil : ENV["CI_COMMIT_REF_NAME"]?)
   end
@@ -12,15 +14,15 @@ module Psykube::GitData
   end
 
   private def git_branch
-    ci_branch || maybe_nil(`git rev-parse --abbrev-ref HEAD`.strip)
+    ci_branch || maybe_nil(`#{GIT_BIN} rev-parse --abbrev-ref HEAD`.strip)
   end
 
   private def git_sha
-    ci_sha || maybe_nil(`git rev-parse HEAD`.strip)
+    ci_sha || maybe_nil(`#{GIT_BIN} rev-parse HEAD`.strip)
   end
 
   private def git_tag
-    ci_tag || maybe_nil(`git describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip)
+    ci_tag || maybe_nil(`#{GIT_BIN} describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip)
   end
 
   private def prefix

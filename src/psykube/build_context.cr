@@ -38,6 +38,7 @@ class Psykube::BuildContext
   end
 
   def default_tag
+    return unless build
     case ENV["PSYKUBE_TAG_STRATEGY"]?
     when "git"
       return "git-tag-#{git_tag}" if git_tag
