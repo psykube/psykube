@@ -18,7 +18,6 @@ class Psykube::CLI::Commands::Exec < Admiral::Command
   define_flag nth : Int32,
     description: "Load the nth listed container",
     short: n
-
   define_argument command,
     description: "The command to run in the container.",
     required: true
