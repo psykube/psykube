@@ -31,7 +31,7 @@ module Psykube::CLI::Commands::Docker
       password = login.password
     end
     if (creds = flags.docker_credentials)
-      username, password = creds.split(":")
+      username, password = creds.split(':', 2)
     end
     if username && password
       password = IO::Memory.new.tap(&.puts password).tap(&.rewind)
@@ -94,7 +94,7 @@ module Psykube::CLI::Commands::Docker
     unless build_context.tag
       sha = File.read(iidfile.path).strip
       iidfile.delete
-      build_context.image, build_context.tag = tag.split(':') if tag && tag.includes?(":")
+      build_context.image, build_context.tag = tag.split(':', 2) if tag && tag.includes?(":")
       build_context.tag = sha.sub(':', '-')
       docker_run ["tag", sha, build_context.image(tag)]
     end

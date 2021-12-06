@@ -165,7 +165,7 @@ class Psykube::Generator::Ingress < ::Psykube::Generator
     when Int32
       port
     when String
-      parts = port.split(":", 2)
+      parts = port.split(':', 2)
       source_port = parts.size == 2 ? parts[0].to_i? : lookup_port!(parts[0])
       raise Psykube::Error.new("port must be an integer greater than zero") unless source_port.try(&.> 0)
       source_port.not_nil!

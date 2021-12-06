@@ -17,14 +17,14 @@ module Psykube::CLI::Commands::Kubectl
     spec = Pyrite::Api::Apps::V1::Deployment.from_json(kubectl_json(manifest: podable, panic: false, error: false)).spec.not_nil!.template.not_nil!.spec.not_nil!
     actor.build_contexts.each do |build_context|
       if (container = spec.containers.find { |c| build_context.container_name == c.name })
-        build_context.image, build_context.tag = container.image.to_s.split(':')
+        build_context.image, build_context.tag = container.image.to_s.split(':', 2)
       end
       build_context
     end
     if (init_containers = spec.init_containers)
       actor.init_build_contexts.each do |build_context|
         if (container = init_containers.find { |c| build_context.container_name == c.name })
-          build_context.image, build_context.tag = container.image.to_s.split(':')
+          build_context.image, build_context.tag = container.image.to_s.split(':', 2)
         end
         build_context
       end

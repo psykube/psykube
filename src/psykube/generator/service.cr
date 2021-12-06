@@ -66,7 +66,7 @@ class Psykube::Generator::Service < ::Psykube::Generator
   end
 
   private def generate_port(name : String?, port : String)
-    parts = port.split(":", 2)
+    parts = port.split(':', 2)
     target_port = parts.size == 2 ? lookup_port!(parts[1]) : lookup_port!(parts[0])
     source_port = parts.size == 2 ? parts[0].to_i? : target_port
     raise Psykube::Error.new("target_port must be an integer greater than zero") unless target_port.try(&.> 0)
