@@ -155,6 +155,8 @@ abstract class Psykube::Manifest
       dns_policy:                      {type: String, optional: true},
       termination_grace_period:        {type: Int32, optional: true},
       tolerations:                     {type: Array(Pyrite::Api::Core::V1::Toleration), optional: true},
+      other_resources:                 {type: Array(Pyrite::Kubernetes::Object), default: [] of Pyrite::Kubernetes::Object},
+      custom_resources:                {type: Array(Pyrite::Kubernetes::CustomObject), default: [] of Pyrite::Kubernetes::CustomObject},
       clusters:                        {type: ClusterMap, default: ClusterMap.new },
       volumes:                         {type: VolumeMap, default: VolumeMap.new},
       security_context:                {type: Pyrite::Api::Core::V1::PodSecurityContext, optional: true},

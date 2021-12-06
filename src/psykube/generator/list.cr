@@ -2,7 +2,7 @@ class Psykube::Generator::List < ::Psykube::Generator
   protected def result
     @role = @manifest.type.not_nil!
     Pyrite::Api::Core::V1::List.new(
-      items: ([] of Pyrite::Kubernetes::Object?).tap do |list|
+      items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
         # Prepare RBAC
         list << ServiceAccount.result(self)
         list.concat Role.result(self)
@@ -35,6 +35,10 @@ class Psykube::Generator::List < ::Psykube::Generator
         if manifest.type == "Deployment"
           list << Autoscale.result(self)
         end
+
+        # Combine Additional Resources
+        list.concat generate_metadata(manifest.other_resources)
+        list.concat generate_metadata(manifest.custom_resources)
       end.compact
     )
   end

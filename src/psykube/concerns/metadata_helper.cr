@@ -15,6 +15,28 @@ module Psykube::Concerns::MetadataHelper
     )
   end
 
+  private def generate_metadata(list : Array(Pyrite::Kubernetes::ObjectMetadata))
+    list.map do |object|
+      generate_metadata(object)
+    end
+  end
+
+  private def generate_metadata(object : Pyrite::Kubernetes::ObjectMetadata)
+    object.tap do |object|
+      object.metadata ||= Pyrite::Apimachinery::Apis::Meta::V1::ObjectMeta.new
+      metadata = object.metadata.not_nil!
+      label_list = [] of StringableMap?
+      label_list << StringableMap{"app" => self.name}
+      label_list += [manifest.labels, cluster.labels].compact
+      label_list << LABELS
+      final_labels = label_list.compact.reduce { |p, n| p.merge(n) }
+      metadata.labels ||= {} of String => String
+      metadata.labels.try(&.merge!(stringify_hash_values(final_labels)))
+      metadata.namespace = NameCleaner.clean(namespace)
+      metadata.name ||= NameCleaner.clean(name)
+    end
+  end
+
   private def stringify_hash_values(map : Nil) : Nil
     nil
   end

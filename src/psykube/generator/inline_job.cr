@@ -7,7 +7,7 @@ class Psykube::Generator::InlineJob < ::Psykube::Generator
   protected def result(name)
     raise Error.new("unknown job: #{name}") unless job = manifest.jobs.try(&.[name]?)
     Pyrite::Api::Core::V1::List.new(
-      items: ([] of Pyrite::Kubernetes::Object?).tap do |list|
+      items: ([] of Pyrite::Kubernetes::Resource?).tap do |list|
         # Prepare RBAC
         list << ServiceAccount.result(self)
         list.concat Role.result(self)

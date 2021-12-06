@@ -18,7 +18,9 @@ class Psykube::CLI::Commands::Generate < Admiral::Command
       output_dir = File.expand_path(output)
       actor.generate.items.not_nil!.each do |item|
         kind = item.kind.downcase
-        name = item.metadata.not_nil!.name.to_s
+        if item.is_a?(Pyrite::Kubernetes::ObjectMetadata)
+          name = item.metadata.not_nil!.name.to_s
+        end
         FileUtils.mkdir_p(output_dir)
         filename = File.join(output_dir, "#{name}.#{kind}.yaml")
         File.open(filename, "w+") do |io|
