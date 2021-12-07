@@ -3,14 +3,15 @@ class Psykube::Manifest::Ingress
   alias HostnameList = Array(String)
 
   Macros.mapping({
-    annotations:  {type: StringableMap, optional: true},
-    tls:          {type: Tls | Bool, optional: true},
-    host:         {type: String, optional: true},
-    hosts:        {type: HostnameList | HostHash, optional: true},
-    port:         {type: Int32 | String, optional: true},
-    service_name: {type: String, optional: true},
-    path:         {type: String, optional: true},
-    paths:        {type: Host::PathList | Host::PathMap, optional: true},
+    ingress_class_name: {type: String, optional: true},
+    annotations:        {type: StringableMap, optional: true},
+    tls:                {type: Tls | Bool, optional: true},
+    host:               {type: String, optional: true},
+    hosts:              {type: HostnameList | HostHash, optional: true},
+    port:               {type: Int32 | String, optional: true},
+    service_name:       {type: String, optional: true},
+    path:               {type: String, optional: true},
+    paths:              {type: Host::PathList | Host::PathMap, optional: true},
   })
 
   def_clone
