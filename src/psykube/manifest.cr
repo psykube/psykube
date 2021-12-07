@@ -213,6 +213,14 @@ abstract class Psykube::Manifest
       def services?
         services.size > 0
       end
+
+      def get_ingress(actor : Actor)
+        Generator::Ingress.new(self, actor).result.not_nil!
+      end
+    {% else %}
+      def get_ingress(actor : Actor)
+        raise Error.new("Ingress is not supported for this manifest type")
+      end
     {% end %}
 
     {% if jobable %}

@@ -35,21 +35,27 @@ class Psykube::Actor
     manifest.get_cluster(cluster_name || "")
   end
 
-  def generate : Pyrite::Api::Core::V1::List
+  def validate_cluster!
     raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !clusters.empty?
     raise Generator::ValidationError.new("cluster does not exist: #{cluster_name}") if cluster.initialized? && !clusters.empty?
+  end
+
+  def generate : Pyrite::Api::Core::V1::List
     manifest.generate(self)
   end
 
+  def get_ingress : Pyrite::Api::Networking::V1::Ingress
+    validate_cluster!
+    manifest.get_ingress(self)
+  end
+
   def podable : Psykube::Generator::Podable::Resource
-    raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !clusters.empty?
-    raise Generator::ValidationError.new("cluster does not exist: #{cluster_name}") if cluster.initialized? && !clusters.empty?
+    validate_cluster!
     manifest.podable(self)
   end
 
   def get_job(name) : Pyrite::Api::Core::V1::List
-    raise Generator::ValidationError.new("cluster argument required for manifests defining clusters") if !cluster_name && !clusters.empty?
-    raise Generator::ValidationError.new("cluster does not exist: #{cluster_name}") if cluster.initialized? && !clusters.empty?
+    validate_cluster!
     manifest.get_job(self, name)
   end
 
