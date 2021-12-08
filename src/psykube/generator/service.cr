@@ -45,6 +45,7 @@ class Psykube::Generator::Service < ::Psykube::Generator
         cluster_ip: service.cluster_ip,
         load_balancer_ip: service.load_balancer_ip,
         load_balancer_source_ranges: service.load_balancer_source_ranges,
+        external_traffic_policy: service.external_traffic_policy,
         session_affinity: service.session_affinity,
         external_ips: service.external_ips,
         ports: generate_ports(service.ports || manifest.ports),

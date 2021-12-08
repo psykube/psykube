@@ -9,6 +9,7 @@ class Psykube::Manifest::Service
     session_affinity:            {type: String, optional: true},
     load_balancer_source_ranges: {type: Array(String), optional: true},
     ports:                       {type: Hash(String, Int32 | String) | Array(Int32 | String | Pyrite::Api::Core::V1::ServicePort), optional: true},
+    external_traffic_policy:     {type: String, optional: true},
   })
 
   def initialize(type : String = "ClusterIP")
