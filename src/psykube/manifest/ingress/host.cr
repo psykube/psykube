@@ -33,7 +33,7 @@ class Psykube::Manifest::Ingress::Host
                else
                  PathMap.new
                end
-    path_map[path] if path_map.empty?
+    path_map[path] = Path.new(port: port, service_name: service_name) if path_map.empty?
     path_map
   end
 end
