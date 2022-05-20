@@ -7,7 +7,9 @@ class Psykube::Actor
   @metadata : StringMap?
   @raw_metadata : StringMap?
   @manifest : Manifest?
+  @raw_manifest : Manifest?
   @template : Crustache::Syntax::Template
+  getter raw_yaml : String
   setter build_contexts : Array(BuildContext)?
   setter init_build_contexts : Array(BuildContext)?
   property cluster_name : String?
@@ -22,7 +24,7 @@ class Psykube::Actor
 
   def initialize(io, cluster_name = nil, context = nil, namespace = nil, basename = nil, tag = nil)
     @namespace = namespace if namespace
-    raw_yaml = String.build { |string_io| IO.copy(io, string_io) }
+    @raw_yaml = String.build { |string_io| IO.copy(io, string_io) }
     @template = Crustache.parse raw_yaml
     @cluster_name = cluster_name
     @tag = tag
@@ -31,8 +33,8 @@ class Psykube::Actor
     @context = context || cluster.context || manifest.context
   end
 
-  def cluster
-    manifest.get_cluster(cluster_name || "")
+  def cluster(m = manifest)
+    m.get_cluster(cluster_name || "")
   end
 
   def validate_cluster!
@@ -75,6 +77,10 @@ class Psykube::Actor
     @init_build_contexts ||= manifest.get_init_build_contexts(cluster_name: @cluster_name || "", basename: basename, tag: @tag, working_directory: @working_directory)
   end
 
+  def raw_manifest
+    @raw_manifest ||= Manifest.from_yaml(template_result({} of String => String))
+  end
+
   def manifest
     @manifest ||= Manifest.from_yaml(template_result metadata)
   end
@@ -83,13 +89,13 @@ class Psykube::Actor
     cluster.platform || manifest.platform
   end
 
-  def name
-    [prefix, manifest.name, suffix].compact.join("-")
+  def name(m = manifest)
+    [prefix(m), m.name, suffix(m)].compact.join("-")
   end
 
-  def template_result(metadata : StringMap = metadata)
+  def template_result(m : StringMap = metadata)
     Crustache.render @template, {
-      "metadata" => escaped(metadata),
+      "metadata" => escaped(m),
       "git"      => escaped(git_data),
       "env"      => escaped(env_hash),
     }
@@ -113,6 +119,7 @@ class Psykube::Actor
 
   private def metadata
     @metadata ||= {
+      "name" => name(raw_manifest),
       "cluster_name" => @cluster_name || "",
       "namespace"    => @namespace,
     }
@@ -126,7 +133,11 @@ class Psykube::Actor
     cluster.registry_user || manifest.registry_user
   end
 
-  private def suffix
-    cluster.suffix || manifest.suffix
+  private def suffix(m = manifest)
+    cluster(m).suffix || m.suffix
+  end
+
+  private def prefix(m = manifest)
+    cluster(m).prefix || m.prefix
   end
 end

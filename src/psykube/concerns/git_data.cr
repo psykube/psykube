@@ -25,10 +25,6 @@ module Psykube::GitData
     ci_tag || maybe_nil(`#{GIT_BIN} describe --exact-match --abbrev=0 --tags 2> /dev/null`.strip)
   end
 
-  private def prefix
-    cluster.prefix || manifest.prefix
-  end
-
   private def maybe_nil(string : String)
     string.empty? ? nil : string
   end
