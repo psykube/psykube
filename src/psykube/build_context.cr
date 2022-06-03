@@ -46,6 +46,10 @@ class Psykube::BuildContext
     end
   end
 
+  def has_tag?
+    !!tag
+  end
+
   def cache_from
     (@build_tags + @cache_from).uniq
   end

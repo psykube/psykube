@@ -119,7 +119,7 @@ class Psykube::Actor
 
   private def metadata
     @metadata ||= {
-      "name" => name(raw_manifest),
+      "name"         => name(raw_manifest),
       "cluster_name" => @cluster_name || "",
       "namespace"    => @namespace,
     }
